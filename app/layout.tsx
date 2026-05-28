@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, DM_Sans } from "next/font/google";
 import "./globals.css";
+import Image from "next/image";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import PrivacyBanner from "@/components/PrivacyBanner";
 
@@ -19,12 +21,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
         <PrivacyBanner />
         <main className="flex-1">{children}</main>
-        <footer className="bg-[#2D2D2D] text-white text-center py-6 text-sm mt-16">
-          <p className="font-[var(--font-dm-sans)] font-semibold text-base mb-1">BoxNiJuanPH</p>
+        <footer className="bg-[#111827] text-white text-center py-8 text-sm mt-16">
+          <div className="flex justify-center mb-3">
+            <Image src="/logo.svg" alt="BoxNiJuanPH" width={140} height={34} />
+          </div>
           <p className="text-gray-400">The Wellness Box for Every Juan</p>
           <p className="text-gray-500 mt-2 text-xs">© 2026 BoxNiJuanPH. BSITOUMN COMP 047 – PUP Open University System</p>
           <p className="mt-2 text-xs">
-            <a href="/privacy" className="text-gray-500 hover:text-[#7D9B76] underline transition-colors">Privacy Policy</a>
+            <Link href="/privacy" className="text-gray-500 hover:text-[#16A34A] underline transition-colors">Privacy Policy</Link>
             {" · "}
             <span className="text-gray-600">Protected under RA 10173</span>
           </p>
