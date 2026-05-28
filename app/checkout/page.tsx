@@ -73,18 +73,18 @@ export default function CheckoutPage() {
 
       {/* Back link */}
       <div className="mb-6">
-        <Link href="/summary" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-[#16A34A] transition-colors">
+        <Link href="/summary" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-[#84CC16] transition-colors">
           ← Back to Summary
         </Link>
       </div>
 
-      <h1 className="font-[var(--font-dm-sans)] text-4xl font-bold text-[#111827] mb-2">Checkout</h1>
+      <h1 className="font-[var(--font-dm-sans)] text-4xl font-bold text-[#1C1917] mb-2">Checkout</h1>
       <p className="text-gray-500 mb-6">Enter your delivery and payment details.</p>
 
       {/* Logged-in user chip */}
       {loggedInUser && (
         <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-4 py-2 text-sm text-green-800 mb-8">
-          <div className="w-6 h-6 rounded-full bg-[#16A34A] text-white flex items-center justify-center text-xs font-bold" aria-hidden="true">
+          <div className="w-6 h-6 rounded-full bg-[#84CC16] text-white flex items-center justify-center text-xs font-bold" aria-hidden="true">
             {loggedInUser.avatar}
           </div>
           <span>
@@ -99,7 +99,7 @@ export default function CheckoutPage() {
         <div className="flex-1 space-y-6">
           {/* Delivery */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-            <h2 className="font-[var(--font-dm-sans)] font-semibold text-[#111827] mb-4">Delivery Information</h2>
+            <h2 className="font-[var(--font-dm-sans)] font-semibold text-[#1C1917] mb-4">Delivery Information</h2>
             <div className="space-y-4">
               <div>
                 <label htmlFor="fullName" className="block text-sm font-medium text-gray-600 mb-1">
@@ -113,7 +113,7 @@ export default function CheckoutPage() {
                   required
                   placeholder="Juan dela Cruz"
                   aria-required="true"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 min-h-[48px]"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#84CC16] focus:ring-2 focus:ring-[#84CC16]/20 min-h-[48px]"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -130,7 +130,7 @@ export default function CheckoutPage() {
                     required
                     placeholder="juan@email.com"
                     aria-required="true"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 min-h-[48px]"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#84CC16] focus:ring-2 focus:ring-[#84CC16]/20 min-h-[48px]"
                   />
                 </div>
                 <div>
@@ -146,7 +146,7 @@ export default function CheckoutPage() {
                     required
                     placeholder="09XX-XXX-XXXX"
                     aria-required="true"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 min-h-[48px]"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#84CC16] focus:ring-2 focus:ring-[#84CC16]/20 min-h-[48px]"
                   />
                 </div>
               </div>
@@ -162,7 +162,7 @@ export default function CheckoutPage() {
                   required
                   placeholder="Street, Barangay"
                   aria-required="true"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 min-h-[48px]"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#84CC16] focus:ring-2 focus:ring-[#84CC16]/20 min-h-[48px]"
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -178,7 +178,7 @@ export default function CheckoutPage() {
                     required
                     placeholder="Maynila"
                     aria-required="true"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 min-h-[48px]"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#84CC16] focus:ring-2 focus:ring-[#84CC16]/20 min-h-[48px]"
                   />
                 </div>
                 <div>
@@ -193,7 +193,7 @@ export default function CheckoutPage() {
                     required
                     placeholder="1000"
                     aria-required="true"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#16A34A] focus:ring-2 focus:ring-[#16A34A]/20 min-h-[48px]"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#84CC16] focus:ring-2 focus:ring-[#84CC16]/20 min-h-[48px]"
                   />
                 </div>
               </div>
@@ -205,7 +205,7 @@ export default function CheckoutPage() {
 
           {/* Payment */}
           <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-            <h2 className="font-[var(--font-dm-sans)] font-semibold text-[#111827] mb-4">Payment Method</h2>
+            <h2 className="font-[var(--font-dm-sans)] font-semibold text-[#1C1917] mb-4">Payment Method</h2>
             <fieldset>
               <legend className="sr-only">Select a payment method</legend>
               <div className="space-y-3">
@@ -219,8 +219,8 @@ export default function CheckoutPage() {
                     key={option.value}
                     className={`flex items-center gap-3 border rounded-xl px-4 py-3 cursor-pointer transition-colors min-h-[52px] ${
                       form.payment === option.value
-                        ? "border-[#16A34A] bg-green-50"
-                        : "border-gray-200 hover:border-[#16A34A]"
+                        ? "border-[#84CC16] bg-green-50"
+                        : "border-gray-200 hover:border-[#84CC16]"
                     }`}
                   >
                     <input
@@ -229,7 +229,7 @@ export default function CheckoutPage() {
                       value={option.value}
                       checked={form.payment === option.value}
                       onChange={handleChange}
-                      className="accent-[#16A34A] w-4 h-4"
+                      className="accent-[#84CC16] w-4 h-4"
                     />
                     <span className="text-sm font-medium">{option.label}</span>
                   </label>
@@ -246,7 +246,7 @@ export default function CheckoutPage() {
                 <li className="flex gap-2"><span>🚫</span> Your data is never sold or shared with third parties</li>
               </ul>
               <p className="text-xs text-gray-400 mt-2">
-                <Link href="/privacy" className="underline hover:text-[#16A34A] transition-colors">View our Privacy Policy →</Link>
+                <Link href="/privacy" className="underline hover:text-[#84CC16] transition-colors">View our Privacy Policy →</Link>
               </p>
             </div>
           </div>
@@ -254,8 +254,8 @@ export default function CheckoutPage() {
 
         {/* Right: Order Summary */}
         <div className="w-full md:w-72 shrink-0">
-          <div className="bg-[#F0FDF4] border border-green-100 rounded-2xl p-6 sticky top-24">
-            <h3 className="font-[var(--font-dm-sans)] font-bold text-[#111827] mb-4">Order Summary</h3>
+          <div className="bg-[#F7FEE7] border border-green-100 rounded-2xl p-6 sticky top-24">
+            <h3 className="font-[var(--font-dm-sans)] font-bold text-[#1C1917] mb-4">Order Summary</h3>
             <div className="space-y-3 mb-4">
               {items.map((item) => (
                 <div key={item.id} className="flex items-center gap-3 text-sm">
@@ -267,9 +267,9 @@ export default function CheckoutPage() {
               ))}
             </div>
             <div className="border-t border-gray-200 pt-4 mt-2">
-              <div className="flex justify-between font-bold text-[#111827]">
+              <div className="flex justify-between font-bold text-[#1C1917]">
                 <span>{planData?.name} Plan</span>
-                <span className="text-[#16A34A]">₱{planData?.price}/mo</span>
+                <span className="text-[#84CC16]">₱{planData?.price}/mo</span>
               </div>
               <p className="text-xs text-gray-400 mt-1">Billed monthly · Cancel anytime</p>
             </div>
@@ -279,7 +279,7 @@ export default function CheckoutPage() {
               aria-disabled={!isComplete}
               className={`w-full mt-6 py-3 rounded-full font-semibold text-sm transition-colors min-h-[48px] ${
                 isComplete
-                  ? "bg-[#16A34A] text-white hover:bg-[#15803D]"
+                  ? "bg-[#84CC16] text-white hover:bg-[#0D9488]"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"
               }`}
             >
@@ -302,17 +302,17 @@ export default function CheckoutPage() {
           aria-describedby="confirm-desc"
         >
           <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl">
-            <h2 id="confirm-title" className="font-[var(--font-dm-sans)] font-bold text-xl text-[#111827] mb-2">
+            <h2 id="confirm-title" className="font-[var(--font-dm-sans)] font-bold text-xl text-[#1C1917] mb-2">
               Confirm Your Order
             </h2>
             <p id="confirm-desc" className="text-sm text-gray-500 mb-1">
-              Delivering to: <span className="font-semibold text-[#111827]">{form.fullName}</span>
+              Delivering to: <span className="font-semibold text-[#1C1917]">{form.fullName}</span>
             </p>
             <p className="text-sm text-gray-500 mb-1">
               {form.address}, {form.city} {form.zipCode}
             </p>
             <p className="text-sm text-gray-500 mb-6">
-              Plan: <span className="font-semibold text-[#16A34A]">{planData?.name} — ₱{planData?.price}/mo</span>
+              Plan: <span className="font-semibold text-[#84CC16]">{planData?.name} — ₱{planData?.price}/mo</span>
             </p>
             <div className="flex gap-3">
               <button
@@ -323,7 +323,7 @@ export default function CheckoutPage() {
               </button>
               <button
                 onClick={handleConfirmOrder}
-                className="flex-1 min-h-[48px] bg-[#16A34A] text-white rounded-full font-semibold text-sm hover:bg-[#15803D] transition-colors"
+                className="flex-1 min-h-[48px] bg-[#84CC16] text-white rounded-full font-semibold text-sm hover:bg-[#0D9488] transition-colors"
               >
                 Confirm Order
               </button>

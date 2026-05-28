@@ -26,7 +26,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-16 bg-[#FAFAF8]">
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-16 bg-[#F7FEE7]">
       <div className="w-full max-w-sm">
         {/* Card */}
         <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8">
@@ -35,7 +35,7 @@ export default function LoginPage() {
             <div className="flex justify-center mb-2">
               <Image src="/logo.svg" alt="BoxNiJuanPH" width={150} height={36} />
             </div>
-            <h1 className="font-[var(--font-dm-sans)] text-xl font-bold text-[#111827] mb-1">Sign in to continue</h1>
+            <h1 className="font-[var(--font-dm-sans)] text-xl font-bold text-[#1C1917] mb-1">Sign in to continue</h1>
             <p className="text-sm text-gray-400">Your order is almost ready!</p>
           </div>
 
@@ -130,7 +130,7 @@ export default function LoginPage() {
           {/* Guest option */}
           <Link
             href="/summary"
-            className="block text-center text-sm text-gray-500 hover:text-[#16A34A] transition-colors"
+            className="block text-center text-sm text-gray-500 hover:text-[#84CC16] transition-colors"
           >
             ← Continue as guest (no account needed)
           </Link>
@@ -140,7 +140,7 @@ export default function LoginPage() {
         <div className="mt-6 text-center px-2">
           <p className="text-xs text-gray-400 leading-relaxed">
             🔒 By signing in, you agree to our{" "}
-            <Link href="/privacy" className="underline hover:text-[#16A34A]">Privacy Policy</Link>.
+            <Link href="/privacy" className="underline hover:text-[#84CC16]">Privacy Policy</Link>.
             {" "}Your data is protected under{" "}
             <strong className="font-medium text-gray-500">RA 10173</strong> (Data Privacy Act of 2012).
             We never store your password or payment details.

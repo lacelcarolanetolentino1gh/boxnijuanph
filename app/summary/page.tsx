@@ -27,12 +27,12 @@ export default function SummaryPage() {
       <StepIndicator current="summary" />
 
       <div className="mb-6">
-        <Link href="/builder" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-[#16A34A] transition-colors">
+        <Link href="/builder" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-[#84CC16] transition-colors">
           ← Back to Builder
         </Link>
       </div>
 
-      <h1 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#111827] mb-2">Your Box Summary</h1>
+      <h1 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#1C1917] mb-2">Your Box Summary</h1>
       <p className="text-gray-500 mb-10">Review your selections before checkout.</p>
 
       {/* Plan card */}
@@ -48,7 +48,7 @@ export default function SummaryPage() {
             <p className="text-gray-300 text-sm">{planData?.description}</p>
           </div>
           <div className="text-right">
-            <p className="font-extrabold text-3xl text-[#4ADE80]">₱{planData?.price}</p>
+            <p className="font-extrabold text-3xl text-[#84CC16]">₱{planData?.price}</p>
             <p className="text-xs text-gray-300">per month</p>
           </div>
         </div>
@@ -56,11 +56,11 @@ export default function SummaryPage() {
 
       {/* Selected items */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6 shadow-sm">
-        <h2 className="font-[var(--font-dm-sans)] font-bold text-[#111827] mb-4">Items in Your Box</h2>
+        <h2 className="font-[var(--font-dm-sans)] font-bold text-[#1C1917] mb-4">Items in Your Box</h2>
         {items.length === 0 ? (
           <div className="text-center py-6">
             <p className="text-gray-400 text-sm mb-3">No items selected.</p>
-            <Link href="/builder" className="text-[#16A34A] underline text-sm font-medium">Go back to builder</Link>
+            <Link href="/builder" className="text-[#84CC16] underline text-sm font-medium">Go back to builder</Link>
           </div>
         ) : (
           <ul className="divide-y divide-gray-50" aria-label="Your selected items">
@@ -70,11 +70,11 @@ export default function SummaryPage() {
                   <Image src={item.image} alt={item.name} fill className="object-cover" unoptimized />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-sm text-[#111827]">{item.name}</p>
+                  <p className="font-semibold text-sm text-[#1C1917]">{item.name}</p>
                   <p className="text-xs text-gray-400">{item.category}</p>
                 </div>
                 <div className="flex gap-1">
-                  {item.isLocal && <span className="text-xs bg-[#16A34A] text-white px-2 py-0.5 rounded-full">🇵🇭 Local</span>}
+                  {item.isLocal && <span className="text-xs bg-[#84CC16] text-white px-2 py-0.5 rounded-full">🇵🇭 Local</span>}
                   {item.isEco && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">♻️ Eco</span>}
                 </div>
               </li>
@@ -85,7 +85,7 @@ export default function SummaryPage() {
 
       {/* CSR impact note */}
       {items.length > 0 && (
-        <div className="bg-[#F0FDF4] border border-green-200 rounded-2xl p-5 mb-8 text-sm text-green-800">
+        <div className="bg-[#F7FEE7] border border-green-200 rounded-2xl p-5 mb-8 text-sm text-green-800">
           <p className="font-bold mb-1">🌱 Your CSR Impact</p>
           <p>
             {localCount > 0 && `${localCount} of your items support Filipino local brands. `}
@@ -97,7 +97,7 @@ export default function SummaryPage() {
 
       <div className="flex gap-4">
         <Link href="/builder" className="flex-1">
-          <button className="w-full min-h-[48px] border-2 border-[#16A34A] text-[#16A34A] py-3 rounded-full font-bold hover:bg-[#16A34A] hover:text-white transition-colors">
+          <button className="w-full min-h-[48px] border-2 border-[#84CC16] text-[#84CC16] py-3 rounded-full font-bold hover:bg-[#84CC16] hover:text-white transition-colors">
             ← Edit Box
           </button>
         </Link>
@@ -109,7 +109,7 @@ export default function SummaryPage() {
           disabled={items.length === 0}
           className={`flex-1 min-h-[48px] py-3 rounded-full font-bold transition-colors ${
             items.length > 0
-              ? "bg-[#16A34A] hover:bg-[#15803D] text-white"
+              ? "bg-[#84CC16] hover:bg-[#0D9488] text-white"
               : "bg-gray-200 text-gray-400 cursor-not-allowed"
           }`}
         >

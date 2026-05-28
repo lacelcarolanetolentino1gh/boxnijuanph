@@ -48,15 +48,15 @@ export default function BuilderPage() {
       <StepIndicator current="builder" />
 
       <div className="mb-6">
-        <Link href="/plans" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-[#16A34A] transition-colors">
+        <Link href="/plans" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-[#84CC16] transition-colors">
           ← Back to Plans
         </Link>
       </div>
 
       <div className="mb-8">
-        <h1 className="font-[var(--font-dm-sans)] text-3xl font-extrabold text-[#111827] mb-1">Build Your Box</h1>
+        <h1 className="font-[var(--font-dm-sans)] text-3xl font-extrabold text-[#1C1917] mb-1">Build Your Box</h1>
         <p className="text-gray-500">
-          {planLabel} Plan — Choose <span className="font-bold text-[#16A34A]">{maxItems} items</span> for your box.
+          {planLabel} Plan — Choose <span className="font-bold text-[#84CC16]">{maxItems} items</span> for your box.
         </p>
       </div>
 
@@ -64,13 +64,13 @@ export default function BuilderPage() {
       <div className="mb-8" role="progressbar" aria-valuenow={selected.length} aria-valuemin={0} aria-valuemax={maxItems} aria-label={`${selected.length} of ${maxItems} items selected`}>
         <div className="flex justify-between text-xs text-gray-400 mb-1">
           <span>{selected.length} of {maxItems} items selected</span>
-          <span className={remaining > 0 ? "text-gray-400" : "text-[#16A34A] font-bold"}>
+          <span className={remaining > 0 ? "text-gray-400" : "text-[#84CC16] font-bold"}>
             {remaining > 0 ? `${remaining} remaining` : "✓ Box complete!"}
           </span>
         </div>
         <div className="w-full bg-gray-100 rounded-full h-3">
           <div
-            className="bg-[#16A34A] h-3 rounded-full transition-all duration-300"
+            className="bg-[#84CC16] h-3 rounded-full transition-all duration-300"
             style={{ width: `${(selected.length / maxItems) * 100}%` }}
           />
         </div>
@@ -88,8 +88,8 @@ export default function BuilderPage() {
                 aria-pressed={activeCategory === cat}
                 className={`px-4 py-2 rounded-full text-sm font-semibold border transition-colors min-h-[40px] ${
                   activeCategory === cat
-                    ? "bg-[#16A34A] text-white border-[#16A34A]"
-                    : "bg-white text-gray-600 border-gray-200 hover:border-[#16A34A] hover:text-[#16A34A]"
+                    ? "bg-[#84CC16] text-white border-[#84CC16]"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-[#84CC16] hover:text-[#84CC16]"
                 }`}
               >
                 {cat}
@@ -111,10 +111,10 @@ export default function BuilderPage() {
                   aria-label={`${product.name}${sel ? ", selected" : ""}${disabled ? ", unavailable — box is full" : ""}`}
                   className={`bg-white rounded-2xl text-left border-2 transition-all shadow-sm overflow-hidden ${
                     sel
-                      ? "border-[#16A34A] ring-2 ring-[#16A34A]/20"
+                      ? "border-[#84CC16] ring-2 ring-[#84CC16]/20"
                       : disabled
                       ? "border-gray-100 opacity-40 cursor-not-allowed"
-                      : "border-gray-100 hover:border-[#16A34A] hover:shadow-md"
+                      : "border-gray-100 hover:border-[#84CC16] hover:shadow-md"
                   }`}
                 >
                   {/* Product image */}
@@ -127,19 +127,19 @@ export default function BuilderPage() {
                       unoptimized
                     />
                     {sel && (
-                      <div className="absolute inset-0 bg-[#16A34A]/20 flex items-center justify-center">
-                        <div className="w-8 h-8 bg-[#16A34A] rounded-full flex items-center justify-center text-white font-bold text-sm">✓</div>
+                      <div className="absolute inset-0 bg-[#84CC16]/20 flex items-center justify-center">
+                        <div className="w-8 h-8 bg-[#84CC16] rounded-full flex items-center justify-center text-white font-bold text-sm">✓</div>
                       </div>
                     )}
                     {product.isLocal && (
-                      <span className="absolute top-2 left-2 text-xs bg-[#16A34A] text-white px-2 py-0.5 rounded-full">🇵🇭</span>
+                      <span className="absolute top-2 left-2 text-xs bg-[#84CC16] text-white px-2 py-0.5 rounded-full">🇵🇭</span>
                     )}
                     {product.isEco && (
                       <span className="absolute top-2 right-2 text-xs bg-white text-green-700 px-2 py-0.5 rounded-full border border-green-200">♻️</span>
                     )}
                   </div>
                   <div className="p-3">
-                    <p className="font-semibold text-sm text-[#111827] mb-0.5">{product.name}</p>
+                    <p className="font-semibold text-sm text-[#1C1917] mb-0.5">{product.name}</p>
                     <p className="text-xs text-gray-400">{product.category}</p>
                   </div>
                 </button>
@@ -154,8 +154,8 @@ export default function BuilderPage() {
 
         {/* Right: sticky summary panel */}
         <div className="w-72 shrink-0 hidden md:block">
-          <div className="bg-[#F0FDF4] border border-green-100 rounded-2xl p-6 sticky top-24">
-            <h3 className="font-[var(--font-dm-sans)] font-bold text-[#111827] mb-4">Your Box</h3>
+          <div className="bg-[#F7FEE7] border border-green-100 rounded-2xl p-6 sticky top-24">
+            <h3 className="font-[var(--font-dm-sans)] font-bold text-[#1C1917] mb-4">Your Box</h3>
             {selected.length === 0 ? (
               <p className="text-sm text-gray-400">No items selected yet.</p>
             ) : (
@@ -165,7 +165,7 @@ export default function BuilderPage() {
                     <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-gray-100">
                       <Image src={p.image} alt={p.name} fill className="object-cover" unoptimized />
                     </div>
-                    <span className="flex-1 text-[#111827] text-xs font-medium leading-tight">{p.name}</span>
+                    <span className="flex-1 text-[#1C1917] text-xs font-medium leading-tight">{p.name}</span>
                     <button
                       onClick={() => toggleProduct(p)}
                       aria-label={`Remove ${p.name}`}
@@ -183,7 +183,7 @@ export default function BuilderPage() {
                 aria-disabled={selected.length < maxItems}
                 className={`w-full py-3 rounded-full text-sm font-bold transition-colors min-h-[48px] ${
                   selected.length >= maxItems
-                    ? "bg-[#16A34A] hover:bg-[#15803D] text-white"
+                    ? "bg-[#84CC16] hover:bg-[#0D9488] text-white"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
                 }`}
               >
@@ -204,7 +204,7 @@ export default function BuilderPage() {
           disabled={selected.length < maxItems}
           className={`w-full py-3 rounded-full text-sm font-bold transition-colors ${
             selected.length >= maxItems
-              ? "bg-[#16A34A] hover:bg-[#15803D] text-white"
+              ? "bg-[#84CC16] hover:bg-[#0D9488] text-white"
               : "bg-gray-200 text-gray-400 cursor-not-allowed"
           }`}
         >
