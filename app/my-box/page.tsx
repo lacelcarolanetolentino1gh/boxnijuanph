@@ -53,6 +53,15 @@ export default function MyBoxPage() {
 
   const handleEditBox = () => {
     if (plan) localStorage.setItem("selectedPlan", plan);
+    // Convert flat items (variant baked into name) back to SelectedItem[] for the builder
+    const restoredSelected = items.map((item) => {
+      // name format: "Product Name — Variant" or just "Product Name"
+      const dashIdx = item.name.lastIndexOf(" — ");
+      const baseName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
+      const variant = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : (item.variants?.[0] ?? "");
+      return { product: { ...item, name: baseName }, variant };
+    });
+    localStorage.setItem("selectedItems", JSON.stringify(restoredSelected));
     router.push("/builder");
   };
 

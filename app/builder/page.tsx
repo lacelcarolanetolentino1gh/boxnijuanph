@@ -276,7 +276,28 @@ export default function BuilderPage() {
     setPlan(storedPlan);
     setMaxItems(PLAN_ITEM_COUNTS[storedPlan] || 3);
     const storedItems = localStorage.getItem("selectedItems");
-    if (storedItems) setSelected(JSON.parse(storedItems));
+    if (storedItems) {
+      try {
+        const parsed = JSON.parse(storedItems);
+        // Support both SelectedItem[] {product, variant} and flat Product[] formats
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          if ("product" in parsed[0]) {
+            setSelected(parsed);
+          } else {
+            // Flat product array — convert to SelectedItem[]
+            const converted = parsed.map((item: Product) => {
+              const dashIdx = item.name.lastIndexOf(" — ");
+              const baseName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
+              const variant = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : (item.variants?.[0] ?? "");
+              return { product: { ...item, name: baseName }, variant };
+            });
+            setSelected(converted);
+          }
+        }
+      } catch {
+        // Malformed data — start with empty selection
+      }
+    }
   }, []);
 
   const filteredProducts = activeCategory === "All"
