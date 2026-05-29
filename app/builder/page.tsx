@@ -12,45 +12,75 @@ type SelectedItem = { product: Product; variant: string };
 function ProductTooltip({ product }: { product: Product }) {
   const { details } = product;
   return (
-    <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-white border border-gray-100 rounded-2xl shadow-2xl p-4 text-left pointer-events-none">
-      {/* Arrow */}
-      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-2 overflow-hidden">
-        <div className="w-3 h-3 bg-white border-r border-b border-gray-100 rotate-45 translate-y-[-7px] mx-auto" />
-      </div>
+    <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-3 w-68 text-left pointer-events-none"
+      style={{ width: "272px" }}>
+      {/* Card */}
+      <div className="bg-[#2D2D2D] rounded-2xl shadow-2xl overflow-hidden">
+        {/* Sage green top accent bar */}
+        <div className="h-1.5 w-full bg-[#7CAE8E]" />
 
-      <p className="font-semibold text-[#2D2D2D] text-xs mb-1">{product.name}</p>
-      <p className="text-xs text-gray-500 mb-2 leading-relaxed">{details.description}</p>
+        <div className="p-4">
+          {/* Product name */}
+          <p className="font-bold text-white text-sm mb-1 leading-tight">{product.name}</p>
+          <p className="text-xs text-gray-300 mb-3 leading-relaxed">{details.description}</p>
 
-      <div className="border-t border-gray-100 pt-2 mb-2">
-        <p className="text-[10px] font-bold text-[#7CAE8E] uppercase tracking-wide mb-0.5">Purpose</p>
-        <p className="text-xs text-gray-500 leading-relaxed">{details.purpose}</p>
-      </div>
-
-      <div className="border-t border-gray-100 pt-2 mb-2">
-        <p className="text-[10px] font-bold text-[#7CAE8E] uppercase tracking-wide mb-0.5">Contents</p>
-        <p className="text-xs text-gray-500 leading-relaxed">{details.contents}</p>
-      </div>
-
-      {details.nutrition && (
-        <div className="border-t border-gray-100 pt-2">
-          <p className="text-[10px] font-bold text-[#7CAE8E] uppercase tracking-wide mb-1.5">Nutrition Facts</p>
-          <p className="text-[10px] text-gray-400 mb-1">Serving: {details.nutrition.servingSize}</p>
-          <div className="grid grid-cols-3 gap-1">
-            {[
-              { label: "Calories", value: `${details.nutrition.calories} kcal` },
-              { label: "Protein", value: details.nutrition.protein },
-              { label: "Carbs", value: details.nutrition.carbs },
-              { label: "Fat", value: details.nutrition.fat },
-              { label: "Sugar", value: details.nutrition.sugar },
-            ].filter((n) => n.value).map((n) => (
-              <div key={n.label} className="bg-[#FAFAF7] rounded-lg p-1 text-center">
-                <p className="text-[9px] text-gray-400">{n.label}</p>
-                <p className="text-[10px] font-bold text-[#2D2D2D]">{n.value}</p>
-              </div>
-            ))}
+          {/* Purpose */}
+          <div className="mb-3">
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#7CAE8E] shrink-0" />
+              <p className="text-[10px] font-bold text-[#7CAE8E] uppercase tracking-widest">Purpose</p>
+            </div>
+            <p className="text-xs text-gray-300 leading-relaxed pl-3">{details.purpose}</p>
           </div>
+
+          {/* Contents */}
+          <div className={details.nutrition ? "mb-3" : ""}>
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#7CAE8E] shrink-0" />
+              <p className="text-[10px] font-bold text-[#7CAE8E] uppercase tracking-widest">Contents</p>
+            </div>
+            <p className="text-xs text-gray-300 leading-relaxed pl-3">{details.contents}</p>
+          </div>
+
+          {/* Nutrition Facts */}
+          {details.nutrition && (
+            <div className="bg-[#1a1a1a] rounded-xl p-3 mt-1">
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-[10px] font-bold text-[#7CAE8E] uppercase tracking-widest">Nutrition Facts</p>
+                <p className="text-[9px] text-gray-500">per {details.nutrition.servingSize}</p>
+              </div>
+              {/* Calories row — prominent */}
+              <div className="flex items-baseline justify-between border-b border-gray-700 pb-1.5 mb-1.5">
+                <span className="text-xs text-gray-300">Calories</span>
+                <span className="text-base font-extrabold text-white">{details.nutrition.calories} <span className="text-xs font-normal text-gray-400">kcal</span></span>
+              </div>
+              {/* Other nutrients */}
+              <div className="grid grid-cols-4 gap-1">
+                {[
+                  { label: "Protein", value: details.nutrition.protein },
+                  { label: "Carbs", value: details.nutrition.carbs },
+                  { label: "Fat", value: details.nutrition.fat },
+                  { label: "Sugar", value: details.nutrition.sugar },
+                ].filter((n) => n.value).map((n) => (
+                  <div key={n.label} className="bg-[#2D2D2D] rounded-lg p-1.5 text-center">
+                    <p className="text-[8px] text-gray-500 mb-0.5">{n.label}</p>
+                    <p className="text-[10px] font-bold text-[#7CAE8E]">{n.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Arrow pointing down to the card */}
+      <div className="flex justify-center">
+        <div className="w-0 h-0" style={{
+          borderLeft: "8px solid transparent",
+          borderRight: "8px solid transparent",
+          borderTop: "8px solid #2D2D2D",
+        }} />
+      </div>
     </div>
   );
 }
