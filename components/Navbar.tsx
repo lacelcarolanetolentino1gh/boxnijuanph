@@ -39,29 +39,29 @@ export default function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-6 text-sm text-gray-600">
-          <Link href="/" className={`hover:text-[#84CC16] font-medium transition-colors ${pathname === "/" ? "text-[#84CC16]" : ""}`}>Home</Link>
-          <Link href="/plans" className={`hover:text-[#84CC16] font-medium transition-colors ${pathname === "/plans" ? "text-[#84CC16]" : ""}`}>Plans</Link>
+          <Link href="/" className={`hover:text-[#7CAE8E] font-medium transition-colors ${pathname === "/" ? "text-[#7CAE8E]" : ""}`}>Home</Link>
+          <Link href="/plans" className={`hover:text-[#7CAE8E] font-medium transition-colors ${pathname === "/plans" ? "text-[#7CAE8E]" : ""}`}>Plans</Link>
 
           {user ? (
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-[#84CC16] text-white flex items-center justify-center text-xs font-bold" aria-hidden="true">
+                <div className="w-8 h-8 rounded-full bg-[#7CAE8E] text-white flex items-center justify-center text-xs font-bold" aria-hidden="true">
                   {user.avatar}
                 </div>
-                <span className="text-sm font-medium text-[#1C1917]">Hi, {user.name.split(" ")[0]}</span>
+                <span className="text-sm font-medium text-[#2D2D2D]">Hi, {user.name.split(" ")[0]}</span>
               </div>
               <button onClick={handleSignOut} className="text-xs text-gray-400 hover:text-red-400 transition-colors" aria-label="Sign out">
                 Sign Out
               </button>
             </div>
           ) : (
-            <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#84CC16] transition-colors">
+            <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#7CAE8E] transition-colors">
               Sign In
             </Link>
           )}
 
           <Link href="/plans">
-            <button className="bg-[#0D9488] hover:bg-[#0B7A70] text-white px-5 py-2.5 rounded-full text-sm font-bold transition-colors min-h-[40px] shadow-sm">
+            <button className="bg-[#5F8F72] hover:bg-[#4A7A5E] text-white px-5 py-2.5 rounded-full text-sm font-bold transition-colors min-h-[40px] shadow-sm">
               Build Your Box
             </button>
           </Link>
@@ -85,18 +85,18 @@ export default function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-4 text-sm">
-          <Link href="/" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#84CC16]">Home</Link>
-          <Link href="/plans" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#84CC16]">Plans</Link>
+          <Link href="/" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">Home</Link>
+          <Link href="/plans" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">Plans</Link>
           {user ? (
             <>
               <span className="text-gray-600">Hi, {user.name.split(" ")[0]}</span>
               <button onClick={() => { handleSignOut(); setMenuOpen(false); }} className="text-red-400 text-left">Sign Out</button>
             </>
           ) : (
-            <Link href="/login" onClick={() => setMenuOpen(false)} className="text-gray-600 hover:text-[#84CC16]">Sign In</Link>
+            <Link href="/login" onClick={() => setMenuOpen(false)} className="text-gray-600 hover:text-[#7CAE8E]">Sign In</Link>
           )}
           <Link href="/plans" onClick={() => setMenuOpen(false)}>
-            <button className="w-full bg-[#0D9488] text-white py-3 rounded-full font-bold">Build Your Box</button>
+            <button className="w-full bg-[#5F8F72] text-white py-3 rounded-full font-bold">Build Your Box</button>
           </Link>
         </div>
       )}

@@ -26,12 +26,12 @@ export default function Home() {
         {/* Hero content */}
         <div className="relative z-10 max-w-6xl mx-auto px-6 py-24 w-full">
           <div className="max-w-2xl">
-            <span className="inline-block bg-[#0D9488] text-white text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-5">
+            <span className="inline-block bg-[#5F8F72] text-white text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-5">
               🇵🇭 Filipino Wellness · Est. 2026
             </span>
             <h1 className="font-[var(--font-dm-sans)] text-5xl md:text-6xl font-extrabold text-white leading-tight mb-5">
               Your Personal<br />
-              <span className="text-[#84CC16]">Wellness Box</span><br />
+              <span className="text-[#7CAE8E]">Wellness Box</span><br />
               Every Month
             </h1>
             <p className="text-gray-200 text-lg mb-8 max-w-lg leading-relaxed">
@@ -39,7 +39,7 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link href="/plans">
-                <button className="bg-[#84CC16] hover:bg-[#0D9488] text-white px-8 py-4 rounded-full text-base font-bold transition-colors shadow-lg min-h-[52px]">
+                <button className="bg-[#7CAE8E] hover:bg-[#5F8F72] text-white px-8 py-4 rounded-full text-base font-bold transition-colors shadow-lg min-h-[52px]">
                   Build Your Box →
                 </button>
               </Link>
@@ -68,7 +68,7 @@ export default function Home() {
       </section>
 
       {/* ── Stats strip ──────────────────────────────────────── */}
-      <section className="bg-[#84CC16] text-white py-6 px-6">
+      <section className="bg-[#7CAE8E] text-white py-6 px-6">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
             { value: "20+", label: "Wellness Products" },
@@ -88,23 +88,23 @@ export default function Home() {
       <section id="how-it-works" className="py-20 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <span className="text-[#0D9488] font-bold text-sm uppercase tracking-widest">Simple Process</span>
-            <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#1C1917] mt-2">How It Works</h2>
+            <span className="text-[#5F8F72] font-bold text-sm uppercase tracking-widest">Simple Process</span>
+            <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#2D2D2D] mt-2">How It Works</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             {[
-              { step: "1", icon: "📋", title: "Choose Your Plan", desc: "Pick Basic, Standard, or Premium based on how many items you want.", color: "bg-[#84CC16]" },
-              { step: "2", icon: "🛍️", title: "Build Your Box", desc: "Browse our wellness catalog and pick exactly the products you love.", color: "bg-[#0D9488]" },
-              { step: "3", icon: "✅", title: "Review & Checkout", desc: "Review your picks, sign in, enter your details, and place your order.", color: "bg-[#84CC16]" },
-              { step: "4", icon: "📦", title: "Receive Your Box", desc: "Your personalized wellness box arrives at your door every month.", color: "bg-[#0D9488]" },
+              { step: "1", icon: "📋", title: "Choose Your Plan", desc: "Pick Basic, Standard, or Premium based on how many items you want.", color: "bg-[#7CAE8E]" },
+              { step: "2", icon: "🛍️", title: "Build Your Box", desc: "Browse our wellness catalog and pick exactly the products you love.", color: "bg-[#5F8F72]" },
+              { step: "3", icon: "✅", title: "Review & Checkout", desc: "Review your picks, sign in, enter your details, and place your order.", color: "bg-[#7CAE8E]" },
+              { step: "4", icon: "📦", title: "Receive Your Box", desc: "Your personalized wellness box arrives at your door every month.", color: "bg-[#5F8F72]" },
             ].map((item) => (
               <div key={item.step} className="flex flex-col items-center gap-3">
                 <div className={`w-14 h-14 ${item.color} text-white rounded-2xl flex items-center justify-center font-extrabold text-xl shadow-md`}>
                   {item.step}
                 </div>
                 <div className="text-3xl">{item.icon}</div>
-                <h3 className="font-[var(--font-dm-sans)] font-bold text-[#1C1917]">{item.title}</h3>
+                <h3 className="font-[var(--font-dm-sans)] font-bold text-[#2D2D2D]">{item.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
               </div>
             ))}
@@ -113,11 +113,11 @@ export default function Home() {
       </section>
 
       {/* ── Wellness Video Section ───────────────────────────── */}
-      <section className="bg-[#F7FEE7] py-20 px-6">
+      <section className="bg-[#FAFAF7] py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
-            <span className="text-[#84CC16] font-bold text-sm uppercase tracking-widest">See It In Action</span>
-            <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#1C1917] mt-2">Built for Active Filipinos</h2>
+            <span className="text-[#7CAE8E] font-bold text-sm uppercase tracking-widest">See It In Action</span>
+            <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#2D2D2D] mt-2">Built for Active Filipinos</h2>
             <p className="text-gray-500 mt-3 max-w-xl mx-auto">
               Every item in your box is chosen by you — from local recovery gear to healthy snacks that fuel your lifestyle.
             </p>
@@ -134,7 +134,7 @@ export default function Home() {
             />
           </div>
           <p className="text-center text-xs text-gray-400 mt-3">
-            Video embedded via YouTube Privacy-Enhanced Mode — no cookies set until you interact. <Link href="/privacy" className="underline hover:text-[#84CC16]">Privacy Policy</Link>
+            Video embedded via YouTube Privacy-Enhanced Mode — no cookies set until you interact. <Link href="/privacy" className="underline hover:text-[#7CAE8E]">Privacy Policy</Link>
           </p>
         </div>
       </section>
@@ -143,8 +143,8 @@ export default function Home() {
       <section className="py-20 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <span className="text-[#0D9488] font-bold text-sm uppercase tracking-widest">Local Picks</span>
-            <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#1C1917] mt-2">Featured Products</h2>
+            <span className="text-[#5F8F72] font-bold text-sm uppercase tracking-widest">Local Picks</span>
+            <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#2D2D2D] mt-2">Featured Products</h2>
             <p className="text-gray-500 mt-2 text-sm">Locally sourced Filipino wellness products</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -160,11 +160,11 @@ export default function Home() {
                   />
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-sm text-[#1C1917] mb-1">{product.name}</h3>
+                  <h3 className="font-semibold text-sm text-[#2D2D2D] mb-1">{product.name}</h3>
                   <p className="text-xs text-gray-400 mb-2">{product.category}</p>
                   <div className="flex gap-1 flex-wrap">
                     {product.isLocal && (
-                      <span className="text-xs bg-[#84CC16] text-white px-2 py-0.5 rounded-full">🇵🇭 Local</span>
+                      <span className="text-xs bg-[#7CAE8E] text-white px-2 py-0.5 rounded-full">🇵🇭 Local</span>
                     )}
                     {product.isEco && (
                       <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">♻️ Eco</span>
@@ -176,7 +176,7 @@ export default function Home() {
           </div>
           <div className="text-center mt-10">
             <Link href="/plans">
-              <button className="bg-[#84CC16] hover:bg-[#0D9488] text-white px-8 py-3 rounded-full font-bold transition-colors min-h-[48px]">
+              <button className="bg-[#7CAE8E] hover:bg-[#5F8F72] text-white px-8 py-3 rounded-full font-bold transition-colors min-h-[48px]">
                 Browse All Products →
               </button>
             </Link>
@@ -185,10 +185,10 @@ export default function Home() {
       </section>
 
       {/* ── Plans Preview ────────────────────────────────────── */}
-      <section className="bg-[#1C1917] py-20 px-6">
+      <section className="bg-[#2D2D2D] py-20 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <span className="text-[#84CC16] font-bold text-sm uppercase tracking-widest">Flexible Pricing</span>
+            <span className="text-[#7CAE8E] font-bold text-sm uppercase tracking-widest">Flexible Pricing</span>
             <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-white mt-2">Plans for Every Lifestyle</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -198,17 +198,17 @@ export default function Home() {
                   <Image src={plan.image} alt={`${plan.name} plan`} fill className="object-cover group-hover:scale-105 transition-transform duration-300" unoptimized />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                   {plan.badge && (
-                    <span className="absolute top-3 right-3 bg-[#0D9488] text-white text-xs font-bold px-3 py-1 rounded-full">{plan.badge}</span>
+                    <span className="absolute top-3 right-3 bg-[#5F8F72] text-white text-xs font-bold px-3 py-1 rounded-full">{plan.badge}</span>
                   )}
                 </div>
                 <div className="bg-[#1F2937] p-5">
                   <div className="flex justify-between items-center mb-1">
                     <h3 className="font-[var(--font-dm-sans)] font-bold text-white text-lg">{plan.name}</h3>
-                    <span className="font-extrabold text-[#84CC16] text-xl">₱{plan.price}<span className="text-sm font-normal text-gray-400">/mo</span></span>
+                    <span className="font-extrabold text-[#7CAE8E] text-xl">₱{plan.price}<span className="text-sm font-normal text-gray-400">/mo</span></span>
                   </div>
                   <p className="text-gray-400 text-xs mb-3">{plan.items} items · {plan.description}</p>
                   <Link href="/plans">
-                    <button className="w-full bg-[#84CC16] hover:bg-[#0D9488] text-white py-2.5 rounded-full text-sm font-bold transition-colors min-h-[44px]">
+                    <button className="w-full bg-[#7CAE8E] hover:bg-[#5F8F72] text-white py-2.5 rounded-full text-sm font-bold transition-colors min-h-[44px]">
                       Choose {plan.name}
                     </button>
                   </Link>
@@ -223,15 +223,15 @@ export default function Home() {
       <section className="py-20 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <span className="text-[#84CC16] font-bold text-sm uppercase tracking-widest">Our Commitment</span>
-            <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#1C1917] mt-2">CSR &amp; Sustainability</h2>
+            <span className="text-[#7CAE8E] font-bold text-sm uppercase tracking-widest">Our Commitment</span>
+            <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#2D2D2D] mt-2">CSR &amp; Sustainability</h2>
             <p className="text-gray-500 mt-2 text-sm">Aligned with UN SDG 12: Responsible Consumption and Production</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {CSR_COMMITMENTS.map((item, i) => (
-              <div key={i} className="bg-[#F7FEE7] border border-green-100 rounded-2xl p-6 text-center hover:shadow-md transition-shadow">
+              <div key={i} className="bg-[#FAFAF7] border border-green-100 rounded-2xl p-6 text-center hover:shadow-md transition-shadow">
                 <div className="text-5xl mb-4">{item.icon}</div>
-                <h3 className="font-[var(--font-dm-sans)] font-bold text-[#1C1917] mb-2">{item.title}</h3>
+                <h3 className="font-[var(--font-dm-sans)] font-bold text-[#2D2D2D] mb-2">{item.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{item.description}</p>
               </div>
             ))}
@@ -249,13 +249,13 @@ export default function Home() {
             className="object-cover"
             unoptimized
           />
-          <div className="absolute inset-0 bg-[#84CC16]/85" />
+          <div className="absolute inset-0 bg-[#7CAE8E]/85" />
         </div>
         <div className="relative z-10 text-center text-white max-w-2xl mx-auto">
           <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold mb-3">Ready to build your box?</h2>
           <p className="mb-8 text-green-100 text-lg">Plans start at ₱399/month. Free delivery within Metro Manila. Cancel anytime.</p>
           <Link href="/plans">
-            <button className="bg-white text-[#84CC16] hover:bg-green-50 px-10 py-4 rounded-full font-extrabold text-base transition-colors shadow-xl min-h-[52px]">
+            <button className="bg-white text-[#7CAE8E] hover:bg-green-50 px-10 py-4 rounded-full font-extrabold text-base transition-colors shadow-xl min-h-[52px]">
               Get Started Today →
             </button>
           </Link>

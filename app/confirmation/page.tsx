@@ -31,28 +31,28 @@ export default function ConfirmationPage() {
 
       {/* Success icon */}
       <div
-        className="w-20 h-20 bg-[#84CC16] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"
+        className="w-20 h-20 bg-[#7CAE8E] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"
         role="img"
         aria-label="Order confirmed"
       >
         <span className="text-4xl text-white font-bold" aria-hidden="true">✓</span>
       </div>
 
-      <h1 className="font-[var(--font-dm-sans)] text-4xl font-bold text-[#1C1917] mb-2">
+      <h1 className="font-[var(--font-dm-sans)] text-4xl font-bold text-[#2D2D2D] mb-2">
         Order Confirmed!
       </h1>
       {name && (
         <p className="text-lg text-gray-500 mb-1">
-          Thank you, <span className="font-semibold text-[#1C1917]">{name}</span>!
+          Thank you, <span className="font-semibold text-[#2D2D2D]">{name}</span>!
         </p>
       )}
       <p className="text-gray-400 text-sm mb-8">
-        Order <span className="font-mono font-semibold text-[#1C1917]">{orderNumber}</span> · {planData?.name} Plan · ₱{planData?.price}/month
+        Order <span className="font-mono font-semibold text-[#2D2D2D]">{orderNumber}</span> · {planData?.name} Plan · ₱{planData?.price}/month
       </p>
 
       {/* Order details */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6 text-left shadow-sm mb-6">
-        <h2 className="font-[var(--font-dm-sans)] font-semibold text-[#1C1917] mb-4">Your Box</h2>
+        <h2 className="font-[var(--font-dm-sans)] font-semibold text-[#2D2D2D] mb-4">Your Box</h2>
         {items.length > 0 ? (
           <ul className="space-y-3" aria-label="Items in your order">
             {items.map((item) => (
@@ -60,9 +60,9 @@ export default function ConfirmationPage() {
                 <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-gray-100">
                   <Image src={item.image} alt={item.name} fill className="object-cover" unoptimized />
                 </div>
-                <span className="text-[#1C1917] flex-1">{item.name}</span>
+                <span className="text-[#2D2D2D] flex-1">{item.name}</span>
                 <div className="flex gap-1 ml-auto">
-                  {item.isLocal && <span className="text-xs bg-[#84CC16] text-white px-2 py-0.5 rounded-full">🇵🇭 Local</span>}
+                  {item.isLocal && <span className="text-xs bg-[#7CAE8E] text-white px-2 py-0.5 rounded-full">🇵🇭 Local</span>}
                   {item.isEco && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">♻️ Eco</span>}
                 </div>
               </li>
@@ -74,8 +74,8 @@ export default function ConfirmationPage() {
       </div>
 
       {/* CSR thank-you */}
-      <div className="bg-[#F7FEE7] rounded-2xl p-6 mb-8 text-left">
-        <h3 className="font-[var(--font-dm-sans)] font-semibold text-[#1C1917] mb-2">🌱 Thank You for Supporting Wellness &amp; CSR</h3>
+      <div className="bg-[#FAFAF7] rounded-2xl p-6 mb-8 text-left">
+        <h3 className="font-[var(--font-dm-sans)] font-semibold text-[#2D2D2D] mb-2">🌱 Thank You for Supporting Wellness &amp; CSR</h3>
         <p className="text-sm text-gray-600">
           {localCount > 0 && `Your box supports ${localCount} Filipino local brand${localCount > 1 ? "s" : ""}. `}
           {ecoCount > 0 && `${ecoCount} of your items are eco-friendly and sustainably sourced. `}
@@ -88,22 +88,22 @@ export default function ConfirmationPage() {
 
       {/* What's next */}
       <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-8 text-left text-sm">
-        <h3 className="font-semibold text-[#1C1917] mb-3">What happens next?</h3>
+        <h3 className="font-semibold text-[#2D2D2D] mb-3">What happens next?</h3>
         <ol className="space-y-2 text-gray-500">
-          <li className="flex gap-2"><span className="text-[#84CC16] font-bold">1.</span> You'll receive a confirmation email within 24 hours.</li>
-          <li className="flex gap-2"><span className="text-[#84CC16] font-bold">2.</span> Your box is assembled and packed by local partners.</li>
-          <li className="flex gap-2"><span className="text-[#84CC16] font-bold">3.</span> Delivery within Metro Manila in 3–5 business days.</li>
+          <li className="flex gap-2"><span className="text-[#7CAE8E] font-bold">1.</span> You'll receive a confirmation email within 24 hours.</li>
+          <li className="flex gap-2"><span className="text-[#7CAE8E] font-bold">2.</span> Your box is assembled and packed by local partners.</li>
+          <li className="flex gap-2"><span className="text-[#7CAE8E] font-bold">3.</span> Delivery within Metro Manila in 3–5 business days.</li>
         </ol>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <Link href="/">
-          <button className="min-h-[48px] border-2 border-[#84CC16] text-[#84CC16] px-6 py-3 rounded-full font-semibold hover:bg-[#84CC16] hover:text-white transition-colors">
+          <button className="min-h-[48px] border-2 border-[#7CAE8E] text-[#7CAE8E] px-6 py-3 rounded-full font-semibold hover:bg-[#7CAE8E] hover:text-white transition-colors">
             Back to Home
           </button>
         </Link>
         <Link href="/plans">
-          <button className="min-h-[48px] bg-[#84CC16] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#0D9488] transition-colors">
+          <button className="min-h-[48px] bg-[#7CAE8E] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#5F8F72] transition-colors">
             Build Another Box →
           </button>
         </Link>

@@ -18,8 +18,8 @@ export default function PlansPage() {
       <StepIndicator current="plans" />
 
       <div className="text-center mb-12">
-        <span className="text-[#0D9488] font-bold text-sm uppercase tracking-widest">Flexible Plans</span>
-        <h1 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#1C1917] mt-2 mb-3">Choose Your Plan</h1>
+        <span className="text-[#5F8F72] font-bold text-sm uppercase tracking-widest">Flexible Plans</span>
+        <h1 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#2D2D2D] mt-2 mb-3">Choose Your Plan</h1>
         <p className="text-gray-500 text-lg">Select how many wellness items you want in your monthly box.</p>
       </div>
 
@@ -28,7 +28,7 @@ export default function PlansPage() {
           <div
             key={plan.id}
             className={`bg-white rounded-2xl border-2 overflow-hidden shadow-sm hover:shadow-lg transition-shadow relative flex flex-col ${
-              plan.badge === "Most Popular" ? "border-[#84CC16]" : "border-gray-200"
+              plan.badge === "Most Popular" ? "border-[#7CAE8E]" : "border-gray-200"
             }`}
           >
             {/* Plan image */}
@@ -42,7 +42,7 @@ export default function PlansPage() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               {plan.badge && (
-                <span className="absolute top-3 right-3 bg-[#0D9488] text-white text-xs font-bold px-3 py-1 rounded-full">
+                <span className="absolute top-3 right-3 bg-[#5F8F72] text-white text-xs font-bold px-3 py-1 rounded-full">
                   {plan.badge}
                 </span>
               )}
@@ -50,8 +50,8 @@ export default function PlansPage() {
 
             {/* Plan details */}
             <div className="p-6 flex flex-col flex-1 items-center text-center">
-              <h2 className="font-[var(--font-dm-sans)] text-2xl font-extrabold text-[#1C1917] mb-1">{plan.name}</h2>
-              <div className="text-4xl font-extrabold text-[#84CC16] my-2">
+              <h2 className="font-[var(--font-dm-sans)] text-2xl font-extrabold text-[#2D2D2D] mb-1">{plan.name}</h2>
+              <div className="text-4xl font-extrabold text-[#7CAE8E] my-2">
                 ₱{plan.price}<span className="text-base font-normal text-gray-400">/mo</span>
               </div>
               <p className="text-gray-500 text-sm mb-1">{plan.items} items per box</p>
@@ -59,7 +59,7 @@ export default function PlansPage() {
               <button
                 onClick={() => handleSelect(plan.id)}
                 aria-label={`Choose ${plan.name} plan — ₱${plan.price} per month, ${plan.items} items`}
-                className="w-full min-h-[48px] bg-[#84CC16] hover:bg-[#0D9488] text-white py-3 rounded-full font-bold transition-colors mt-auto"
+                className="w-full min-h-[48px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white py-3 rounded-full font-bold transition-colors mt-auto"
               >
                 Choose {plan.name}
               </button>
