@@ -23,12 +23,14 @@ export default function PlansPage() {
         <p className="text-gray-500 text-lg">Select how many wellness items you want in your monthly box.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {PLANS.map((plan) => (
           <div
             key={plan.id}
             className={`bg-white rounded-2xl border-2 overflow-hidden shadow-sm hover:shadow-lg transition-shadow relative flex flex-col ${
-              plan.badge === "Most Popular" ? "border-[#7CAE8E]" : "border-gray-200"
+              plan.badge === "Most Popular" ? "border-[#7CAE8E]" :
+              plan.id === "custom" ? "border-dashed border-[#7CAE8E]/60" :
+              "border-gray-200"
             }`}
           >
             {/* Plan image */}
@@ -42,7 +44,9 @@ export default function PlansPage() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               {plan.badge && (
-                <span className="absolute top-3 right-3 bg-[#5F8F72] text-white text-xs font-bold px-3 py-1 rounded-full">
+                <span className={`absolute top-3 right-3 text-white text-xs font-bold px-3 py-1 rounded-full ${
+                  plan.id === "custom" ? "bg-[#7CAE8E]" : "bg-[#5F8F72]"
+                }`}>
                   {plan.badge}
                 </span>
               )}
@@ -51,17 +55,30 @@ export default function PlansPage() {
             {/* Plan details */}
             <div className="p-6 flex flex-col flex-1 items-center text-center">
               <h2 className="font-[var(--font-dm-sans)] text-2xl font-extrabold text-[#2D2D2D] mb-1">{plan.name}</h2>
-              <div className="text-4xl font-extrabold text-[#7CAE8E] my-2">
-                ₱{plan.price}<span className="text-base font-normal text-gray-400">/mo</span>
-              </div>
-              <p className="text-gray-500 text-sm mb-1">{plan.items} items per box</p>
+              {plan.id === "custom" ? (
+                <div className="my-2">
+                  <div className="text-3xl font-extrabold text-[#7CAE8E]">Pay-per-item</div>
+                  <div className="text-xs text-gray-400 mt-0.5">Priced by what you pick</div>
+                </div>
+              ) : (
+                <div className="text-4xl font-extrabold text-[#7CAE8E] my-2">
+                  ₱{plan.price}<span className="text-base font-normal text-gray-400">/mo</span>
+                </div>
+              )}
+              <p className="text-gray-500 text-sm mb-1">
+                {plan.id === "custom" ? "Unlimited items" : `${plan.items} items per box`}
+              </p>
               <p className="text-gray-400 text-xs mb-6 border-t pt-4 w-full">{plan.description}</p>
               <button
                 onClick={() => handleSelect(plan.id)}
-                aria-label={`Choose ${plan.name} plan — ₱${plan.price} per month, ${plan.items} items`}
-                className="w-full min-h-[48px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white py-3 rounded-full font-bold transition-colors mt-auto"
+                aria-label={`Choose ${plan.name} plan`}
+                className={`w-full min-h-[48px] py-3 rounded-full font-bold transition-colors mt-auto ${
+                  plan.id === "custom"
+                    ? "bg-white border-2 border-[#7CAE8E] text-[#7CAE8E] hover:bg-[#7CAE8E] hover:text-white"
+                    : "bg-[#7CAE8E] hover:bg-[#5F8F72] text-white"
+                }`}
               >
-                Choose {plan.name}
+                {plan.id === "custom" ? "Build Custom Box" : `Choose ${plan.name}`}
               </button>
             </div>
           </div>

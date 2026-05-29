@@ -269,6 +269,8 @@ export default function BuilderPage() {
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [modalProduct, setModalProduct] = useState<Product | null>(null);
 
+  const isCustom = plan === "custom";
+
   useEffect(() => {
     const storedPlan = localStorage.getItem("selectedPlan") || "basic";
     setPlan(storedPlan);
@@ -286,10 +288,8 @@ export default function BuilderPage() {
 
   const handleCardClick = (product: Product) => {
     if (isSelected(product.id)) {
-      // Deselect
       setSelected(selected.filter((s) => s.product.id !== product.id));
-    } else if (selected.length < maxItems) {
-      // Open variant modal
+    } else if (isCustom || selected.length < maxItems) {
       setModalProduct(product);
     }
   };
@@ -301,7 +301,6 @@ export default function BuilderPage() {
   };
 
   const handleContinue = () => {
-    // Store as flat Product array with variant baked into name for downstream pages
     const items = selected.map((s) => ({
       ...s.product,
       name: `${s.product.name} — ${s.variant}`,
@@ -310,8 +309,21 @@ export default function BuilderPage() {
     router.push("/summary");
   };
 
+  // For custom plan, save box without going to checkout (just persist)
+  const handleSaveCustom = () => {
+    const items = selected.map((s) => ({
+      ...s.product,
+      name: `${s.product.name} — ${s.variant}`,
+    }));
+    localStorage.setItem("selectedItems", JSON.stringify(items));
+    // Also mark as custom subscription saved
+    localStorage.setItem("customBoxSaved", "true");
+    router.push("/my-box");
+  };
+
   const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1);
-  const remaining = maxItems - selected.length;
+  const remaining = isCustom ? 0 : maxItems - selected.length;
+  const boxComplete = isCustom ? selected.length > 0 : selected.length >= maxItems;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
@@ -325,27 +337,43 @@ export default function BuilderPage() {
 
       <div className="mb-8">
         <h1 className="font-[var(--font-dm-sans)] text-3xl font-extrabold text-[#2D2D2D] mb-1">Build Your Box</h1>
-        <p className="text-gray-500">
-          {planLabel} Plan — Choose <span className="font-bold text-[#7CAE8E]">{maxItems} items</span> for your box.
-          {" "}<span className="text-xs text-gray-400">Hover a card for details · Click to select</span>
-        </p>
+        {isCustom ? (
+          <p className="text-gray-500">
+            Custom Box — Add <span className="font-bold text-[#7CAE8E]">as many items as you want</span>. No limits.
+            {" "}<span className="text-xs text-gray-400">Hover a card for details · Click to select</span>
+          </p>
+        ) : (
+          <p className="text-gray-500">
+            {planLabel} Plan — Choose <span className="font-bold text-[#7CAE8E]">{maxItems} items</span> for your box.
+            {" "}<span className="text-xs text-gray-400">Hover a card for details · Click to select</span>
+          </p>
+        )}
       </div>
 
-      {/* Progress bar */}
-      <div className="mb-8" role="progressbar" aria-valuenow={selected.length} aria-valuemin={0} aria-valuemax={maxItems} aria-label={`${selected.length} of ${maxItems} items selected`}>
-        <div className="flex justify-between text-xs text-gray-400 mb-1">
-          <span>{selected.length} of {maxItems} items selected</span>
-          <span className={remaining > 0 ? "text-gray-400" : "text-[#7CAE8E] font-bold"}>
-            {remaining > 0 ? `${remaining} remaining` : "✓ Box complete!"}
-          </span>
+      {/* Progress bar / custom indicator */}
+      {isCustom ? (
+        <div className="mb-8 flex items-center gap-3 bg-[#7CAE8E]/10 border border-[#7CAE8E]/30 rounded-xl px-4 py-3" role="status">
+          <span className="text-[#7CAE8E] text-xl">✦</span>
+          <p className="text-sm text-[#5F8F72] font-medium">
+            {selected.length === 0 ? "Start adding items to your custom box." : `${selected.length} item${selected.length !== 1 ? "s" : ""} in your box — save anytime.`}
+          </p>
         </div>
-        <div className="w-full bg-gray-100 rounded-full h-3">
-          <div
-            className="bg-[#7CAE8E] h-3 rounded-full transition-all duration-300"
-            style={{ width: `${(selected.length / maxItems) * 100}%` }}
-          />
+      ) : (
+        <div className="mb-8" role="progressbar" aria-valuenow={selected.length} aria-valuemin={0} aria-valuemax={maxItems} aria-label={`${selected.length} of ${maxItems} items selected`}>
+          <div className="flex justify-between text-xs text-gray-400 mb-1">
+            <span>{selected.length} of {maxItems} items selected</span>
+            <span className={remaining > 0 ? "text-gray-400" : "text-[#7CAE8E] font-bold"}>
+              {remaining > 0 ? `${remaining} remaining` : "✓ Box complete!"}
+            </span>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-3">
+            <div
+              className="bg-[#7CAE8E] h-3 rounded-full transition-all duration-300"
+              style={{ width: `${(selected.length / maxItems) * 100}%` }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex gap-8">
         {/* Left: filters + products */}
@@ -372,7 +400,7 @@ export default function BuilderPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {filteredProducts.map((product) => {
               const sel = isSelected(product.id);
-              const disabled = !sel && selected.length >= maxItems;
+              const disabled = !sel && !isCustom && selected.length >= maxItems;
               return (
                 <ProductCard
                   key={product.id}
@@ -394,7 +422,9 @@ export default function BuilderPage() {
         {/* Right: sticky summary panel */}
         <div className="w-72 shrink-0 hidden md:block">
           <div className="bg-[#FAFAF7] border border-green-100 rounded-2xl p-6 sticky top-24">
-            <h3 className="font-[var(--font-dm-sans)] font-bold text-[#2D2D2D] mb-4">Your Box</h3>
+            <h3 className="font-[var(--font-dm-sans)] font-bold text-[#2D2D2D] mb-4">
+              Your Box {isCustom && <span className="text-xs font-normal text-[#7CAE8E] ml-1">· Custom</span>}
+            </h3>
             {selected.length === 0 ? (
               <p className="text-sm text-gray-400">No items selected yet.</p>
             ) : (
@@ -418,19 +448,50 @@ export default function BuilderPage() {
               </ul>
             )}
             <div className="border-t border-green-100 pt-3 mt-3">
-              <p className="text-xs text-gray-400 text-center mb-3">{selected.length}/{maxItems} items</p>
-              <button
-                onClick={handleContinue}
-                disabled={selected.length < maxItems}
-                aria-disabled={selected.length < maxItems}
-                className={`w-full py-3 rounded-full text-sm font-bold transition-colors min-h-[48px] ${
-                  selected.length >= maxItems
-                    ? "bg-[#7CAE8E] hover:bg-[#5F8F72] text-white"
-                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                }`}
-              >
-                {selected.length >= maxItems ? "Review My Box →" : `Add ${remaining} more item${remaining !== 1 ? "s" : ""}`}
-              </button>
+              {isCustom ? (
+                <>
+                  <p className="text-xs text-gray-400 text-center mb-3">{selected.length} item{selected.length !== 1 ? "s" : ""} · Custom</p>
+                  <button
+                    onClick={handleSaveCustom}
+                    disabled={selected.length === 0}
+                    aria-disabled={selected.length === 0}
+                    className={`w-full py-3 rounded-full text-sm font-bold transition-colors min-h-[48px] mb-2 ${
+                      selected.length > 0
+                        ? "bg-[#7CAE8E] hover:bg-[#5F8F72] text-white"
+                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    }`}
+                  >
+                    Save My Box ✓
+                  </button>
+                  <button
+                    onClick={handleContinue}
+                    disabled={selected.length === 0}
+                    className={`w-full py-3 rounded-full text-sm font-bold transition-colors min-h-[48px] border-2 ${
+                      selected.length > 0
+                        ? "border-[#7CAE8E] text-[#7CAE8E] hover:bg-[#7CAE8E] hover:text-white"
+                        : "border-gray-200 text-gray-400 cursor-not-allowed"
+                    }`}
+                  >
+                    Review & Order →
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs text-gray-400 text-center mb-3">{selected.length}/{maxItems} items</p>
+                  <button
+                    onClick={handleContinue}
+                    disabled={selected.length < maxItems}
+                    aria-disabled={selected.length < maxItems}
+                    className={`w-full py-3 rounded-full text-sm font-bold transition-colors min-h-[48px] ${
+                      selected.length >= maxItems
+                        ? "bg-[#7CAE8E] hover:bg-[#5F8F72] text-white"
+                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    }`}
+                  >
+                    {selected.length >= maxItems ? "Review My Box →" : `Add ${remaining} more item${remaining !== 1 ? "s" : ""}`}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -439,19 +500,42 @@ export default function BuilderPage() {
       {/* Mobile continue bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-10">
         <div className="flex justify-between text-xs text-gray-500 mb-2">
-          <span>{selected.length}/{maxItems} items selected</span>
+          <span>{selected.length}{isCustom ? "" : `/${maxItems}`} items selected</span>
         </div>
-        <button
-          onClick={handleContinue}
-          disabled={selected.length < maxItems}
-          className={`w-full py-3 rounded-full text-sm font-bold transition-colors ${
-            selected.length >= maxItems
-              ? "bg-[#7CAE8E] hover:bg-[#5F8F72] text-white"
-              : "bg-gray-200 text-gray-400 cursor-not-allowed"
-          }`}
-        >
-          {selected.length >= maxItems ? "Review My Box →" : `Add ${remaining} more item${remaining !== 1 ? "s" : ""}`}
-        </button>
+        {isCustom ? (
+          <div className="flex gap-2">
+            <button
+              onClick={handleSaveCustom}
+              disabled={selected.length === 0}
+              className={`flex-1 py-3 rounded-full text-sm font-bold transition-colors ${
+                selected.length > 0 ? "bg-[#7CAE8E] text-white" : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              Save Box
+            </button>
+            <button
+              onClick={handleContinue}
+              disabled={selected.length === 0}
+              className={`flex-1 py-3 rounded-full text-sm font-bold border-2 transition-colors ${
+                selected.length > 0 ? "border-[#7CAE8E] text-[#7CAE8E]" : "border-gray-200 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              Review →
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleContinue}
+            disabled={selected.length < maxItems}
+            className={`w-full py-3 rounded-full text-sm font-bold transition-colors ${
+              selected.length >= maxItems
+                ? "bg-[#7CAE8E] hover:bg-[#5F8F72] text-white"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            }`}
+          >
+            {selected.length >= maxItems ? "Review My Box →" : `Add ${remaining} more item${remaining !== 1 ? "s" : ""}`}
+          </button>
+        )}
       </div>
 
       {/* Variant modal */}

@@ -102,9 +102,14 @@ export default function ConfirmationPage() {
             Back to Home
           </button>
         </Link>
-        <Link href="/plans">
+        <Link href="/my-box">
           <button className="min-h-[48px] bg-[#7CAE8E] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#5F8F72] transition-colors">
-            Build Another Box →
+            View My Subscription →
+          </button>
+        </Link>
+        <Link href="/plans">
+          <button className="min-h-[48px] border border-gray-200 text-gray-500 px-6 py-3 rounded-full font-semibold hover:border-[#7CAE8E] hover:text-[#7CAE8E] transition-colors">
+            Build Another Box
           </button>
         </Link>
       </div>

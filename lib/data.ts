@@ -28,12 +28,22 @@ export const PLANS = [
     badge: "Best Value",
     image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80",
   },
+  {
+    id: "custom",
+    name: "Custom",
+    price: 0,
+    items: 0,
+    description: "Pick anything, any quantity — build exactly the box you want",
+    badge: "Most Flexible",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80",
+  },
 ];
 
 export const PLAN_ITEM_COUNTS: Record<string, number> = {
   basic: 3,
   standard: 5,
   premium: 8,
+  custom: Infinity,
 };
 
 export type ProductDetail = {

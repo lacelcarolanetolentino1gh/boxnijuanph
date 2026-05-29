@@ -51,6 +51,7 @@ export default function Navbar() {
                 </div>
                 <span className="text-sm font-medium text-[#2D2D2D]">Hi, {user.name.split(" ")[0]}</span>
               </div>
+              <Link href="/my-box" className={`hover:text-[#7CAE8E] font-medium transition-colors text-sm ${pathname === "/my-box" ? "text-[#7CAE8E]" : ""}`}>My Box</Link>
               <button onClick={handleSignOut} className="text-xs text-gray-400 hover:text-red-400 transition-colors" aria-label="Sign out">
                 Sign Out
               </button>
@@ -92,6 +93,7 @@ export default function Navbar() {
           {user ? (
             <>
               <span className="text-gray-600">Hi, {user.name.split(" ")[0]}</span>
+              <Link href="/my-box" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">My Box</Link>
               <button onClick={() => { handleSignOut(); setMenuOpen(false); }} className="text-red-400 text-left">Sign Out</button>
             </>
           ) : (

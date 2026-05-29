@@ -15,6 +15,7 @@ const MOCK_USERS: Record<Provider, { name: string; email: string; avatar: string
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState<Provider | null>(null);
+  const [showGuestWarning, setShowGuestWarning] = useState(false);
 
   const handleLogin = (provider: Provider) => {
     setLoading(provider);
@@ -23,6 +24,12 @@ export default function LoginPage() {
       localStorage.setItem("boxUser", JSON.stringify(user));
       router.push("/checkout");
     }, 600);
+  };
+
+  const handleGuestCheckout = () => {
+    // Remove any stale user session so checkout knows it's a guest
+    localStorage.removeItem("boxUser");
+    router.push("/checkout");
   };
 
   return (
@@ -128,12 +135,44 @@ export default function LoginPage() {
           </div>
 
           {/* Guest option */}
-          <Link
-            href="/summary"
-            className="block text-center text-sm text-gray-500 hover:text-[#7CAE8E] transition-colors"
-          >
-            ← Continue as guest (no account needed)
-          </Link>
+          {!showGuestWarning ? (
+            <button
+              onClick={() => setShowGuestWarning(true)}
+              className="w-full text-center text-sm text-gray-500 hover:text-[#7CAE8E] transition-colors py-1"
+            >
+              Continue as guest
+            </button>
+          ) : (
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-left" role="note" aria-label="Guest checkout disclaimer">
+              <p className="text-xs font-bold text-amber-700 uppercase tracking-wide mb-2">⚠ Guest Checkout Notice</p>
+              <p className="text-xs text-amber-800 leading-relaxed mb-3">
+                You can still place an order without an account, but you will <strong>not</strong> be able to:
+              </p>
+              <ul className="text-xs text-amber-700 space-y-1 mb-3 pl-2">
+                <li className="flex gap-1.5"><span>✕</span> Track or manage your subscription</li>
+                <li className="flex gap-1.5"><span>✕</span> Edit or cancel your box later</li>
+                <li className="flex gap-1.5"><span>✕</span> Access your order history</li>
+                <li className="flex gap-1.5"><span>✕</span> Use the Custom Box (no-limit) feature</li>
+              </ul>
+              <p className="text-xs text-amber-700 leading-relaxed mb-4">
+                <strong>We highly recommend signing in</strong> — it only takes one tap and keeps all your orders safe in one place. Your personal data collected at checkout is still protected under <strong>RA 10173</strong> (Data Privacy Act of 2012) and used solely for delivery purposes.
+              </p>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => setShowGuestWarning(false)}
+                  className="w-full min-h-[44px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white rounded-full text-sm font-bold transition-colors"
+                >
+                  Sign In Instead (Recommended)
+                </button>
+                <button
+                  onClick={handleGuestCheckout}
+                  className="w-full min-h-[40px] text-xs text-amber-600 hover:text-amber-800 underline transition-colors"
+                >
+                  I understand — continue as guest anyway
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Privacy notice */}

@@ -82,7 +82,7 @@ export default function CheckoutPage() {
       <p className="text-gray-500 mb-6">Enter your delivery and payment details.</p>
 
       {/* Logged-in user chip */}
-      {loggedInUser && (
+      {loggedInUser ? (
         <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-4 py-2 text-sm text-green-800 mb-8">
           <div className="w-6 h-6 rounded-full bg-[#7CAE8E] text-white flex items-center justify-center text-xs font-bold" aria-hidden="true">
             {loggedInUser.avatar}
@@ -91,6 +91,20 @@ export default function CheckoutPage() {
             Signed in as <strong>{loggedInUser.name}</strong> via {PROVIDER_LABELS[loggedInUser.provider] ?? loggedInUser.provider}
           </span>
           <span className="text-green-600 text-xs">✓</span>
+        </div>
+      ) : (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 mb-8" role="note" aria-label="Guest checkout notice">
+          <div className="flex-1">
+            <p className="text-sm font-bold text-amber-800 mb-1">⚠ You&apos;re checking out as a guest</p>
+            <p className="text-xs text-amber-700 leading-relaxed">
+              Your delivery details are collected solely for fulfillment and protected under <strong>RA 10173</strong> (Data Privacy Act of 2012). As a guest, you will not be able to track or manage your subscription after checkout.
+            </p>
+          </div>
+          <Link href="/login" className="shrink-0">
+            <button className="min-h-[40px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white px-5 py-2 rounded-full text-xs font-bold transition-colors whitespace-nowrap">
+              Sign In Instead
+            </button>
+          </Link>
         </div>
       )}
 
