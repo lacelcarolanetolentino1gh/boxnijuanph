@@ -108,6 +108,14 @@ export default function ConfirmationPage() {
           </button>
         </Link>
       </div>
+
+      <p className="text-sm text-gray-400 mt-6">
+        Questions about your order?{" "}
+        <Link href="/contact" className="text-[#7CAE8E] underline hover:text-[#5F8F72] transition-colors">
+          Contact our support team
+        </Link>
+        {" "}or use the chat bubble below.
+      </p>
     </div>
   );
 }

@@ -41,6 +41,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-6 text-sm text-gray-600">
           <Link href="/" className={`hover:text-[#7CAE8E] font-medium transition-colors ${pathname === "/" ? "text-[#7CAE8E]" : ""}`}>Home</Link>
           <Link href="/plans" className={`hover:text-[#7CAE8E] font-medium transition-colors ${pathname === "/plans" ? "text-[#7CAE8E]" : ""}`}>Plans</Link>
+          <Link href="/contact" className={`hover:text-[#7CAE8E] font-medium transition-colors ${pathname === "/contact" ? "text-[#7CAE8E]" : ""}`}>Contact</Link>
 
           {user ? (
             <div className="flex items-center gap-3">
@@ -87,6 +88,7 @@ export default function Navbar() {
         <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-4 text-sm">
           <Link href="/" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">Home</Link>
           <Link href="/plans" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">Plans</Link>
+          <Link href="/contact" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">Contact</Link>
           {user ? (
             <>
               <span className="text-gray-600">Hi, {user.name.split(" ")[0]}</span>
