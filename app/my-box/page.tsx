@@ -603,7 +603,7 @@ function MyBoxContent() {
                   <label
                     key={opt.value}
                     className={`flex items-center gap-3 border rounded-xl px-4 py-3 min-h-[52px] transition-colors ${
-                      profileEditing ? "cursor-pointer" : "cursor-default opacity-70"
+                      profileEditing ? "cursor-pointer" : "cursor-default pointer-events-none opacity-70"
                     } ${
                       profile.defaultPayment === opt.value
                         ? "border-[#7CAE8E] bg-green-50"
@@ -615,8 +615,7 @@ function MyBoxContent() {
                       name="defaultPayment"
                       value={opt.value}
                       checked={profile.defaultPayment === opt.value}
-                      onChange={profileEditing ? handleProfileChange : undefined}
-                      readOnly={!profileEditing}
+                      onChange={handleProfileChange}
                       className="accent-[#7CAE8E] w-4 h-4"
                     />
                     <span className="text-sm font-medium text-gray-700">{opt.label}</span>
