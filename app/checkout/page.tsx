@@ -39,12 +39,27 @@ export default function CheckoutPage() {
     if (storedUser) {
       const user: BoxUser = JSON.parse(storedUser);
       setLoggedInUser(user);
-      // Pre-fill name and email from social login
-      setForm((prev) => ({
-        ...prev,
-        fullName: user.name,
-        email: user.email,
-      }));
+      // Pre-fill from saved profile first, then fall back to user account data
+      const storedProfile = localStorage.getItem("boxProfile");
+      if (storedProfile) {
+        const prof = JSON.parse(storedProfile);
+        setForm((prev) => ({
+          ...prev,
+          fullName: prof.displayName || user.name,
+          email: user.email,
+          phone: prof.phone || "",
+          address: prof.address || "",
+          city: prof.city || "",
+          zipCode: prof.zipCode || "",
+          payment: prof.defaultPayment || "gcash",
+        }));
+      } else {
+        setForm((prev) => ({
+          ...prev,
+          fullName: user.name,
+          email: user.email,
+        }));
+      }
     }
   }, []);
 
