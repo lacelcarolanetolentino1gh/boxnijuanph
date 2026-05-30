@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,6 +13,7 @@ type BoxProfile = {
   city: string;
   zipCode: string;
   defaultPayment: string;
+  profilePic?: string; // base64 data URL
 };
 
 const PAYMENT_OPTIONS = [
@@ -50,6 +51,22 @@ export default function MyBoxPage() {
   });
   const [profileSaved, setProfileSaved] = useState(false);
   const [profileEditing, setProfileEditing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Image must be under 2MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      setProfile((p) => ({ ...p, profilePic: dataUrl }));
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     setHydrated(true);
@@ -129,9 +146,8 @@ export default function MyBoxPage() {
 
   const handleProfileSave = () => {
     localStorage.setItem("boxProfile", JSON.stringify(profile));
-    // Also update the user display name in boxUser
     if (user) {
-      const updated = { ...user, name: profile.displayName };
+      const updated = { ...user, name: profile.displayName, avatar: profile.profilePic || user.avatar };
       localStorage.setItem("boxUser", JSON.stringify(updated));
       setUser(updated);
     }
@@ -175,8 +191,12 @@ export default function MyBoxPage() {
         </Link>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[#7CAE8E]/20 rounded-full flex items-center justify-center text-[#7CAE8E] font-bold text-lg shrink-0">
-              {user.name.charAt(0).toUpperCase()}
+            <div className="w-12 h-12 rounded-full shrink-0 overflow-hidden bg-[#7CAE8E]/20 flex items-center justify-center text-[#7CAE8E] font-bold text-lg">
+              {profile.profilePic ? (
+                <Image src={profile.profilePic} alt={user.name} width={48} height={48} className="w-full h-full object-cover" unoptimized />
+              ) : (
+                user.name.charAt(0).toUpperCase()
+              )}
             </div>
             <div>
               <h1 className="font-[var(--font-dm-sans)] text-2xl font-extrabold text-[#2D2D2D]">{user.name}</h1>
@@ -399,7 +419,50 @@ export default function MyBoxPage() {
         <div className="grid md:grid-cols-3 gap-6">
           <div className="md:col-span-2 space-y-6">
 
-            {/* Account info (read-only) */}
+            {/* Profile picture */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <h3 className="font-[var(--font-dm-sans)] font-bold text-[#2D2D2D] mb-4">Profile Picture</h3>
+              <div className="flex items-center gap-5">
+                <div className="w-20 h-20 rounded-full overflow-hidden bg-[#7CAE8E]/20 flex items-center justify-center text-[#7CAE8E] font-bold text-2xl shrink-0 border-2 border-[#7CAE8E]/30">
+                  {profile.profilePic ? (
+                    <Image src={profile.profilePic} alt="Profile" width={80} height={80} className="w-full h-full object-cover" unoptimized />
+                  ) : (
+                    user.name.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-600 mb-3">
+                    {profile.profilePic ? "Looking good! You can replace it anytime." : "Add a photo so we know it's you."}
+                  </p>
+                  <div className="flex gap-2 flex-wrap">
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="min-h-[40px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white px-4 py-2 rounded-full text-xs font-bold transition-colors"
+                    >
+                      {profile.profilePic ? "Change Photo" : "Upload Photo"}
+                    </button>
+                    {profile.profilePic && (
+                      <button
+                        onClick={() => setProfile((p) => ({ ...p, profilePic: undefined }))}
+                        className="min-h-[40px] border border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-400 px-4 py-2 rounded-full text-xs font-medium transition-colors"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-2">JPG or PNG · Max 2MB · Stored locally on your device</p>
+                </div>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleProfilePicChange}
+                className="hidden"
+                aria-label="Upload profile picture"
+              />
+            </div>
+
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="h-1.5 w-full bg-[#7CAE8E]" />
               <div className="p-5">
@@ -531,34 +594,31 @@ export default function MyBoxPage() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <h3 className="font-[var(--font-dm-sans)] font-bold text-[#2D2D2D] mb-1">Default Payment Method</h3>
               <p className="text-xs text-gray-400 mb-5">Pre-selected at checkout. You can always change it before placing an order.</p>
-              <fieldset disabled={!profileEditing}>
-                <legend className="sr-only">Select default payment method</legend>
-                <div className="space-y-2">
-                  {PAYMENT_OPTIONS.map((opt) => (
-                    <label
-                      key={opt.value}
-                      className={`flex items-center gap-3 border rounded-xl px-4 py-3 min-h-[52px] transition-colors ${
-                        profileEditing ? "cursor-pointer" : "cursor-default"
-                      } ${
-                        profile.defaultPayment === opt.value
-                          ? "border-[#7CAE8E] bg-green-50"
-                          : "border-gray-200"
-                      } ${profileEditing && profile.defaultPayment !== opt.value ? "hover:border-[#7CAE8E]" : ""}`}
-                    >
-                      <input
-                        type="radio"
-                        name="defaultPayment"
-                        value={opt.value}
-                        checked={profile.defaultPayment === opt.value}
-                        onChange={handleProfileChange}
-                        disabled={!profileEditing}
-                        className="accent-[#7CAE8E] w-4 h-4"
-                      />
-                      <span className="text-sm font-medium text-gray-700">{opt.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
+              <div className="space-y-2" role="radiogroup" aria-label="Default payment method">
+                {PAYMENT_OPTIONS.map((opt) => (
+                  <label
+                    key={opt.value}
+                    className={`flex items-center gap-3 border rounded-xl px-4 py-3 min-h-[52px] transition-colors ${
+                      profileEditing ? "cursor-pointer" : "cursor-default opacity-70"
+                    } ${
+                      profile.defaultPayment === opt.value
+                        ? "border-[#7CAE8E] bg-green-50"
+                        : "border-gray-200"
+                    } ${profileEditing && profile.defaultPayment !== opt.value ? "hover:border-[#7CAE8E]" : ""}`}
+                  >
+                    <input
+                      type="radio"
+                      name="defaultPayment"
+                      value={opt.value}
+                      checked={profile.defaultPayment === opt.value}
+                      onChange={profileEditing ? handleProfileChange : undefined}
+                      readOnly={!profileEditing}
+                      className="accent-[#7CAE8E] w-4 h-4"
+                    />
+                    <span className="text-sm font-medium text-gray-700">{opt.label}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
             {/* Save / Cancel buttons */}
