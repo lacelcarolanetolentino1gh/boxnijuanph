@@ -55,16 +55,9 @@ export default function PlansPage() {
             {/* Plan details */}
             <div className="p-6 flex flex-col flex-1 items-center text-center">
               <h2 className="font-[var(--font-dm-sans)] text-2xl font-extrabold text-[#2D2D2D] mb-1">{plan.name}</h2>
-              {plan.id === "custom" ? (
-                <div className="my-2">
-                  <div className="text-3xl font-extrabold text-[#7CAE8E]">Pay-per-item</div>
-                  <div className="text-xs text-gray-400 mt-0.5">Priced by what you pick</div>
-                </div>
-              ) : (
-                <div className="text-4xl font-extrabold text-[#7CAE8E] my-2">
-                  ₱{plan.price}<span className="text-base font-normal text-gray-400">/mo</span>
-                </div>
-              )}
+              <div className="text-4xl font-extrabold text-[#7CAE8E] my-2">
+                ₱{plan.price}<span className="text-base font-normal text-gray-400">/mo</span>
+              </div>
               <p className="text-gray-500 text-sm mb-1">
                 {plan.id === "custom" ? "Unlimited items" : `${plan.items} items per box`}
               </p>

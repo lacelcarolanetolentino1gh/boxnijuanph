@@ -269,11 +269,11 @@ export default function MyBoxPage() {
                         <h2 className="font-[var(--font-dm-sans)] text-xl font-extrabold text-[#2D2D2D]">
                           {planData?.name || "Custom"} {isCustom && <span className="text-sm font-normal text-[#7CAE8E]">· No Limit</span>}
                         </h2>
-                        {!isCustom && planData && (
-                          <p className="text-[#7CAE8E] font-bold text-lg mt-0.5">₱{planData.price}<span className="text-xs font-normal text-gray-400">/mo</span></p>
-                        )}
+                        <p className="text-[#7CAE8E] font-bold text-lg mt-0.5">
+                          ₱{planData?.price}<span className="text-xs font-normal text-gray-400">/mo</span>
+                        </p>
                         {isCustom && (
-                          <p className="text-[#7CAE8E] text-sm mt-0.5">Pay-per-item · Modify anytime</p>
+                          <p className="text-xs text-gray-400 mt-0.5">Unlimited items · Modify anytime</p>
                         )}
                       </div>
                       <span className="bg-[#7CAE8E]/10 text-[#5F8F72] text-xs font-bold px-3 py-1 rounded-full border border-[#7CAE8E]/30">

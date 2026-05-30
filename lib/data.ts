@@ -31,9 +31,9 @@ export const PLANS = [
   {
     id: "custom",
     name: "Custom",
-    price: 0,
+    price: 1299,
     items: 0,
-    description: "Pick anything, any quantity — build exactly the box you want",
+    description: "Unlimited items — build exactly the box you want, modify anytime",
     badge: "Most Flexible",
     image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80",
   },
