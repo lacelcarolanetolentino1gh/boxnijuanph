@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { PLANS, Product } from "@/lib/data";
@@ -29,8 +29,9 @@ const PROVIDER_LABELS: Record<string, string> = {
   facebook: "Facebook",
 };
 
-export default function MyBoxPage() {
+function MyBoxContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<BoxUser | null>(null);
   const [plan, setPlan] = useState<string | null>(null);
   const [items, setItems] = useState<Product[]>([]);
@@ -70,6 +71,9 @@ export default function MyBoxPage() {
 
   useEffect(() => {
     setHydrated(true);
+    // Open profile tab if ?tab=profile in URL
+    if (searchParams.get("tab") === "profile") setActiveTab("profile");
+
     const storedUser = localStorage.getItem("boxUser");
     if (!storedUser) {
       router.push("/login");
@@ -703,5 +707,13 @@ export default function MyBoxPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function MyBoxPage() {
+  return (
+    <Suspense>
+      <MyBoxContent />
+    </Suspense>
   );
 }

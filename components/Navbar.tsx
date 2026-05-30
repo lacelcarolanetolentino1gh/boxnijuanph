@@ -4,23 +4,30 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-type BoxUser = { name: string; email: string; provider: string; avatar: string };
+type BoxUser = { name: string; email: string; provider: string; avatar?: string };
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<BoxUser | null>(null);
+  const [profilePic, setProfilePic] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("boxUser");
-    if (stored) setUser(JSON.parse(stored));
-    const onStorage = () => {
-      const updated = localStorage.getItem("boxUser");
-      setUser(updated ? JSON.parse(updated) : null);
+    const load = () => {
+      const stored = localStorage.getItem("boxUser");
+      setUser(stored ? JSON.parse(stored) : null);
+      const prof = localStorage.getItem("boxProfile");
+      if (prof) {
+        const parsed = JSON.parse(prof);
+        setProfilePic(parsed.profilePic || null);
+      } else {
+        setProfilePic(null);
+      }
     };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    load();
+    window.addEventListener("storage", load);
+    return () => window.removeEventListener("storage", load);
   }, []);
 
   const handleSignOut = () => {
@@ -45,12 +52,23 @@ export default function Navbar() {
 
           {user ? (
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-[#7CAE8E] text-white flex items-center justify-center text-xs font-bold" aria-hidden="true">
-                  {user.avatar}
+              {/* Clickable avatar + name → goes to Profile tab */}
+              <Link
+                href="/my-box?tab=profile"
+                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                aria-label="Go to your profile"
+              >
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-[#7CAE8E] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                  {profilePic ? (
+                    <Image src={profilePic} alt={user.name} width={32} height={32} className="w-full h-full object-cover" unoptimized />
+                  ) : (
+                    <span>{user.name.charAt(0).toUpperCase()}</span>
+                  )}
                 </div>
-                <span className="text-sm font-medium text-[#2D2D2D]">Hi, {user.name.split(" ")[0]}</span>
-              </div>
+                <span className="text-sm font-medium text-[#2D2D2D] hover:text-[#7CAE8E] transition-colors">
+                  Hi, {user.name.split(" ")[0]}
+                </span>
+              </Link>
               <Link href="/my-box" className={`hover:text-[#7CAE8E] font-medium transition-colors text-sm ${pathname === "/my-box" ? "text-[#7CAE8E]" : ""}`}>My Box</Link>
               <button onClick={handleSignOut} className="text-xs text-gray-400 hover:text-red-400 transition-colors" aria-label="Sign out">
                 Sign Out
@@ -92,7 +110,16 @@ export default function Navbar() {
           <Link href="/contact" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">Contact</Link>
           {user ? (
             <>
-              <span className="text-gray-600">Hi, {user.name.split(" ")[0]}</span>
+              <Link href="/my-box?tab=profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 text-gray-700 hover:text-[#7CAE8E]">
+                <div className="w-7 h-7 rounded-full overflow-hidden bg-[#7CAE8E] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                  {profilePic ? (
+                    <Image src={profilePic} alt={user.name} width={28} height={28} className="w-full h-full object-cover" unoptimized />
+                  ) : (
+                    <span>{user.name.charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
+                <span className="font-medium">Hi, {user.name.split(" ")[0]} · Profile</span>
+              </Link>
               <Link href="/my-box" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">My Box</Link>
               <button onClick={() => { handleSignOut(); setMenuOpen(false); }} className="text-red-400 text-left">Sign Out</button>
             </>
