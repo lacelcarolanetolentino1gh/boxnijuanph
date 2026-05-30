@@ -15,8 +15,10 @@ export default function MyBoxPage() {
   const [orderDetails, setOrderDetails] = useState<Record<string, unknown> | null>(null);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelled, setCancelled] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    setHydrated(true);
     const storedUser = localStorage.getItem("boxUser");
     if (!storedUser) {
       router.push("/login");
@@ -74,6 +76,7 @@ export default function MyBoxPage() {
     setShowCancelConfirm(false);
   };
 
+  if (!hydrated) return null;
   if (!user) return null;
 
   if (cancelled) {
@@ -84,7 +87,7 @@ export default function MyBoxPage() {
         </div>
         <h1 className="font-[var(--font-dm-sans)] text-2xl font-bold text-[#2D2D2D] mb-3">Subscription Cancelled</h1>
         <p className="text-gray-500 text-sm mb-8">
-          Your subscription has been cancelled. We&apos;re sad to see you go, {user.name.split(" ")[0]}!
+          Your subscription has been cancelled. We&apos;re sad to see you go{user ? `, ${user.name.split(" ")[0]}` : ""}!
         </p>
         <Link href="/plans">
           <button className="min-h-[48px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white px-8 py-3 rounded-full font-bold transition-colors">
@@ -103,7 +106,7 @@ export default function MyBoxPage() {
         </div>
         <h1 className="font-[var(--font-dm-sans)] text-2xl font-bold text-[#2D2D2D] mb-3">No Active Subscription</h1>
         <p className="text-gray-500 text-sm mb-8">
-          You don&apos;t have an active box yet, {user.name.split(" ")[0]}. Start building yours today!
+          You don&apos;t have an active box yet{user ? `, ${user.name.split(" ")[0]}` : ""}. Start building yours today!
         </p>
         <Link href="/plans">
           <button className="min-h-[48px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white px-8 py-3 rounded-full font-bold transition-colors">
