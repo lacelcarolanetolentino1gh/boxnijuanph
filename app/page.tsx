@@ -122,19 +122,20 @@ export default function Home() {
               Every item in your box is chosen by you — from local recovery gear to healthy snacks that fuel your lifestyle.
             </p>
           </div>
-          {/* YouTube privacy-enhanced embed — no cookies unless user interacts */}
+          {/* Direct MP4 embed — no YouTube restrictions */}
           <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl" style={{ paddingBottom: "56.25%" }}>
-            <iframe
-              className="absolute inset-0 w-full h-full"
-              src="https://www.youtube-nocookie.com/embed/CHhc-zVEwa0?autoplay=1&mute=1&loop=1&playlist=CHhc-zVEwa0&controls=1&rel=0&modestbranding=1"
-              title="BoxNiJuanPH — Filipino Wellness Lifestyle"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              loading="lazy"
+            <video
+              className="absolute inset-0 w-full h-full object-cover"
+              src="/explainer.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls
             />
           </div>
           <p className="text-center text-xs text-gray-400 mt-3">
-            Video embedded via YouTube Privacy-Enhanced Mode — no cookies set until you interact. <Link href="/privacy" className="underline hover:text-[#7CAE8E]">Privacy Policy</Link>
+            <Link href="/privacy" className="underline hover:text-[#7CAE8E]">Privacy Policy</Link>
           </p>
         </div>
       </section>
