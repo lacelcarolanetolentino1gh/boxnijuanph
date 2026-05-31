@@ -126,7 +126,7 @@ export default function Home() {
           <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl" style={{ paddingBottom: "56.25%" }}>
             <iframe
               className="absolute inset-0 w-full h-full"
-              src="https://www.youtube-nocookie.com/embed/RPMp7p3_940?autoplay=1&mute=1&loop=1&playlist=RPMp7p3_940&controls=1&rel=0&modestbranding=1"
+              src="https://www.youtube-nocookie.com/embed/CHhc-zVEwa0?autoplay=1&mute=1&loop=1&playlist=CHhc-zVEwa0&controls=1&rel=0&modestbranding=1"
               title="BoxNiJuanPH — Filipino Wellness Lifestyle"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
