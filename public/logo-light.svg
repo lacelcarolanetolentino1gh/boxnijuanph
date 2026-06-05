@@ -1,37 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 52" fill="none">
-  <!-- Box outline -->
-  <rect x="2" y="8" width="36" height="36" rx="7" stroke="#7CAE8E" stroke-width="2.5" fill="rgba(255,255,255,0.08)"/>
-
-  <!-- Running figure -->
-  <!-- Head -->
-  <circle cx="20" cy="16" r="3.2" fill="#7CAE8E"/>
-  <!-- Body -->
-  <line x1="20" y1="19.5" x2="18" y2="27" stroke="#7CAE8E" stroke-width="2.2" stroke-linecap="round"/>
-  <!-- Left arm back -->
-  <line x1="19.5" y1="22" x2="14.5" y2="25" stroke="#A8C8B4" stroke-width="2" stroke-linecap="round"/>
-  <!-- Right arm forward -->
-  <line x1="19" y1="22" x2="24.5" y2="19.5" stroke="#A8C8B4" stroke-width="2" stroke-linecap="round"/>
-  <!-- Left leg back -->
-  <line x1="18" y1="27" x2="13.5" y2="33" stroke="#7CAE8E" stroke-width="2.2" stroke-linecap="round"/>
-  <!-- Right leg forward/up -->
-  <line x1="18" y1="27" x2="24" y2="31" stroke="#7CAE8E" stroke-width="2.2" stroke-linecap="round"/>
-  <!-- Right foot -->
-  <line x1="24" y1="31" x2="27" y2="29.5" stroke="#7CAE8E" stroke-width="2" stroke-linecap="round"/>
-
-  <!-- Speed lines inside box -->
-  <line x1="5" y1="31" x2="10" y2="31" stroke="#A8C8B4" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
-  <line x1="4" y1="34.5" x2="9" y2="34.5" stroke="#A8C8B4" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
-
-  <!-- Brand name text -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 178 44" fill="none">
   <!-- "Box" in white -->
-  <text x="47" y="33" font-family="'DM Sans', Arial, sans-serif" font-weight="800" font-size="19" fill="#FFFFFF" letter-spacing="-0.3">Box</text>
+  <text x="0" y="28" font-family="'DM Sans', Arial, sans-serif" font-weight="800" font-size="19" fill="#FFFFFF" letter-spacing="-0.3">Box</text>
   <!-- "Ni" in sage green -->
-  <text x="85" y="33" font-family="'DM Sans', Arial, sans-serif" font-weight="800" font-size="19" fill="#7CAE8E" letter-spacing="-0.3">Ni</text>
+  <text x="38" y="28" font-family="'DM Sans', Arial, sans-serif" font-weight="800" font-size="19" fill="#7CAE8E" letter-spacing="-0.3">Ni</text>
   <!-- "Juan" in white -->
-  <text x="105" y="33" font-family="'DM Sans', Arial, sans-serif" font-weight="800" font-size="19" fill="#FFFFFF" letter-spacing="-0.3">Juan</text>
+  <text x="58" y="28" font-family="'DM Sans', Arial, sans-serif" font-weight="800" font-size="19" fill="#FFFFFF" letter-spacing="-0.3">Juan</text>
   <!-- "PH" in light sage -->
-  <text x="153" y="33" font-family="'DM Sans', Arial, sans-serif" font-weight="800" font-size="19" fill="#A8C8B4" letter-spacing="-0.3">PH</text>
-
+  <text x="106" y="28" font-family="'DM Sans', Arial, sans-serif" font-weight="800" font-size="19" fill="#A8C8B4" letter-spacing="-0.3">PH</text>
   <!-- Tagline -->
-  <text x="47" y="44" font-family="'DM Sans', Arial, sans-serif" font-weight="500" font-size="8.5" fill="#A8C8B4" letter-spacing="1.8">WELLNESS · FITNESS · PILIPINAS</text>
+  <text x="0" y="40" font-family="'DM Sans', Arial, sans-serif" font-weight="500" font-size="8.5" fill="#A8C8B4" letter-spacing="1.8">WELLNESS · FITNESS · PILIPINAS</text>
 </svg>
