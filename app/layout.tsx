@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Image src="/logo-light.svg" alt="BoxNiJuanPH" width={140} height={34} />
           </div>
           <p className="text-gray-400">The Wellness Box for Every Juan</p>
-          <p className="text-gray-500 mt-2 text-xs">© 2026 BoxNiJuanPH. BSITOUMN COMP 047 – PUP Open University System</p>
+          <p className="text-gray-500 mt-2 text-xs">© 2026 BoxNiJuanPH. BSITOUMN 2-1 COMP 047 – PUP Open University System</p>
           <p className="mt-2 text-xs">
             <Link href="/privacy" className="text-gray-500 hover:text-[#7CAE8E] underline transition-colors">Privacy Policy</Link>
             {" · "}
