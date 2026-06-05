@@ -24,7 +24,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="flex-1">{children}</main>
         <ChatWidget />
         <footer className="bg-[#2D2D2D] text-white text-center py-8 text-sm mt-16">
-          <div className="flex justify-center mb-3">
+          <div className="flex justify-center items-center gap-2 mb-3">
+            <Image src="/logo-icon.png" alt="" width={28} height={28} unoptimized />
             <Image src="/logo-light.svg" alt="BoxNiJuanPH" width={140} height={34} />
           </div>
           <p className="text-gray-400">The Wellness Box for Every Juan</p>

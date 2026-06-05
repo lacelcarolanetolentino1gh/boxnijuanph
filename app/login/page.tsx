@@ -39,7 +39,8 @@ export default function LoginPage() {
         <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="flex justify-center mb-2">
+            <div className="flex justify-center items-center gap-2 mb-2">
+              <Image src="/logo-icon.png" alt="" width={32} height={32} unoptimized />
               <Image src="/logo.svg" alt="BoxNiJuanPH" width={150} height={36} />
             </div>
             <h1 className="font-[var(--font-dm-sans)] text-xl font-bold text-[#2D2D2D] mb-1">Sign in to continue</h1>
