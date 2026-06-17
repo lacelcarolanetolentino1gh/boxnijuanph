@@ -358,7 +358,7 @@ export const PRODUCTS: Product[] = [
     category: "Healthy Snacks",
     price: 65,
     emoji: "🥥",
-    image: "https://images.unsplash.com/photo-1559181567-c3190ca9d715?w=400&q=80",
+    image: "https://images.unsplash.com/photo-1603569283847-aa295f0d016a?w=400&q=80",
     isLocal: true,
     isEco: true,
     variants: ["Pure Coconut Water", "Coconut + Pineapple", "Coconut + Mango"],
