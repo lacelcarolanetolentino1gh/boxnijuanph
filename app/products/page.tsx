@@ -49,10 +49,12 @@ function ProductCard({ product }: { product: Product }) {
 export default function ProductsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeBrand, setActiveBrand] = useState("All");
+  const [localOnly, setLocalOnly] = useState(false);
 
   const filtered = PRODUCTS
     .filter((p) => activeCategory === "All" || p.category === activeCategory)
-    .filter((p) => activeBrand === "All" || p.brand === activeBrand);
+    .filter((p) => activeBrand === "All" || p.brand === activeBrand)
+    .filter((p) => !localOnly || p.isLocal);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-16">
@@ -70,41 +72,70 @@ export default function ProductsPage() {
         </Link>
       </div>
 
-      {/* Category filters */}
-      <div className="flex gap-2 flex-wrap mb-3" role="group" aria-label="Filter by category">
-        {["All", ...CATEGORIES].map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            aria-pressed={activeCategory === cat}
-            className={`px-4 py-2 rounded-full text-sm font-semibold border transition-colors min-h-[40px] ${
-              activeCategory === cat
-                ? "bg-[#7CAE8E] text-white border-[#7CAE8E]"
-                : "bg-white text-gray-600 border-gray-200 hover:border-[#7CAE8E] hover:text-[#7CAE8E]"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+      {/* Filter bar */}
+      <div className="flex flex-wrap gap-3 mb-6 items-center bg-white border border-gray-100 rounded-2xl px-5 py-4 shadow-sm">
+        <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest mr-1">Filter</span>
 
-      {/* Brand filters */}
-      <div className="flex gap-2 flex-wrap mb-8 items-center" role="group" aria-label="Filter by brand">
-        <span className="text-xs text-gray-400 font-medium mr-1">Brand:</span>
-        {["All", ...BRANDS].map((brand) => (
-          <button
-            key={brand}
-            onClick={() => setActiveBrand(brand)}
-            aria-pressed={activeBrand === brand}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors min-h-[32px] ${
-              activeBrand === brand
-                ? "bg-[#2D2D2D] text-white border-[#2D2D2D]"
-                : "bg-white text-gray-500 border-gray-200 hover:border-[#2D2D2D] hover:text-[#2D2D2D]"
+        {/* Category dropdown */}
+        <div className="relative">
+          <select
+            value={activeCategory}
+            onChange={(e) => setActiveCategory(e.target.value)}
+            aria-label="Filter by category"
+            className={`appearance-none pl-4 pr-8 py-2 rounded-full text-sm font-semibold border cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-[#7CAE8E]/30 ${
+              activeCategory !== "All"
+                ? "bg-[#7CAE8E] text-white border-[#7CAE8E]"
+                : "bg-gray-50 text-gray-600 border-gray-200 hover:border-[#7CAE8E]"
             }`}
           >
-            {brand}
+            <option value="All">All Categories</option>
+            {CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+          <span className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs ${activeCategory !== "All" ? "text-white" : "text-gray-400"}`}>▾</span>
+        </div>
+
+        {/* Brand dropdown */}
+        <div className="relative">
+          <select
+            value={activeBrand}
+            onChange={(e) => setActiveBrand(e.target.value)}
+            aria-label="Filter by brand"
+            className={`appearance-none pl-4 pr-8 py-2 rounded-full text-sm font-semibold border cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-[#7CAE8E]/30 ${
+              activeBrand !== "All"
+                ? "bg-[#2D2D2D] text-white border-[#2D2D2D]"
+                : "bg-gray-50 text-gray-600 border-gray-200 hover:border-[#2D2D2D]"
+            }`}
+          >
+            <option value="All">All Brands</option>
+            {BRANDS.map((brand) => (
+              <option key={brand} value={brand}>{brand}</option>
+            ))}
+          </select>
+          <span className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs ${activeBrand !== "All" ? "text-white" : "text-gray-400"}`}>▾</span>
+        </div>
+
+        {/* Local only toggle */}
+        <label className="flex items-center gap-2 cursor-pointer ml-1">
+          <input
+            type="checkbox"
+            checked={localOnly}
+            onChange={(e) => setLocalOnly(e.target.checked)}
+            className="accent-[#7CAE8E] w-4 h-4"
+          />
+          <span className="text-sm text-gray-600 font-medium">🇵🇭 Local brands only</span>
+        </label>
+
+        {/* Clear filters */}
+        {(activeCategory !== "All" || activeBrand !== "All" || localOnly) && (
+          <button
+            onClick={() => { setActiveCategory("All"); setActiveBrand("All"); setLocalOnly(false); }}
+            className="ml-auto text-xs text-gray-400 hover:text-red-400 transition-colors underline"
+          >
+            Clear filters
           </button>
-        ))}
+        )}
       </div>
 
       {/* Count */}
