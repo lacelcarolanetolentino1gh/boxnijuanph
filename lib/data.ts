@@ -67,6 +67,7 @@ export type ProductDetail = {
 export type Product = {
   id: string;
   name: string;
+  brand: string;
   category: string;
   price: number;
   emoji: string;
@@ -82,6 +83,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "rf1",
     name: "Foam Roller Mini",
+    brand: "ActivePH",
     category: "Recovery & Fitness",
     price: 180,
     emoji: "🔵",
@@ -98,6 +100,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "rf2",
     name: "Resistance Bands",
+    brand: "GalosPorta",
     category: "Recovery & Fitness",
     price: 150,
     emoji: "💪",
@@ -114,6 +117,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "rf3",
     name: "Cooling Towel",
+    brand: "BagongHangin",
     category: "Recovery & Fitness",
     price: 120,
     emoji: "🧊",
@@ -130,6 +134,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "rf4",
     name: "Compression Sleeve",
+    brand: "ActivePH",
     category: "Recovery & Fitness",
     price: 160,
     emoji: "🦵",
@@ -146,6 +151,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "rf5",
     name: "Muscle Relief Balm",
+    brand: "HilomNaturals",
     category: "Recovery & Fitness",
     price: 130,
     emoji: "💚",
@@ -159,11 +165,46 @@ export const PRODUCTS: Product[] = [
       contents: "Key ingredients: Eucalyptus oil, menthol, camphor, virgin coconut oil, beeswax. 50g jar. Paraben-free.",
     },
   },
+  {
+    id: "rf6",
+    name: "Yoga Mat Strap",
+    brand: "GalosPorta",
+    category: "Recovery & Fitness",
+    price: 95,
+    emoji: "🧘",
+    image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&q=80",
+    isLocal: true,
+    isEco: true,
+    variants: ["Forest Green", "Terracotta", "Midnight Blue"],
+    details: {
+      description: "Durable cotton canvas strap with metal D-ring buckle for carrying and stretching.",
+      purpose: "Carry your mat hands-free and use as a stretching aid for deeper yoga and recovery poses.",
+      contents: "100% recycled cotton canvas, metal D-ring buckle, 183 cm length. Made in Cebu.",
+    },
+  },
+  {
+    id: "rf7",
+    name: "Massage Ball Set",
+    brand: "HilomNaturals",
+    category: "Recovery & Fitness",
+    price: 145,
+    emoji: "⚽",
+    image: "https://images.unsplash.com/photo-1571019613576-2b22c76fd955?w=400&q=80",
+    isLocal: true,
+    isEco: false,
+    variants: ["Smooth (2-pack)", "Spiky (2-pack)", "Mixed Set (1 each)"],
+    details: {
+      description: "Compact rubber massage balls for targeted trigger point therapy and deep tissue relief.",
+      purpose: "Breaks up muscle knots in the feet, back, shoulders, and glutes. Great pre- and post-workout.",
+      contents: "Set of 2 balls. Diameter: 6 cm. Natural rubber. Includes mesh carry pouch.",
+    },
+  },
 
   // ── Healthy Snacks ──────────────────────────────────────────────
   {
     id: "hs1",
     name: "Energy Bars (2pcs)",
+    brand: "SarapFit",
     category: "Healthy Snacks",
     price: 90,
     emoji: "🍫",
@@ -188,6 +229,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "hs2",
     name: "Trail Mix Pack",
+    brand: "SarapFit",
     category: "Healthy Snacks",
     price: 95,
     emoji: "🥜",
@@ -212,6 +254,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "hs3",
     name: "Electrolyte Drink",
+    brand: "HydraLab PH",
     category: "Healthy Snacks",
     price: 80,
     emoji: "💧",
@@ -236,6 +279,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "hs4",
     name: "Dark Chocolate Bar",
+    brand: "Malagos Craft",
     category: "Healthy Snacks",
     price: 85,
     emoji: "🍫",
@@ -260,6 +304,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "hs5",
     name: "Dried Fruit Pack",
+    brand: "Malagos Craft",
     category: "Healthy Snacks",
     price: 75,
     emoji: "🍇",
@@ -281,11 +326,62 @@ export const PRODUCTS: Product[] = [
       },
     },
   },
+  {
+    id: "hs6",
+    name: "Protein Shake Sachet",
+    brand: "HydraLab PH",
+    category: "Healthy Snacks",
+    price: 110,
+    emoji: "🥛",
+    image: "https://images.unsplash.com/photo-1579722820308-d74e571900a9?w=400&q=80",
+    isLocal: false,
+    isEco: false,
+    variants: ["Chocolate Milk", "Vanilla Bean", "Matcha Latte", "Strawberry"],
+    details: {
+      description: "Single-serve whey protein sachet — 20g protein, low sugar, clean ingredients.",
+      purpose: "Post-workout muscle repair and recovery. Mixes easily with water or milk.",
+      contents: "Whey protein concentrate, cocoa/vanilla powder, sucralose. 35g sachet. No fillers.",
+      nutrition: {
+        servingSize: "1 sachet (35g) in 200ml water",
+        calories: 140,
+        protein: "20g",
+        carbs: "8g",
+        fat: "3g",
+        sugar: "3g",
+      },
+    },
+  },
+  {
+    id: "hs7",
+    name: "Coconut Water Drink",
+    brand: "SarapFit",
+    category: "Healthy Snacks",
+    price: 65,
+    emoji: "🥥",
+    image: "https://images.unsplash.com/photo-1559181567-c3190ca9d715?w=400&q=80",
+    isLocal: true,
+    isEco: true,
+    variants: ["Pure Coconut Water", "Coconut + Pineapple", "Coconut + Mango"],
+    details: {
+      description: "100% natural coconut water tetra pack from Philippine coconut farms. No added sugar.",
+      purpose: "Natural electrolyte replenishment. Perfect post-workout or as a light refresher anytime.",
+      contents: "100% coconut water, 250ml tetra pack. No preservatives. No added sugar. From Quezon Province farms.",
+      nutrition: {
+        servingSize: "1 pack (250ml)",
+        calories: 45,
+        protein: "0g",
+        carbs: "11g",
+        fat: "0g",
+        sugar: "9g",
+      },
+    },
+  },
 
   // ── Skincare for Athletes ───────────────────────────────────────
   {
     id: "sk1",
     name: "SPF Lip Balm",
+    brand: "Likhang Balat",
     category: "Skincare for Athletes",
     price: 65,
     emoji: "💋",
@@ -302,6 +398,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "sk2",
     name: "Sunscreen Stick",
+    brand: "SolPH",
     category: "Skincare for Athletes",
     price: 110,
     emoji: "☀️",
@@ -318,6 +415,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "sk3",
     name: "Face Wipes (10pcs)",
+    brand: "Likhang Balat",
     category: "Skincare for Athletes",
     price: 70,
     emoji: "🧻",
@@ -334,6 +432,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "sk4",
     name: "Aloe Vera Gel",
+    brand: "HilomNaturals",
     category: "Skincare for Athletes",
     price: 95,
     emoji: "🌿",
@@ -350,6 +449,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "sk5",
     name: "Vitamin C Serum Sachet",
+    brand: "Likhang Balat",
     category: "Skincare for Athletes",
     price: 85,
     emoji: "✨",
@@ -363,11 +463,46 @@ export const PRODUCTS: Product[] = [
       contents: "Key ingredients: L-ascorbic acid, hyaluronic acid, vitamin E, ferulic acid. Single-use 2ml sachet. Fragrance-free.",
     },
   },
+  {
+    id: "sk6",
+    name: "After-Sun Lotion",
+    brand: "SolPH",
+    category: "Skincare for Athletes",
+    price: 120,
+    emoji: "🌅",
+    image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400&q=80",
+    isLocal: true,
+    isEco: true,
+    variants: ["Cooling Gel Formula", "Hydrating Cream Formula", "Lightweight Mist"],
+    details: {
+      description: "Soothing after-sun lotion with coconut water and calamansi extract. Locally developed.",
+      purpose: "Repairs UV-damaged skin, reduces redness, and restores moisture after outdoor activities.",
+      contents: "Coconut water, calamansi extract, shea butter, hyaluronic acid. 100ml pump bottle. Paraben-free.",
+    },
+  },
+  {
+    id: "sk7",
+    name: "Charcoal Soap Bar",
+    brand: "HilomNaturals",
+    category: "Skincare for Athletes",
+    price: 75,
+    emoji: "🧼",
+    image: "https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=400&q=80",
+    isLocal: true,
+    isEco: true,
+    variants: ["Activated Charcoal", "Charcoal + Tea Tree", "Charcoal + Coffee Scrub"],
+    details: {
+      description: "Cold-process handmade soap with activated charcoal and virgin coconut oil. Made in Laguna.",
+      purpose: "Deep-cleanses pores, removes post-workout grime and excess oil. Gentle enough for daily use.",
+      contents: "Activated charcoal, VCO, shea butter, essential oils. 100g bar. Sulfate-free. Vegan.",
+    },
+  },
 
   // ── Lifestyle & Comfort ─────────────────────────────────────────
   {
     id: "lc1",
     name: "Motivational Journal",
+    brand: "PadayonPH",
     category: "Lifestyle & Comfort",
     price: 140,
     emoji: "📓",
@@ -384,6 +519,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "lc2",
     name: "Scented Candle",
+    brand: "AlingNena Crafts",
     category: "Lifestyle & Comfort",
     price: 160,
     emoji: "🕯️",
@@ -400,6 +536,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "lc3",
     name: "Inspirational Card",
+    brand: "PadayonPH",
     category: "Lifestyle & Comfort",
     price: 40,
     emoji: "💌",
@@ -416,6 +553,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "lc4",
     name: "Reusable Tote Bag",
+    brand: "TahoKo Goods",
     category: "Lifestyle & Comfort",
     price: 120,
     emoji: "👜",
@@ -432,6 +570,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "lc5",
     name: "Sticker Sheet",
+    brand: "PadayonPH",
     category: "Lifestyle & Comfort",
     price: 35,
     emoji: "⭐",
@@ -445,9 +584,45 @@ export const PRODUCTS: Product[] = [
       contents: "20 die-cut vinyl stickers per sheet. UV-resistant, waterproof. Designed & printed in the Philippines.",
     },
   },
+  {
+    id: "lc6",
+    name: "Herbal Tea Pouch",
+    brand: "AlingNena Crafts",
+    category: "Lifestyle & Comfort",
+    price: 90,
+    emoji: "🍵",
+    image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&q=80",
+    isLocal: true,
+    isEco: true,
+    variants: ["Salabat & Honey (Ginger)", "Sambong & Lemon", "Pandan & Moringa"],
+    details: {
+      description: "Blend of locally-sourced Philippine medicinal herbs. Hand-packed in biodegradable tea bags.",
+      purpose: "Post-workout relaxation and natural anti-inflammatory support. Promotes restful sleep and digestion.",
+      contents: "10 biodegradable tea bags per pouch. Herbs sourced from Benguet and Laguna farms. No artificial flavors.",
+    },
+  },
+  {
+    id: "lc7",
+    name: "Bamboo Water Bottle",
+    brand: "TahoKo Goods",
+    category: "Lifestyle & Comfort",
+    price: 195,
+    emoji: "🎍",
+    image: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80",
+    isLocal: true,
+    isEco: true,
+    variants: ["500ml — Natural", "500ml — Black Cap", "750ml — Natural"],
+    details: {
+      description: "Stainless steel insulated bottle with bamboo cap and sleeve. Made by a Filipino social enterprise.",
+      purpose: "Keeps drinks cold for 24h or hot for 12h. Reduces single-use plastic consumption.",
+      contents: "18/8 food-grade stainless steel inner, bamboo outer cap, silicone sleeve. BPA-free. 500ml or 750ml.",
+    },
+  },
 ];
 
 export const CATEGORIES = ["Recovery & Fitness", "Healthy Snacks", "Skincare for Athletes", "Lifestyle & Comfort"];
+
+export const BRANDS = [...new Set(PRODUCTS.map((p) => p.brand))].sort();
 
 export const CSR_COMMITMENTS = [
   {

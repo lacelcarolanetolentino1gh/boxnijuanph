@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { PRODUCTS, CATEGORIES, PLAN_ITEM_COUNTS, Product } from "@/lib/data";
+import { PRODUCTS, CATEGORIES, BRANDS, PLAN_ITEM_COUNTS, Product } from "@/lib/data";
 import StepIndicator from "@/components/StepIndicator";
 
 type SelectedItem = { product: Product; variant: string };
@@ -252,7 +252,7 @@ function ProductCard({
           {selectedVariant ? (
             <p className="text-xs text-[#7CAE8E] font-medium truncate">{selectedVariant}</p>
           ) : (
-            <p className="text-xs text-gray-400">{product.category}</p>
+            <p className="text-xs text-gray-400 truncate">{product.brand} · {product.category}</p>
           )}
         </div>
       </button>
@@ -267,6 +267,7 @@ export default function BuilderPage() {
   const [maxItems, setMaxItems] = useState<number>(3);
   const [selected, setSelected] = useState<SelectedItem[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [activeBrand, setActiveBrand] = useState<string>("All");
   const [modalProduct, setModalProduct] = useState<Product | null>(null);
 
   const isCustom = plan === "custom";
@@ -300,9 +301,9 @@ export default function BuilderPage() {
     }
   }, []);
 
-  const filteredProducts = activeCategory === "All"
-    ? PRODUCTS
-    : PRODUCTS.filter((p) => p.category === activeCategory);
+  const filteredProducts = PRODUCTS
+    .filter((p) => activeCategory === "All" || p.category === activeCategory)
+    .filter((p) => activeBrand === "All" || p.brand === activeBrand);
 
   const isSelected = (id: string) => selected.some((s) => s.product.id === id);
   const getVariant = (id: string) => selected.find((s) => s.product.id === id)?.variant;
@@ -400,7 +401,7 @@ export default function BuilderPage() {
         {/* Left: filters + products */}
         <div className="flex-1">
           {/* Category filters */}
-          <div className="flex gap-2 flex-wrap mb-6" role="group" aria-label="Filter by category">
+          <div className="flex gap-2 flex-wrap mb-3" role="group" aria-label="Filter by category">
             {["All", ...CATEGORIES].map((cat) => (
               <button
                 key={cat}
@@ -413,6 +414,25 @@ export default function BuilderPage() {
                 }`}
               >
                 {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Brand filters */}
+          <div className="flex gap-2 flex-wrap mb-6 items-center" role="group" aria-label="Filter by brand">
+            <span className="text-xs text-gray-400 font-medium mr-1">Brand:</span>
+            {["All", ...BRANDS].map((brand) => (
+              <button
+                key={brand}
+                onClick={() => setActiveBrand(brand)}
+                aria-pressed={activeBrand === brand}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors min-h-[32px] ${
+                  activeBrand === brand
+                    ? "bg-[#2D2D2D] text-white border-[#2D2D2D]"
+                    : "bg-white text-gray-500 border-gray-200 hover:border-[#2D2D2D] hover:text-[#2D2D2D]"
+                }`}
+              >
+                {brand}
               </button>
             ))}
           </div>
