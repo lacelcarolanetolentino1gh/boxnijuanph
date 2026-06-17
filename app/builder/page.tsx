@@ -269,6 +269,7 @@ export default function BuilderPage() {
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [activeBrand, setActiveBrand] = useState<string>("All");
   const [localOnly, setLocalOnly] = useState(false);
+  const [query, setQuery] = useState("");
   const [modalProduct, setModalProduct] = useState<Product | null>(null);
 
   const isCustom = plan === "custom";
@@ -305,7 +306,14 @@ export default function BuilderPage() {
   const filteredProducts = PRODUCTS
     .filter((p) => activeCategory === "All" || p.category === activeCategory)
     .filter((p) => activeBrand === "All" || p.brand === activeBrand)
-    .filter((p) => !localOnly || p.isLocal);
+    .filter((p) => !localOnly || p.isLocal)
+    .filter((p) => {
+      if (!query.trim()) return true;
+      const q = query.toLowerCase();
+      return p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.details.description.toLowerCase().includes(q);
+    });
+
+  const hasFilters = activeCategory !== "All" || activeBrand !== "All" || localOnly || query.trim() !== "";
 
   const isSelected = (id: string) => selected.some((s) => s.product.id === id);
   const getVariant = (id: string) => selected.find((s) => s.product.id === id)?.variant;
@@ -406,7 +414,21 @@ export default function BuilderPage() {
           <div className="flex flex-wrap gap-3 mb-6 items-center bg-white border border-gray-100 rounded-2xl px-5 py-4 shadow-sm">
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest mr-1">Filter</span>
 
-            {/* Category dropdown */}
+            {/* Search input */}
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">🔍</span>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search products..."
+                aria-label="Search products"
+                className="pl-8 pr-4 py-2 rounded-full text-sm border border-gray-200 bg-gray-50 text-gray-600 focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 w-48 transition-colors"
+              />
+              {query && (
+                <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 text-xs">✕</button>
+              )}
+            </div>
             <div className="relative">
               <select
                 value={activeCategory}
@@ -458,9 +480,9 @@ export default function BuilderPage() {
             </label>
 
             {/* Clear filters */}
-            {(activeCategory !== "All" || activeBrand !== "All" || localOnly) && (
+            {hasFilters && (
               <button
-                onClick={() => { setActiveCategory("All"); setActiveBrand("All"); setLocalOnly(false); }}
+                onClick={() => { setActiveCategory("All"); setActiveBrand("All"); setLocalOnly(false); setQuery(""); }}
                 className="ml-auto text-xs text-gray-400 hover:text-red-400 transition-colors underline"
               >
                 Clear filters
