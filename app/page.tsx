@@ -72,7 +72,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {[
             { value: "20+", label: "Wellness Products" },
-            { value: "3", label: "Flexible Plans" },
+            { value: "4", label: "Flexible Plans" },
             { value: "100%", label: "Filipino Brands" },
             { value: "UN SDG 12", label: "Aligned" },
           ].map((s) => (
@@ -94,7 +94,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             {[
-              { step: "1", icon: "📋", title: "Choose Your Plan", desc: "Pick Basic, Standard, or Premium based on how many items you want.", color: "bg-[#7CAE8E]" },
+              { step: "1", icon: "📋", title: "Choose Your Plan", desc: "Pick Basic, Standard, Premium, or Custom based on how many items you want.", color: "bg-[#7CAE8E]" },
               { step: "2", icon: "🛍️", title: "Build Your Box", desc: "Browse our wellness catalog and pick exactly the products you love.", color: "bg-[#5F8F72]" },
               { step: "3", icon: "✅", title: "Review & Checkout", desc: "Review your picks, sign in, enter your details, and place your order.", color: "bg-[#7CAE8E]" },
               { step: "4", icon: "📦", title: "Receive Your Box", desc: "Your personalized wellness box arrives at your door every month.", color: "bg-[#5F8F72]" },
@@ -192,7 +192,7 @@ export default function Home() {
             <span className="text-[#7CAE8E] font-bold text-sm uppercase tracking-widest">Flexible Pricing</span>
             <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-white mt-2">Plans for Every Lifestyle</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {PLANS.map((plan) => (
               <div key={plan.id} className="relative rounded-2xl overflow-hidden group">
                 <div className="relative h-48">
@@ -207,7 +207,7 @@ export default function Home() {
                     <h3 className="font-[var(--font-dm-sans)] font-bold text-white text-lg">{plan.name}</h3>
                     <span className="font-extrabold text-[#7CAE8E] text-xl">₱{plan.price}<span className="text-sm font-normal text-gray-400">/mo</span></span>
                   </div>
-                  <p className="text-gray-400 text-xs mb-3">{plan.items} items · {plan.description}</p>
+                  <p className="text-gray-400 text-xs mb-3">{plan.id === "custom" ? "Unlimited items" : `${plan.items} items`} · {plan.description}</p>
                   <Link href="/plans">
                     <button className="w-full bg-[#7CAE8E] hover:bg-[#5F8F72] text-white py-2.5 rounded-full text-sm font-bold transition-colors min-h-[44px]">
                       Choose {plan.name}
