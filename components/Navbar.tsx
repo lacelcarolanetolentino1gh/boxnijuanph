@@ -71,8 +71,12 @@ export default function Navbar() {
                 </span>
               </Link>
               <Link href="/my-box" className={`hover:text-[#7CAE8E] font-medium transition-colors text-sm ${pathname === "/my-box" ? "text-[#7CAE8E]" : ""}`}>My Box</Link>
-              <button onClick={handleSignOut} className="text-xs text-gray-400 hover:text-red-400 transition-colors" aria-label="Sign out">
-                Sign Out
+              <button
+                onClick={handleSignOut}
+                className="text-sm font-medium text-gray-500 hover:text-red-500 border border-gray-200 hover:border-red-300 px-3 py-1.5 rounded-full transition-colors"
+                aria-label="Sign out"
+              >
+                Log Out
               </button>
             </div>
           ) : (
@@ -122,7 +126,9 @@ export default function Navbar() {
                 <span className="font-medium">Hi, {user.name.split(" ")[0]} · Profile</span>
               </Link>
               <Link href="/my-box" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">My Box</Link>
-              <button onClick={() => { handleSignOut(); setMenuOpen(false); }} className="text-red-400 text-left">Sign Out</button>
+              <button onClick={() => { handleSignOut(); setMenuOpen(false); }} className="text-left text-sm font-medium text-red-400 hover:text-red-500 border border-red-200 hover:border-red-300 px-4 py-2.5 rounded-full transition-colors w-fit">
+                Log Out
+              </button>
             </>
           ) : (
             <Link href="/login" onClick={() => setMenuOpen(false)} className="text-gray-600 hover:text-[#7CAE8E]">Sign In</Link>

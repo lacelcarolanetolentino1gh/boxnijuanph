@@ -671,6 +671,19 @@ function MyBoxContent() {
                 <button className="text-xs text-[#7CAE8E] font-semibold hover:underline">Contact Support →</button>
               </Link>
             </div>
+
+            <div className="bg-white rounded-2xl border border-red-100 p-5 text-center">
+              <p className="text-xs text-gray-400 mb-3">Done for now?</p>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("boxUser");
+                  router.push("/");
+                }}
+                className="w-full min-h-[40px] border border-red-200 text-red-400 hover:bg-red-50 hover:text-red-500 rounded-full text-sm font-semibold transition-colors"
+              >
+                Log Out
+              </button>
+            </div>
           </div>
         </div>
       )}
