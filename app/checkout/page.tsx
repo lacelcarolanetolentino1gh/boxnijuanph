@@ -115,7 +115,7 @@ export default function CheckoutPage() {
               Your delivery details are collected solely for fulfillment and protected under <strong>RA 10173</strong> (Data Privacy Act of 2012). As a guest, you will not be able to track or manage your subscription after checkout.
             </p>
           </div>
-          <Link href="/login" className="shrink-0">
+          <Link href="/login?redirect=/checkout" className="shrink-0">
             <button className="min-h-[40px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white px-5 py-2 rounded-full text-xs font-bold transition-colors whitespace-nowrap">
               Sign In Instead
             </button>

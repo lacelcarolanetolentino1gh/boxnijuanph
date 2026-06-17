@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -12,8 +12,10 @@ const MOCK_USERS: Record<Provider, { name: string; email: string; avatar: string
   facebook: { name: "Juan dela Cruz", email: "juan.delacruz@fb.com", avatar: "J" },
 };
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
   const [loading, setLoading] = useState<Provider | null>(null);
   const [showGuestWarning, setShowGuestWarning] = useState(false);
 
@@ -22,14 +24,13 @@ export default function LoginPage() {
     setTimeout(() => {
       const user = { ...MOCK_USERS[provider], provider };
       localStorage.setItem("boxUser", JSON.stringify(user));
-      router.push("/checkout");
+      router.push(redirect);
     }, 600);
   };
 
   const handleGuestCheckout = () => {
-    // Remove any stale user session so checkout knows it's a guest
     localStorage.removeItem("boxUser");
-    router.push("/checkout");
+    router.push(redirect);
   };
 
   return (
@@ -188,5 +189,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
   );
 }

@@ -88,7 +88,7 @@ function MyBoxContent() {
 
     const storedUser = localStorage.getItem("boxUser");
     if (!storedUser) {
-      router.push("/login");
+      router.push("/login?redirect=/my-box");
       return;
     }
     const parsedUser: BoxUser = JSON.parse(storedUser);

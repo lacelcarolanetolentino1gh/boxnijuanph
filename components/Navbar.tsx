@@ -81,7 +81,7 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#7CAE8E] transition-colors">
+            <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} className="text-sm font-medium text-gray-600 hover:text-[#7CAE8E] transition-colors">
               Sign In
             </Link>
           )}
@@ -133,7 +133,7 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <Link href="/login" onClick={() => setMenuOpen(false)} className="text-gray-600 hover:text-[#7CAE8E]">Sign In</Link>
+            <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} onClick={() => setMenuOpen(false)} className="text-gray-600 hover:text-[#7CAE8E]">Sign In</Link>
           )}
           <Link href="/plans" onClick={() => setMenuOpen(false)}>
             <button className="w-full bg-[#5F8F72] text-white py-3 rounded-full font-bold">Build Your Box</button>

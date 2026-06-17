@@ -104,7 +104,7 @@ export default function SummaryPage() {
         <button
           onClick={() => {
             const user = localStorage.getItem("boxUser");
-            router.push(user ? "/checkout" : "/login");
+            router.push(user ? "/checkout" : "/login?redirect=/checkout");
           }}
           disabled={items.length === 0}
           className={`flex-1 min-h-[48px] py-3 rounded-full font-bold transition-colors ${
