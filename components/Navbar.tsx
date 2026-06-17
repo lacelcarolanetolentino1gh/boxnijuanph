@@ -40,9 +40,9 @@ export default function Navbar() {
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
       <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo-icon.png" alt="" width={56} height={56} priority className="shrink-0" />
-          <Image src="/logo.svg" alt="BoxNiJuanPH" width={220} height={54} priority />
+        <Link href="/" className="flex items-center gap-1.5">
+          <Image src="/logo-icon.png" alt="" width={64} height={64} priority className="shrink-0" />
+          <Image src="/logo.svg" alt="BoxNiJuanPH" width={250} height={60} priority />
         </Link>
 
         {/* Desktop nav */}
