@@ -239,8 +239,8 @@ export default function CheckoutPage() {
               <legend className="sr-only">Select a payment method</legend>
               <div className="space-y-3">
                 {[
-                  { value: "gcash", label: "💚 GCash" },
-                  { value: "maya", label: "💙 Maya" },
+                  { value: "gcash", logo: "/gcash-logo.svg", label: "GCash", width: 72, height: 18 },
+                  { value: "maya", logo: "/maya-logo.svg", label: "Maya", width: 56, height: 22 },
                   { value: "credit", label: "💳 Credit / Debit Card" },
                   { value: "cod", label: "💵 Cash on Delivery" },
                 ].map((option) => (
@@ -260,7 +260,11 @@ export default function CheckoutPage() {
                       onChange={handleChange}
                       className="accent-[#7CAE8E] w-4 h-4"
                     />
-                    <span className="text-sm font-medium">{option.label}</span>
+                    {"logo" in option ? (
+                      <Image src={option.logo!} alt={option.label} width={option.width} height={option.height} unoptimized />
+                    ) : (
+                      <span className="text-sm font-medium">{option.label}</span>
+                    )}
                   </label>
                 ))}
               </div>

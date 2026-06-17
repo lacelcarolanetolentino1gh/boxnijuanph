@@ -8,7 +8,8 @@ export const PLANS = [
     items: 3,
     description: "1 Recovery, 1 Snack, 1 Lifestyle",
     badge: "",
-    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80",
+    // Starter wellness kit — resistance bands / small fitness gear
+    image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80",
   },
   {
     id: "standard",
@@ -17,7 +18,8 @@ export const PLANS = [
     items: 5,
     description: "1 Recovery, 2 Snacks, 1 Skincare, 1 Lifestyle",
     badge: "Most Popular",
-    image: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=600&q=80",
+    // Balanced wellness flat lay — snacks + skincare + lifestyle
+    image: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=600&q=80",
   },
   {
     id: "premium",
@@ -26,7 +28,8 @@ export const PLANS = [
     items: 8,
     description: "2 Recovery, 2 Snacks, 2 Skincare, 2 Lifestyle",
     badge: "Best Value",
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80",
+    // Full wellness spread — skincare bottles, serums, wellness products
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80",
   },
   {
     id: "custom",
@@ -35,7 +38,8 @@ export const PLANS = [
     items: 0,
     description: "Unlimited items — build exactly the box you want, modify anytime",
     badge: "Most Flexible",
-    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80",
+    // Open subscription box with items ready to be chosen
+    image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&q=80",
   },
 ];
 

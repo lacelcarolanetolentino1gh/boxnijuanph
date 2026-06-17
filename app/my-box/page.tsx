@@ -17,8 +17,8 @@ type BoxProfile = {
 };
 
 const PAYMENT_OPTIONS = [
-  { value: "gcash", label: "💚 GCash" },
-  { value: "maya", label: "💙 Maya" },
+  { value: "gcash", logo: "/gcash-logo.svg", label: "GCash", width: 72, height: 18 },
+  { value: "maya", logo: "/maya-logo.svg", label: "Maya", width: 56, height: 22 },
   { value: "credit", label: "💳 Credit / Debit Card" },
   { value: "cod", label: "💵 Cash on Delivery" },
 ];
@@ -618,7 +618,11 @@ function MyBoxContent() {
                       onChange={handleProfileChange}
                       className="accent-[#7CAE8E] w-4 h-4"
                     />
-                    <span className="text-sm font-medium text-gray-700">{opt.label}</span>
+                    {"logo" in opt ? (
+                      <Image src={(opt as { logo: string }).logo} alt={opt.label} width={(opt as { width: number }).width} height={(opt as { height: number }).height} unoptimized />
+                    ) : (
+                      <span className="text-sm font-medium text-gray-700">{opt.label}</span>
+                    )}
                   </label>
                 ))}
               </div>
