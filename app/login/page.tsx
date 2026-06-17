@@ -24,6 +24,8 @@ function LoginContent() {
     setTimeout(() => {
       const user = { ...MOCK_USERS[provider], provider };
       localStorage.setItem("boxUser", JSON.stringify(user));
+      // Dispatch storage event so Navbar re-reads on the same tab
+      window.dispatchEvent(new Event("storage"));
       router.push(redirect);
     }, 600);
   };
