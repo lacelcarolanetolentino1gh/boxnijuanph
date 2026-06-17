@@ -41,8 +41,8 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo-icon.png" alt="" width={44} height={44} priority className="shrink-0" />
-          <Image src="/logo.svg" alt="BoxNiJuanPH" width={180} height={44} priority />
+          <Image src="/logo-icon.png" alt="" width={56} height={56} priority className="shrink-0" />
+          <Image src="/logo.svg" alt="BoxNiJuanPH" width={220} height={54} priority />
         </Link>
 
         {/* Desktop nav */}
