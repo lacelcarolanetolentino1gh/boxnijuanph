@@ -64,7 +64,19 @@ function MyBoxContent() {
     const reader = new FileReader();
     reader.onload = (ev) => {
       const dataUrl = ev.target?.result as string;
-      setProfile((p) => ({ ...p, profilePic: dataUrl }));
+      setProfile((p) => {
+        const updated = { ...p, profilePic: dataUrl };
+        // Auto-save immediately so the photo persists across navigation/logout
+        localStorage.setItem("boxProfile", JSON.stringify(updated));
+        if (user) {
+          const updatedUser = { ...user, avatar: dataUrl };
+          localStorage.setItem("boxUser", JSON.stringify(updatedUser));
+          setUser(updatedUser);
+        }
+        return updated;
+      });
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 3000);
     };
     reader.readAsDataURL(file);
   };
@@ -447,7 +459,16 @@ function MyBoxContent() {
                     </button>
                     {profile.profilePic && (
                       <button
-                        onClick={() => setProfile((p) => ({ ...p, profilePic: undefined }))}
+                        onClick={() => setProfile((p) => {
+                          const updated = { ...p, profilePic: undefined };
+                          localStorage.setItem("boxProfile", JSON.stringify(updated));
+                          if (user) {
+                            const updatedUser = { ...user, avatar: undefined };
+                            localStorage.setItem("boxUser", JSON.stringify(updatedUser));
+                            setUser(updatedUser);
+                          }
+                          return updated;
+                        })}
                         className="min-h-[40px] border border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-400 px-4 py-2 rounded-full text-xs font-medium transition-colors"
                       >
                         Remove
