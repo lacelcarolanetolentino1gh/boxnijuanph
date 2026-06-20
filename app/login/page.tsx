@@ -89,11 +89,11 @@ function LoginContent() {
   const finishLogin = (name: string, email: string, provider: string, isSignup: boolean) => {
     const firstName = name.trim().split(" ")[0];
     localStorage.setItem("loginToast", isSignup ? `welcome:${firstName}` : `welcome-back:${firstName}`);
-    // Always clear previous session's box data on login — each user starts fresh
-    localStorage.removeItem("orderDetails");
-    localStorage.removeItem("selectedItems");
-    localStorage.removeItem("selectedPlan");
-    localStorage.removeItem("boxProfile");
+    // Clear incomplete box selections (no checkout done) — keeps completed orders intact
+    if (!localStorage.getItem("orderDetails")) {
+      localStorage.removeItem("selectedItems");
+      localStorage.removeItem("selectedPlan");
+    }
     // If returning user has prior chat history, flag the chatbot to show the continue prompt
     if (!isSignup && localStorage.getItem("boxbotHistory")) {
       localStorage.setItem("boxbotShowContinuePrompt", "1");
