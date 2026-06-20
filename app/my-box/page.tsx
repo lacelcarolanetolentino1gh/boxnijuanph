@@ -120,11 +120,6 @@ function MyBoxContent() {
       setOrderDetails(data);
       setPlan(data.plan || null);
       setItems(data.items || []);
-    } else {
-      const storedItems = localStorage.getItem("selectedItems");
-      const storedPlan = localStorage.getItem("selectedPlan");
-      if (storedItems) setItems(JSON.parse(storedItems));
-      if (storedPlan) setPlan(storedPlan);
     }
   }, [router]);
 
