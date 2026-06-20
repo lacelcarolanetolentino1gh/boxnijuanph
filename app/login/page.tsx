@@ -24,6 +24,7 @@ function LoginContent() {
   const redirect = searchParams.get("redirect") || "/";
   const [loading, setLoading] = useState(false);
   const [showGuestWarning, setShowGuestWarning] = useState(false);
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
 
   // Mock auth form state
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
@@ -33,6 +34,15 @@ function LoginContent() {
 
   const handleProviderClick = (provider: Provider) => {
     setSelectedProvider(provider);
+    setFormName("");
+    setFormEmail("");
+    setFormError("");
+    setShowGuestWarning(false);
+  };
+
+  const handleModeSwitch = (newMode: "signin" | "signup") => {
+    setMode(newMode);
+    setSelectedProvider(null);
     setFormName("");
     setFormEmail("");
     setFormError("");
@@ -50,9 +60,9 @@ function LoginContent() {
     setFormError("");
     setLoading(true);
     setTimeout(() => {
-      const isReturning = !!localStorage.getItem("boxUser");
       const firstName = formName.trim().split(" ")[0];
-      localStorage.setItem("loginToast", isReturning ? `welcome-back:${firstName}` : `welcome:${firstName}`);
+      // Sign Up = always welcome, Sign In = always welcome back
+      localStorage.setItem("loginToast", mode === "signup" ? `welcome:${firstName}` : `welcome-back:${firstName}`);
       const user = {
         name: formName.trim(),
         email: formEmail.trim(),
@@ -75,13 +85,40 @@ function LoginContent() {
       <div className="w-full max-w-sm">
         <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8">
           {/* Logo */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <div className="flex justify-center items-center gap-2 mb-2">
               <Image src="/logo-icon.png" alt="" width={32} height={32} unoptimized />
               <Image src="/logo.svg" alt="BoxNiJuanPH" width={150} height={36} />
             </div>
-            <h1 className="font-[var(--font-dm-sans)] text-xl font-bold text-[#2D2D2D] mb-1">Sign in to continue</h1>
-            <p className="text-sm text-gray-400">Your order is almost ready!</p>
+          </div>
+
+          {/* Sign In / Sign Up toggle */}
+          <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-6">
+            <button
+              onClick={() => handleModeSwitch("signin")}
+              className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors min-h-[36px] ${
+                mode === "signin" ? "bg-white text-[#2D2D2D] shadow-sm" : "text-gray-500 hover:text-[#2D2D2D]"
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => handleModeSwitch("signup")}
+              className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors min-h-[36px] ${
+                mode === "signup" ? "bg-white text-[#2D2D2D] shadow-sm" : "text-gray-500 hover:text-[#2D2D2D]"
+              }`}
+            >
+              Sign Up
+            </button>
+          </div>
+
+          <div className="text-center mb-6">
+            <h1 className="font-[var(--font-dm-sans)] text-xl font-bold text-[#2D2D2D] mb-1">
+              {mode === "signup" ? "Create your account" : "Welcome back!"}
+            </h1>
+            <p className="text-sm text-gray-400">
+              {mode === "signup" ? "Join BoxNiJuanPH and build your wellness box." : "Sign in to access your box and orders."}
+            </p>
           </div>
 
           {/* ── Mock auth form (after provider selected) ── */}
@@ -143,10 +180,12 @@ function LoginContent() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                     </svg>
-                    Signing in…
+                    {mode === "signup" ? "Creating account…" : "Signing in…"}
                   </span>
                 ) : (
-                  `Continue with ${PROVIDER_LABELS[selectedProvider]} →`
+                  mode === "signup"
+                    ? `Sign Up with ${PROVIDER_LABELS[selectedProvider]} →`
+                    : `Sign In with ${PROVIDER_LABELS[selectedProvider]} →`
                 )}
               </button>
             </div>
