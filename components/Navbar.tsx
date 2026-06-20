@@ -12,6 +12,7 @@ export default function Navbar() {
   const [user, setUser] = useState<BoxUser | null>(null);
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [toast, setToast] = useState<{ message: string; emoji: string } | null>(null);
 
   useEffect(() => {
     const load = () => {
@@ -23,6 +24,19 @@ export default function Navbar() {
         setProfilePic(parsed.profilePic || null);
       } else {
         setProfilePic(null);
+      }
+
+      // Check for login toast
+      const loginToast = localStorage.getItem("loginToast");
+      if (loginToast) {
+        localStorage.removeItem("loginToast");
+        const [type, name] = loginToast.split(":");
+        if (type === "welcome-back") {
+          setToast({ emoji: "👋", message: `Welcome back, ${name}!` });
+        } else {
+          setToast({ emoji: "🎉", message: `Welcome, ${name}!` });
+        }
+        setTimeout(() => setToast(null), 4000);
       }
     };
     load();
@@ -37,6 +51,7 @@ export default function Navbar() {
   };
 
   return (
+    <>
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
       <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
         {/* Logo */}
@@ -141,5 +156,17 @@ export default function Navbar() {
         </div>
       )}
     </nav>
+    {/* Toast notification */}
+    {toast && (
+      <div
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-[#2D2D2D] text-white px-5 py-3 rounded-2xl shadow-2xl animate-fade-in-up"
+        role="status"
+        aria-live="polite"
+      >
+        <span className="text-xl">{toast.emoji}</span>
+        <span className="text-sm font-semibold">{toast.message}</span>
+      </div>
+    )}
+    </>
   );
 }

@@ -50,6 +50,9 @@ function LoginContent() {
     setFormError("");
     setLoading(true);
     setTimeout(() => {
+      const isReturning = !!localStorage.getItem("boxUser");
+      const firstName = formName.trim().split(" ")[0];
+      localStorage.setItem("loginToast", isReturning ? `welcome-back:${firstName}` : `welcome:${firstName}`);
       const user = {
         name: formName.trim(),
         email: formEmail.trim(),
