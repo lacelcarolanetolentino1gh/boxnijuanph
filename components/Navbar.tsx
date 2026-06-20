@@ -161,7 +161,8 @@ export default function Navbar() {
     {/* Toast notification */}
     {toast && (
       <div
-        className="fixed top-20 right-6 z-50 flex items-center gap-3 bg-[#2D2D2D] text-white px-5 py-3 rounded-2xl shadow-2xl animate-fade-in-up"
+        style={{ position: "fixed", top: "80px", right: "24px", zIndex: 9999 }}
+        className="flex items-center gap-3 bg-[#2D2D2D] text-white px-5 py-3 rounded-2xl shadow-2xl animate-fade-in-up"
         role="status"
         aria-live="polite"
       >
