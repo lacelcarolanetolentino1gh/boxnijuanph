@@ -89,6 +89,10 @@ function LoginContent() {
   const finishLogin = (name: string, email: string, provider: string, isSignup: boolean) => {
     const firstName = name.trim().split(" ")[0];
     localStorage.setItem("loginToast", isSignup ? `welcome:${firstName}` : `welcome-back:${firstName}`);
+    // If returning user has prior chat history, flag the chatbot to show the continue prompt
+    if (!isSignup && localStorage.getItem("boxbotHistory")) {
+      localStorage.setItem("boxbotShowContinuePrompt", "1");
+    }
     const user = {
       name: name.trim(),
       email: email.trim(),

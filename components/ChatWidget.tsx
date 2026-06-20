@@ -2,15 +2,18 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { PRODUCTS, Product } from "@/lib/data";
 
 type PageLink = { label: string; href: string };
 type TextMessage = { from: "user" | "bot"; type: "text"; text: string; links?: PageLink[] };
 type ProductMessage = { from: "bot"; type: "products"; text: string; products: Product[] };
-type Message = TextMessage | ProductMessage;
+type ContinuePrompt = { from: "bot"; type: "continue-prompt"; text: string };
+type Message = TextMessage | ProductMessage | ContinuePrompt;
 
 const HISTORY_KEY = "boxbotHistory";
-const MAX_HISTORY = 60; // keep last 60 messages
+const CONTINUE_PROMPT_KEY = "boxbotShowContinuePrompt";
+const MAX_HISTORY = 60;
 
 // ── Bot response rules ────────────────────────────────────────────
 const BOT_RESPONSES: { keywords: string[]; reply: string; links?: PageLink[] }[] = [
@@ -178,9 +181,10 @@ function ProductCard({ product }: { product: Product }) {
 
 // ── Main ChatWidget ───────────────────────────────────────────────
 export default function ChatWidget() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [minimized, setMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>(() => {
-    // Load from localStorage on first render
     if (typeof window !== "undefined") {
       try {
         const stored = localStorage.getItem(HISTORY_KEY);
@@ -199,9 +203,30 @@ export default function ChatWidget() {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(toSave));
   }, [messages]);
 
+  // After login: if there's prior history, inject a continue-prompt message
   useEffect(() => {
-    if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, open, typing]);
+    const shouldPrompt = localStorage.getItem(CONTINUE_PROMPT_KEY);
+    if (!shouldPrompt) return;
+    localStorage.removeItem(CONTINUE_PROMPT_KEY);
+    // Only show prompt if there's a real prior conversation (more than 1 message)
+    const stored = localStorage.getItem(HISTORY_KEY);
+    if (!stored) return;
+    try {
+      const prior: Message[] = JSON.parse(stored);
+      if (prior.length <= 1) return;
+      const prompt: ContinuePrompt = {
+        from: "bot",
+        type: "continue-prompt",
+        text: "Welcome back! I saved our previous conversation. Would you like to continue where we left off, or start a fresh chat?",
+      };
+      setMessages((prev) => [...prev, prompt]);
+      setOpen(true);
+    } catch { /* ignore */ }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (open && !minimized) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, open, minimized, typing]);
 
   const sendMessage = () => {
     const text = input.trim();
@@ -230,37 +255,77 @@ export default function ChatWidget() {
     localStorage.removeItem(HISTORY_KEY);
   };
 
+  const handleContinue = () => {
+    // Remove the continue-prompt message and keep existing history
+    setMessages((prev) => prev.filter((m) => m.type !== "continue-prompt"));
+  };
+
+  const handleStartFresh = () => {
+    const initial: Message[] = [{ from: "bot", type: "text", text: "Hi! 👋 I'm BoxBot. How can I help you today?" }];
+    setMessages(initial);
+    localStorage.removeItem(HISTORY_KEY);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+    setMinimized(false);
+  };
+
   return (
     <>
       {/* Chat panel */}
       {open && (
         <div
-          className="fixed bottom-24 right-5 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
-          style={{ maxHeight: "520px" }}
+          className="fixed bottom-24 right-5 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden transition-all duration-200"
+          style={{ maxHeight: minimized ? "56px" : "520px" }}
           role="dialog"
           aria-label="BoxBot customer support chat"
         >
-          {/* Header */}
-          <div className="bg-[#7CAE8E] px-4 py-3 flex items-center justify-between shrink-0">
+          {/* Header — always visible, clickable when minimized to expand */}
+          <div
+            className={`bg-[#7CAE8E] px-4 py-3 flex items-center justify-between shrink-0 ${minimized ? "cursor-pointer" : ""}`}
+            onClick={minimized ? () => setMinimized(false) : undefined}
+          >
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
                 <BoxBotIcon size={22} />
               </div>
               <div>
                 <p className="text-white font-semibold text-sm leading-tight">BoxBot</p>
-                <p className="text-green-100 text-xs">BoxNiJuanPH Support · Always online</p>
+                <p className="text-green-100 text-xs">
+                  {minimized ? "Click to expand" : "BoxNiJuanPH Support · Always online"}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {!minimized && (
+                <button
+                  onClick={handleClearHistory}
+                  aria-label="Clear chat history"
+                  title="Clear chat"
+                  className="text-white/60 hover:text-white transition-colors p-1 text-xs"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                  </svg>
+                </button>
+              )}
+              {/* Minimize / Expand toggle */}
               <button
-                onClick={handleClearHistory}
-                aria-label="Clear chat history"
-                title="Clear chat"
-                className="text-white/60 hover:text-white transition-colors p-1 text-xs"
+                onClick={(e) => { e.stopPropagation(); setMinimized((v) => !v); }}
+                aria-label={minimized ? "Expand chat" : "Minimize chat"}
+                title={minimized ? "Expand" : "Minimize"}
+                className="text-white/70 hover:text-white transition-colors p-1"
               >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
-                </svg>
+                {minimized ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M5 15l7-7 7 7" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M19 9l-7 7-7-7" />
+                  </svg>
+                )}
               </button>
               <button
                 onClick={() => setOpen(false)}
@@ -274,125 +339,142 @@ export default function ChatWidget() {
             </div>
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-[#FAFAF7]">
-            {messages.map((msg, i) => (
-              <div key={i} className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}>
-                {msg.from === "bot" && (
-                  <div className="w-6 h-6 rounded-full bg-[#7CAE8E] text-white flex items-center justify-center shrink-0 mr-2 mt-0.5">
-                    <BoxBotIcon size={14} />
+          {/* Body — hidden when minimized */}
+          {!minimized && (
+            <>
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-[#FAFAF7]">
+                {messages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}>
+                    {msg.from === "bot" && (
+                      <div className="w-6 h-6 rounded-full bg-[#7CAE8E] text-white flex items-center justify-center shrink-0 mr-2 mt-0.5">
+                        <BoxBotIcon size={14} />
+                      </div>
+                    )}
+                    <div className="max-w-[80%] space-y-2">
+                      {msg.type === "continue-prompt" ? (
+                        <div className="bg-white border border-[#7CAE8E]/40 rounded-2xl rounded-bl-sm shadow-sm px-3 py-3 space-y-2">
+                          <p className="text-sm text-[#2D2D2D] leading-relaxed">{msg.text}</p>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={handleContinue}
+                              className="flex-1 text-xs font-semibold bg-[#7CAE8E] text-white px-3 py-1.5 rounded-full hover:bg-[#5F8F72] transition-colors"
+                            >
+                              Continue chat
+                            </button>
+                            <button
+                              onClick={handleStartFresh}
+                              className="flex-1 text-xs font-semibold border border-gray-200 text-gray-500 px-3 py-1.5 rounded-full hover:border-red-300 hover:text-red-400 transition-colors"
+                            >
+                              Start fresh
+                            </button>
+                          </div>
+                        </div>
+                      ) : msg.type === "products" ? (
+                        <>
+                          <div className="bg-white text-[#2D2D2D] border border-gray-100 rounded-2xl rounded-bl-sm shadow-sm px-3 py-2 text-sm leading-relaxed">
+                            {msg.text}
+                          </div>
+                          <div className="space-y-2">
+                            {msg.products.map((p) => <ProductCard key={p.id} product={p} />)}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div
+                            className={`px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
+                              msg.from === "user"
+                                ? "bg-[#7CAE8E] text-white rounded-br-sm"
+                                : "bg-white text-[#2D2D2D] border border-gray-100 rounded-bl-sm shadow-sm"
+                            }`}
+                          >
+                            {msg.text}
+                          </div>
+                          {msg.from === "bot" && msg.links && msg.links.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mt-1">
+                              {msg.links.map((link) => (
+                                <Link
+                                  key={link.href}
+                                  href={link.href}
+                                  className="text-[11px] font-medium text-[#5F8F72] border border-[#7CAE8E] px-2.5 py-1 rounded-full hover:bg-[#7CAE8E] hover:text-white transition-colors"
+                                >
+                                  {link.label}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {typing && (
+                  <div className="flex justify-start">
+                    <div className="w-6 h-6 rounded-full bg-[#7CAE8E] text-white flex items-center justify-center shrink-0 mr-2">
+                      <BoxBotIcon size={14} />
+                    </div>
+                    <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-2.5 shadow-sm flex gap-1 items-center">
+                      {[0, 1, 2].map((i) => (
+                        <span key={i} className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+                          style={{ animationDelay: `${i * 0.15}s` }} />
+                      ))}
+                    </div>
                   </div>
                 )}
-                <div className="max-w-[80%] space-y-2">
-                  {msg.type === "products" ? (
-                    <>
-                      <div className="bg-white text-[#2D2D2D] border border-gray-100 rounded-2xl rounded-bl-sm shadow-sm px-3 py-2 text-sm leading-relaxed">
-                        {msg.text}
-                      </div>
-                      <div className="space-y-2">
-                        {msg.products.map((p) => <ProductCard key={p.id} product={p} />)}
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div
-                        className={`px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
-                          msg.from === "user"
-                            ? "bg-[#7CAE8E] text-white rounded-br-sm"
-                            : "bg-white text-[#2D2D2D] border border-gray-100 rounded-bl-sm shadow-sm"
-                        }`}
-                      >
-                        {msg.text}
-                      </div>
-                      {msg.from === "bot" && msg.links && msg.links.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-1">
-                          {msg.links.map((link) => (
-                            <Link
-                              key={link.href}
-                              href={link.href}
-                              className="text-[11px] font-medium text-[#5F8F72] border border-[#7CAE8E] px-2.5 py-1 rounded-full hover:bg-[#7CAE8E] hover:text-white transition-colors"
-                            >
-                              {link.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
+                <div ref={bottomRef} />
               </div>
-            ))}
-            {typing && (
-              <div className="flex justify-start">
-                <div className="w-6 h-6 rounded-full bg-[#7CAE8E] text-white flex items-center justify-center shrink-0 mr-2">
-                  <BoxBotIcon size={14} />
-                </div>
-                <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-2.5 shadow-sm flex gap-1 items-center">
-                  {[0, 1, 2].map((i) => (
-                    <span key={i} className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: `${i * 0.15}s` }} />
-                  ))}
-                </div>
+
+              {/* Quick replies */}
+              <div className="px-4 pt-2 pb-1 flex gap-2 flex-wrap bg-white border-t border-gray-50 shrink-0">
+                {["Order status", "Plans & pricing", "Show products", "Delivery", "Refund", "FAQ"].map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => setInput(q)}
+                    className="text-xs border border-[#7CAE8E] text-[#7CAE8E] px-2.5 py-1 rounded-full hover:bg-[#7CAE8E] hover:text-white transition-colors"
+                  >
+                    {q}
+                  </button>
+                ))}
               </div>
-            )}
-            <div ref={bottomRef} />
-          </div>
 
-          {/* Quick replies */}
-          <div className="px-4 pt-2 pb-1 flex gap-2 flex-wrap bg-white border-t border-gray-50 shrink-0">
-            {["Order status", "Plans & pricing", "Show products", "Delivery", "Refund", "FAQ"].map((q) => (
-              <button
-                key={q}
-                onClick={() => setInput(q)}
-                className="text-xs border border-[#7CAE8E] text-[#7CAE8E] px-2.5 py-1 rounded-full hover:bg-[#7CAE8E] hover:text-white transition-colors"
-              >
-                {q}
-              </button>
-            ))}
-          </div>
-
-          {/* Input */}
-          <div className="px-3 py-3 bg-white border-t border-gray-100 flex gap-2 shrink-0">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKey}
-              placeholder="Type a message…"
-              aria-label="Chat message"
-              className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7CAE8E] transition-colors"
-            />
-            <button
-              onClick={sendMessage}
-              disabled={!input.trim()}
-              aria-label="Send message"
-              className="w-9 h-9 bg-[#7CAE8E] hover:bg-[#5F8F72] disabled:opacity-40 text-white rounded-full flex items-center justify-center transition-colors shrink-0"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-              </svg>
-            </button>
-          </div>
+              {/* Input */}
+              <div className="px-3 py-3 bg-white border-t border-gray-100 flex gap-2 shrink-0">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKey}
+                  placeholder="Type a message…"
+                  aria-label="Chat message"
+                  className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7CAE8E] transition-colors"
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={!input.trim()}
+                  aria-label="Send message"
+                  className="w-9 h-9 bg-[#7CAE8E] hover:bg-[#5F8F72] disabled:opacity-40 text-white rounded-full flex items-center justify-center transition-colors shrink-0"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                  </svg>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
 
-      {/* Floating button */}
-      <button
-        onClick={() => setOpen((v) => !v)}
-        aria-label={open ? "Close BoxBot chat" : "Open BoxBot chat"}
-        className="fixed bottom-5 right-5 z-50 w-14 h-14 bg-[#7CAE8E] hover:bg-[#5F8F72] text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
-      >
-        {open ? (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
-        ) : (
+      {/* Floating button — hidden when panel is open */}
+      {!open && (
+        <button
+          onClick={handleOpen}
+          aria-label="Open BoxBot chat"
+          className="fixed bottom-5 right-5 z-50 w-14 h-14 bg-[#7CAE8E] hover:bg-[#5F8F72] text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+        >
           <BoxBotIcon size={26} className="text-white" />
-        )}
-        {!open && (
           <span className="absolute top-1 right-1 w-3 h-3 bg-red-400 rounded-full border-2 border-white" aria-hidden="true" />
-        )}
-      </button>
+        </button>
+      )}
     </>
   );
 }
