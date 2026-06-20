@@ -25,24 +25,26 @@ export default function Navbar() {
       } else {
         setProfilePic(null);
       }
-
-      // Check for login toast
-      const loginToast = localStorage.getItem("loginToast");
-      if (loginToast) {
-        localStorage.removeItem("loginToast");
-        const [type, name] = loginToast.split(":");
-        if (type === "welcome-back") {
-          setToast({ emoji: "👋", message: `Welcome back, ${name}!` });
-        } else {
-          setToast({ emoji: "🎉", message: `Welcome, ${name}!` });
-        }
-        setTimeout(() => setToast(null), 4000);
-      }
     };
     load();
     window.addEventListener("storage", load);
     return () => window.removeEventListener("storage", load);
   }, []);
+
+  // Check for login toast on every navigation (pathname change)
+  useEffect(() => {
+    const loginToast = localStorage.getItem("loginToast");
+    if (loginToast) {
+      localStorage.removeItem("loginToast");
+      const [type, name] = loginToast.split(":");
+      if (type === "welcome-back") {
+        setToast({ emoji: "👋", message: `Welcome back, ${name}!` });
+      } else {
+        setToast({ emoji: "🎉", message: `Welcome, ${name}!` });
+      }
+      setTimeout(() => setToast(null), 4000);
+    }
+  }, [pathname]);
 
   const handleSignOut = () => {
     localStorage.removeItem("boxUser");
