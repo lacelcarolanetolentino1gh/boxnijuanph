@@ -316,7 +316,7 @@ function ProductCard({
                   {s.variant}{s.qty > 1 ? ` ×${s.qty}` : ""}
                 </p>
               ))}
-              {!allVariantsTaken && !disabled && (
+              {isCustom && !allVariantsTaken && !disabled && (
                 <p className="text-[10px] text-gray-400 mt-0.5">+ Add another variant</p>
               )}
             </div>
@@ -398,8 +398,9 @@ export default function BuilderPage() {
     const productEntries = selected.filter((s) => s.product.id === product.id);
     const allVariantsTaken = product.variants.every((v) => productEntries.some((s) => s.variant === v));
 
-    if (productEntries.length > 0 && allVariantsTaken) {
-      // All variants taken — clicking removes all entries for this product
+    if (productEntries.length > 0 && (allVariantsTaken || !isCustom)) {
+      // Fixed plans: clicking selected product always removes it
+      // Custom plan: only remove when all variants are taken
       setSelected(selected.filter((s) => s.product.id !== product.id));
     } else if (productEntries.length === 0 && !isCustom && selected.length >= maxItems) {
       // Box full, not selected yet — do nothing
