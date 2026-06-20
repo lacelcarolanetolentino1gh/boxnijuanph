@@ -698,6 +698,9 @@ function MyBoxContent() {
                 onClick={() => {
                   localStorage.removeItem("boxUser");
                   localStorage.removeItem("boxProfile");
+                  localStorage.removeItem("orderDetails");
+                  localStorage.removeItem("selectedItems");
+                  localStorage.removeItem("selectedPlan");
                   router.push("/");
                 }}
                 className="w-full min-h-[40px] border border-red-200 text-red-400 hover:bg-red-50 hover:text-red-500 rounded-full text-sm font-semibold transition-colors"
