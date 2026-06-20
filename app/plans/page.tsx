@@ -1,15 +1,41 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Image from "next/image";
 import { PLANS } from "@/lib/data";
 import StepIndicator from "@/components/StepIndicator";
 
 export default function PlansPage() {
   const router = useRouter();
+  const [pendingPlanId, setPendingPlanId] = useState<string | null>(null);
 
   const handleSelect = (planId: string) => {
+    const user = localStorage.getItem("boxUser");
+    if (!user) {
+      // Not logged in — go straight
+      localStorage.setItem("selectedPlan", planId);
+      localStorage.setItem("selectedItems", JSON.stringify([]));
+      router.push("/builder");
+      return;
+    }
+    const existing = localStorage.getItem("selectedItems");
+    let hasItems = false;
+    try {
+      const parsed = JSON.parse(existing || "[]");
+      hasItems = Array.isArray(parsed) && parsed.length > 0;
+    } catch { /* ignore */ }
+
+    if (hasItems) {
+      setPendingPlanId(planId);
+    } else {
+      confirmSelect(planId);
+    }
+  };
+
+  const confirmSelect = (planId: string) => {
     localStorage.setItem("selectedPlan", planId);
     localStorage.setItem("selectedItems", JSON.stringify([]));
+    setPendingPlanId(null);
     router.push("/builder");
   };
 
@@ -88,6 +114,53 @@ export default function PlansPage() {
       </div>
 
       <p className="text-center text-gray-400 text-xs mt-8">All plans include free delivery within Metro Manila. Cancel anytime.</p>
+
+      {/* ── Pending box warning modal ─────────────────────────────── */}
+      {pendingPlanId && (() => {
+        const newPlan = PLANS.find((p) => p.id === pendingPlanId);
+        return (
+          <div
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm px-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Pending box warning"
+          >
+            <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden">
+              {/* Icon */}
+              <div className="flex flex-col items-center pt-8 pb-4 px-6">
+                <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mb-4">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.5">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                </div>
+                <h2 className="font-[var(--font-dm-sans)] font-extrabold text-[#2D2D2D] text-lg text-center leading-snug">
+                  You have items saved in your current box
+                </h2>
+                <p className="text-sm text-gray-500 text-center mt-2 leading-relaxed">
+                  Switching to the <span className="font-semibold text-[#2D2D2D]">{newPlan?.name} Plan</span> will clear your current selections. This cannot be undone.
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col gap-3 px-6 pb-7 pt-2">
+                <button
+                  onClick={() => confirmSelect(pendingPlanId)}
+                  className="w-full min-h-[52px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white font-bold rounded-full transition-colors"
+                >
+                  Yes, start fresh with {newPlan?.name}
+                </button>
+                <button
+                  onClick={() => setPendingPlanId(null)}
+                  className="w-full min-h-[48px] border-2 border-gray-200 text-gray-500 font-semibold rounded-full hover:border-[#7CAE8E] hover:text-[#7CAE8E] transition-colors"
+                >
+                  Keep my current items
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Plan Comparison Table ─────────────────────────────────── */}
       <div className="mt-16">
