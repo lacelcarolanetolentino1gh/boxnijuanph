@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { PRODUCTS, CATEGORIES, BRANDS, PLAN_ITEM_COUNTS, Product } from "@/lib/data";
+import { PRODUCTS, CATEGORIES, BRANDS, PLAN_ITEM_COUNTS, PLANS, Product } from "@/lib/data";
 import StepIndicator from "@/components/StepIndicator";
 
 type SelectedItem = { product: Product; variant: string; qty: number };
@@ -451,6 +451,7 @@ export default function BuilderPage() {
   };
 
   const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1);
+  const planData = PLANS.find((p) => p.id === plan);
   const remaining = isCustom ? 0 : maxItems - selected.length;
   const boxComplete = isCustom ? selected.length > 0 : selected.length >= maxItems;
 
@@ -472,10 +473,19 @@ export default function BuilderPage() {
             {" "}<span className="text-xs text-gray-400">Hover a card for details · Click to select</span>
           </p>
         ) : (
-          <p className="text-gray-500">
-            {planLabel} Plan — Choose <span className="font-bold text-[#7CAE8E]">{maxItems} items</span> for your box.
-            {" "}<span className="text-xs text-gray-400">Hover a card for details · Click to select</span>
-          </p>
+          <>
+            <p className="text-gray-500">
+              {planLabel} Plan — Choose <span className="font-bold text-[#7CAE8E]">{maxItems} items</span> for your box.
+              {" "}<span className="text-xs text-gray-400">Hover a card for details · Click to select</span>
+            </p>
+            {planData?.description && (
+              <p className="text-xs text-[#7CAE8E] mt-1.5 flex items-center gap-1.5">
+                <span className="font-semibold">Recommended:</span>
+                <span className="text-gray-500">{planData.description}</span>
+                <span className="text-gray-400">· You can mix categories freely</span>
+              </p>
+            )}
+          </>
         )}
       </div>
 
