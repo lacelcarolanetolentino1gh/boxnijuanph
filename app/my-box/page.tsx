@@ -697,6 +697,7 @@ function MyBoxContent() {
               <button
                 onClick={() => {
                   localStorage.removeItem("boxUser");
+                  localStorage.removeItem("boxProfile");
                   router.push("/");
                 }}
                 className="w-full min-h-[40px] border border-red-200 text-red-400 hover:bg-red-50 hover:text-red-500 rounded-full text-sm font-semibold transition-colors"

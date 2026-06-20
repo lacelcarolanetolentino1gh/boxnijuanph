@@ -48,6 +48,7 @@ export default function Navbar() {
 
   const handleSignOut = () => {
     localStorage.removeItem("boxUser");
+    localStorage.removeItem("boxProfile");
     setUser(null);
     router.push("/");
   };
