@@ -184,6 +184,7 @@ export default function ChatWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
+  const [pendingPrompt, setPendingPrompt] = useState(false);
   const [messages, setMessages] = useState<Message[]>(() => {
     if (typeof window !== "undefined") {
       try {
@@ -203,24 +204,18 @@ export default function ChatWidget() {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(toSave));
   }, [messages]);
 
-  // After login: if there's prior history, inject a continue-prompt message
+  // After login: if there's prior history, flag a pending prompt — don't auto-open
   useEffect(() => {
     const shouldPrompt = localStorage.getItem(CONTINUE_PROMPT_KEY);
     if (!shouldPrompt) return;
     localStorage.removeItem(CONTINUE_PROMPT_KEY);
-    // Only show prompt if there's a real prior conversation (more than 1 message)
     const stored = localStorage.getItem(HISTORY_KEY);
     if (!stored) return;
     try {
       const prior: Message[] = JSON.parse(stored);
       if (prior.length <= 1) return;
-      const prompt: ContinuePrompt = {
-        from: "bot",
-        type: "continue-prompt",
-        text: "Welcome back! I saved our previous conversation. Would you like to continue where we left off, or start a fresh chat?",
-      };
-      setMessages((prev) => [...prev, prompt]);
-      setOpen(true);
+      // Just flag it — inject the prompt when user opens the chat
+      setPendingPrompt(true);
     } catch { /* ignore */ }
   }, [pathname]);
 
@@ -267,6 +262,16 @@ export default function ChatWidget() {
   };
 
   const handleOpen = () => {
+    // If there's a pending continue prompt, inject it now that user chose to open
+    if (pendingPrompt) {
+      const prompt: ContinuePrompt = {
+        from: "bot",
+        type: "continue-prompt",
+        text: "Welcome back! I saved our previous conversation. Would you like to continue where we left off, or start a fresh chat?",
+      };
+      setMessages((prev) => [...prev, prompt]);
+      setPendingPrompt(false);
+    }
     setOpen(true);
     setMinimized(false);
   };
@@ -472,7 +477,12 @@ export default function ChatWidget() {
           className="fixed bottom-5 right-5 z-50 w-14 h-14 bg-[#7CAE8E] hover:bg-[#5F8F72] text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
         >
           <BoxBotIcon size={26} className="text-white" />
-          <span className="absolute top-1 right-1 w-3 h-3 bg-red-400 rounded-full border-2 border-white" aria-hidden="true" />
+          {pendingPrompt ? (
+            // Pulsing badge — indicates a message is waiting
+            <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-yellow-400 rounded-full border-2 border-white animate-pulse" aria-label="Message waiting" />
+          ) : (
+            <span className="absolute top-1 right-1 w-3 h-3 bg-red-400 rounded-full border-2 border-white" aria-hidden="true" />
+          )}
         </button>
       )}
     </>
