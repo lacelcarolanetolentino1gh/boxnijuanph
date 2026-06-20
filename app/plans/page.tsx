@@ -61,7 +61,16 @@ export default function PlansPage() {
               <p className="text-gray-500 text-sm mb-1">
                 {plan.id === "custom" ? "Unlimited items" : `${plan.items} items per box`}
               </p>
-              <p className="text-gray-400 text-xs mb-6 border-t pt-4 w-full">{plan.description}</p>
+              <div className="border-t pt-4 w-full mb-6">
+                {plan.id === "custom" ? (
+                  <p className="text-xs text-gray-400">{plan.description}</p>
+                ) : (
+                  <p className="text-xs text-gray-500">
+                    <span className="font-semibold text-[#7CAE8E]">Recommended: </span>
+                    {plan.description}
+                  </p>
+                )}
+              </div>
               <button
                 onClick={() => handleSelect(plan.id)}
                 aria-label={`Choose ${plan.name} plan`}
