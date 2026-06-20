@@ -89,11 +89,13 @@ function ProductTooltip({ product }: { product: Product }) {
 function VariantModal({
   product,
   takenVariants,
+  isCustom,
   onConfirm,
   onClose,
 }: {
   product: Product;
   takenVariants: string[];
+  isCustom: boolean;
   onConfirm: (variant: string, qty: number) => void;
   onClose: () => void;
 }) {
@@ -150,7 +152,7 @@ function VariantModal({
           </button>
         </div>
 
-        {/* Variant picker */}
+        {/* Option picker */}
         <div className="p-5 pb-3">
           <p className="text-xs font-bold text-[#7CAE8E] uppercase tracking-wide mb-3">Choose an Option</p>
           <div className="flex flex-col gap-2">
@@ -180,34 +182,36 @@ function VariantModal({
           </div>
         </div>
 
-        {/* Quantity stepper */}
-        <div className="px-5 pb-4">
-          <p className="text-xs font-bold text-[#7CAE8E] uppercase tracking-wide mb-3">Quantity</p>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setQty((q) => Math.max(1, q - 1))}
-              aria-label="Decrease quantity"
-              className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] transition-colors font-bold text-lg disabled:opacity-40"
-              disabled={qty <= 1}
-            >
-              −
-            </button>
-            <span className="text-xl font-extrabold text-[#2D2D2D] w-8 text-center" aria-live="polite">{qty}</span>
-            <button
-              onClick={() => setQty((q) => q + 1)}
-              aria-label="Increase quantity"
-              className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] transition-colors font-bold text-lg"
-            >
-              +
-            </button>
-            <span className="text-xs text-gray-400 ml-1">pcs</span>
+        {/* Quantity stepper — Custom plan only */}
+        {isCustom && (
+          <div className="px-5 pb-4">
+            <p className="text-xs font-bold text-[#7CAE8E] uppercase tracking-wide mb-3">Quantity</p>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                aria-label="Decrease quantity"
+                className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] transition-colors font-bold text-lg disabled:opacity-40"
+                disabled={qty <= 1}
+              >
+                −
+              </button>
+              <span className="text-xl font-extrabold text-[#2D2D2D] w-8 text-center" aria-live="polite">{qty}</span>
+              <button
+                onClick={() => setQty((q) => q + 1)}
+                aria-label="Increase quantity"
+                className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] transition-colors font-bold text-lg"
+              >
+                +
+              </button>
+              <span className="text-xs text-gray-400 ml-1">pcs</span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Confirm */}
         <div className="px-5 pb-5">
           <button
-            onClick={() => onConfirm(chosen, qty)}
+            onClick={() => onConfirm(chosen, isCustom ? qty : 1)}
             disabled={isTaken(chosen)}
             className={`w-full min-h-[52px] font-bold rounded-full transition-colors ${
               isTaken(chosen)
@@ -215,7 +219,7 @@ function VariantModal({
                 : "bg-[#7CAE8E] hover:bg-[#5F8F72] text-white"
             }`}
           >
-            Add to Box {qty > 1 ? `(×${qty})` : ""} →
+            {isCustom && qty > 1 ? `Add to Box (×${qty}) →` : "Add to Box →"}
           </button>
         </div>
       </div>
@@ -229,12 +233,14 @@ function ProductCard({
   sel,
   disabled,
   selectedVariants,
+  isCustom,
   onCardClick,
 }: {
   product: Product;
   sel: boolean;
   disabled: boolean;
   selectedVariants: { variant: string; qty: number }[];
+  isCustom: boolean;
   onCardClick: () => void;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -283,8 +289,8 @@ function ProductCard({
               </div>
             </div>
           )}
-          {/* Qty badge */}
-          {totalQty > 1 && (
+          {/* Qty badge — Custom plan only */}
+          {isCustom && totalQty > 1 && (
             <div className="absolute top-2 right-2 bg-[#2D2D2D] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
               ×{totalQty}
             </div>
@@ -595,6 +601,7 @@ export default function BuilderPage() {
                   sel={sel}
                   disabled={disabled}
                   selectedVariants={getSelectedVariants(product.id)}
+                  isCustom={isCustom}
                   onCardClick={() => handleCardClick(product)}
                 />
               );
@@ -623,21 +630,23 @@ export default function BuilderPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[#2D2D2D] text-xs font-medium leading-tight truncate">{s.product.name}</p>
-                      <p className="text-[10px] text-[#7CAE8E] truncate mb-1">{s.variant}</p>
-                      {/* Qty stepper */}
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          onClick={() => handleQtyChange(s.product.id, s.variant, -1)}
-                          aria-label={`Decrease qty of ${s.variant}`}
-                          className="w-5 h-5 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] text-xs font-bold transition-colors"
-                        >−</button>
-                        <span className="text-xs font-bold text-[#2D2D2D] min-w-[16px] text-center">{s.qty}</span>
-                        <button
-                          onClick={() => handleQtyChange(s.product.id, s.variant, 1)}
-                          aria-label={`Increase qty of ${s.variant}`}
-                          className="w-5 h-5 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] text-xs font-bold transition-colors"
-                        >+</button>
-                      </div>
+                      <p className="text-[10px] text-[#7CAE8E] truncate mb-1">{s.variant}{isCustom && s.qty > 1 ? ` ×${s.qty}` : ""}</p>
+                      {/* Qty stepper — Custom plan only */}
+                      {isCustom && (
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => handleQtyChange(s.product.id, s.variant, -1)}
+                            aria-label={`Decrease qty of ${s.variant}`}
+                            className="w-5 h-5 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] text-xs font-bold transition-colors"
+                          >−</button>
+                          <span className="text-xs font-bold text-[#2D2D2D] min-w-[16px] text-center">{s.qty}</span>
+                          <button
+                            onClick={() => handleQtyChange(s.product.id, s.variant, 1)}
+                            aria-label={`Increase qty of ${s.variant}`}
+                            className="w-5 h-5 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] text-xs font-bold transition-colors"
+                          >+</button>
+                        </div>
+                      )}
                     </div>
                     <button
                       onClick={() => handleRemoveVariant(s.product.id, s.variant)}
@@ -744,6 +753,7 @@ export default function BuilderPage() {
         <VariantModal
           product={modalProduct}
           takenVariants={getTakenVariants(modalProduct.id)}
+          isCustom={isCustom}
           onConfirm={handleVariantConfirm}
           onClose={() => setModalProduct(null)}
         />
