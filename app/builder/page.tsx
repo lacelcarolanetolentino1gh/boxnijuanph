@@ -467,7 +467,7 @@ export default function BuilderPage() {
           </p>
         ) : (
           <p className="text-gray-500">
-            {planLabel} Plan — Choose <span className="font-bold text-[#7CAE8E]">{maxItems} items</span> for your box.
+            {planLabel} Plan — Choose <span className="font-bold text-[#7CAE8E]">{maxItems} variants</span> for your box.
             {" "}<span className="text-xs text-gray-400">Hover a card for details · Click to select</span>
           </p>
         )}
@@ -482,9 +482,9 @@ export default function BuilderPage() {
           </p>
         </div>
       ) : (
-        <div className="mb-8" role="progressbar" aria-valuenow={selected.length} aria-valuemin={0} aria-valuemax={maxItems} aria-label={`${selected.length} of ${maxItems} items selected`}>
+        <div className="mb-8" role="progressbar" aria-valuenow={selected.length} aria-valuemin={0} aria-valuemax={maxItems} aria-label={`${selected.length} of ${maxItems} variants selected`}>
           <div className="flex justify-between text-xs text-gray-400 mb-1">
-            <span>{selected.length} of {maxItems} items selected</span>
+            <span>{selected.length} of {maxItems} variants selected</span>
             <span className={remaining > 0 ? "text-gray-400" : "text-[#7CAE8E] font-bold"}>
               {remaining > 0 ? `${remaining} remaining` : "✓ Box complete!"}
             </span>
@@ -678,7 +678,7 @@ export default function BuilderPage() {
                 </>
               ) : (
                 <>
-                  <p className="text-xs text-gray-400 text-center mb-3">{selected.length}/{maxItems} items</p>
+                  <p className="text-xs text-gray-400 text-center mb-3">{selected.length}/{maxItems} variants</p>
                   <button
                     onClick={handleContinue}
                     disabled={selected.length < maxItems}
@@ -701,7 +701,7 @@ export default function BuilderPage() {
       {/* Mobile continue bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-10">
         <div className="flex justify-between text-xs text-gray-500 mb-2">
-          <span>{selected.length}{isCustom ? "" : `/${maxItems}`} items selected</span>
+          <span>{selected.length}{isCustom ? "" : `/${maxItems}`} variants selected</span>
         </div>
         {isCustom ? (
           <div className="flex gap-2">
