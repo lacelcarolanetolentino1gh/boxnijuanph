@@ -9,7 +9,7 @@ export default function ConfirmationPage() {
   const [plan, setPlan] = useState<string>("basic");
   const [items, setItems] = useState<Product[]>([]);
   const [name, setName] = useState<string>("");
-  const [orderNumber] = useState(() => `BNJ-${Math.floor(100000 + Math.random() * 900000)}`);
+  const [orderNumber, setOrderNumber] = useState<string>("");
 
   useEffect(() => {
     const stored = localStorage.getItem("orderDetails");
@@ -18,6 +18,7 @@ export default function ConfirmationPage() {
       setPlan(data.plan);
       setItems(data.items || []);
       setName(data.form?.fullName || "");
+      setOrderNumber(data.orderNumber || `BNJ-${Math.floor(100000 + Math.random() * 900000)}`);
     }
   }, []);
 

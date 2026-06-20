@@ -78,7 +78,8 @@ export default function CheckoutPage() {
   };
 
   const handleConfirmOrder = () => {
-    localStorage.setItem("orderDetails", JSON.stringify({ plan, items, form }));
+    const orderNumber = `BNJ-${Math.floor(100000 + Math.random() * 900000)}`;
+    localStorage.setItem("orderDetails", JSON.stringify({ plan, items, form, orderNumber }));
     router.push("/confirmation");
   };
 
