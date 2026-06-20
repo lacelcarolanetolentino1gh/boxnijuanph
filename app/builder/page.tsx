@@ -182,36 +182,12 @@ function VariantModal({
           </div>
         </div>
 
-        {/* Quantity stepper — Custom plan only */}
-        {isCustom && (
-          <div className="px-5 pb-4">
-            <p className="text-xs font-bold text-[#7CAE8E] uppercase tracking-wide mb-3">Quantity</p>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setQty((q) => Math.max(1, q - 1))}
-                aria-label="Decrease quantity"
-                className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] transition-colors font-bold text-lg disabled:opacity-40"
-                disabled={qty <= 1}
-              >
-                −
-              </button>
-              <span className="text-xl font-extrabold text-[#2D2D2D] w-8 text-center" aria-live="polite">{qty}</span>
-              <button
-                onClick={() => setQty((q) => q + 1)}
-                aria-label="Increase quantity"
-                className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] transition-colors font-bold text-lg"
-              >
-                +
-              </button>
-              <span className="text-xs text-gray-400 ml-1">pcs</span>
-            </div>
-          </div>
-        )}
+        {/* Quantity stepper — removed: all plans use 1 item per slot */}
 
         {/* Confirm */}
         <div className="px-5 pb-5">
           <button
-            onClick={() => onConfirm(chosen, isCustom ? qty : 1)}
+            onClick={() => onConfirm(chosen, 1)}
             disabled={isTaken(chosen)}
             className={`w-full min-h-[52px] font-bold rounded-full transition-colors ${
               isTaken(chosen)
@@ -219,7 +195,7 @@ function VariantModal({
                 : "bg-[#7CAE8E] hover:bg-[#5F8F72] text-white"
             }`}
           >
-            {isCustom && qty > 1 ? `Add to Box (×${qty}) →` : "Add to Box →"}
+            {isCustom ? "Add to Box (Custom — up to 12) →" : "Add to Box →"}
           </button>
         </div>
       </div>
@@ -470,7 +446,7 @@ export default function BuilderPage() {
         <h1 className="font-[var(--font-dm-sans)] text-3xl font-extrabold text-[#2D2D2D] mb-1">Build Your Box</h1>
         {isCustom ? (
           <p className="text-gray-500">
-            Custom Box — Add <span className="font-bold text-[#7CAE8E]">as many items as you want</span>. No limits.
+            Custom Box — Pick <span className="font-bold text-[#7CAE8E]">up to 12 items</span>, any combination you want. No category restrictions.
             {" "}<span className="text-xs text-gray-400">Hover a card for details · Click to select</span>
           </p>
         ) : (
@@ -492,11 +468,19 @@ export default function BuilderPage() {
 
       {/* Progress bar / custom indicator */}
       {isCustom ? (
-        <div className="mb-8 flex items-center gap-3 bg-[#7CAE8E]/10 border border-[#7CAE8E]/30 rounded-xl px-4 py-3" role="status">
-          <span className="text-[#7CAE8E] text-xl">✦</span>
-          <p className="text-sm text-[#5F8F72] font-medium">
-            {selected.length === 0 ? "Start adding items to your custom box." : `${selected.length} item${selected.length !== 1 ? "s" : ""} in your box — save anytime.`}
-          </p>
+        <div className="mb-8" role="progressbar" aria-valuenow={selected.length} aria-valuemin={0} aria-valuemax={12} aria-label={`${selected.length} of 12 items selected`}>
+          <div className="flex justify-between text-xs text-gray-400 mb-1">
+            <span>{selected.length} of 12 items selected</span>
+            <span className={selected.length >= 12 ? "text-[#7CAE8E] font-bold" : "text-gray-400"}>
+              {selected.length >= 12 ? "✓ Box complete!" : `${12 - selected.length} remaining`}
+            </span>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-3">
+            <div
+              className="bg-[#7CAE8E] h-3 rounded-full transition-all duration-300"
+              style={{ width: `${Math.min((selected.length / 12) * 100, 100)}%` }}
+            />
+          </div>
         </div>
       ) : (
         <div className="mb-8" role="progressbar" aria-valuenow={selected.length} aria-valuemin={0} aria-valuemax={maxItems} aria-label={`${selected.length} of ${maxItems} items selected`}>
@@ -641,23 +625,7 @@ export default function BuilderPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[#2D2D2D] text-xs font-medium leading-tight truncate">{s.product.name}</p>
-                      <p className="text-[10px] text-[#7CAE8E] truncate mb-1">{s.variant}{isCustom && s.qty > 1 ? ` ×${s.qty}` : ""}</p>
-                      {/* Qty stepper — Custom plan only */}
-                      {isCustom && (
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => handleQtyChange(s.product.id, s.variant, -1)}
-                            aria-label={`Decrease qty of ${s.variant}`}
-                            className="w-5 h-5 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] text-xs font-bold transition-colors"
-                          >−</button>
-                          <span className="text-xs font-bold text-[#2D2D2D] min-w-[16px] text-center">{s.qty}</span>
-                          <button
-                            onClick={() => handleQtyChange(s.product.id, s.variant, 1)}
-                            aria-label={`Increase qty of ${s.variant}`}
-                            className="w-5 h-5 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] text-xs font-bold transition-colors"
-                          >+</button>
-                        </div>
-                      )}
+                      <p className="text-[10px] text-[#7CAE8E] truncate mb-1">{s.variant}</p>
                     </div>
                     <button
                       onClick={() => handleRemoveVariant(s.product.id, s.variant)}

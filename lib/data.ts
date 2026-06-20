@@ -35,8 +35,8 @@ export const PLANS = [
     id: "custom",
     name: "Custom",
     price: 1299,
-    items: 0,
-    description: "Unlimited items — build exactly the box you want, modify anytime",
+    items: 12,
+    description: "Any mix you want — no category restrictions, up to 12 items",
     badge: "Most Flexible",
     // Open subscription box with items ready to be chosen
     image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&q=80",
@@ -47,7 +47,7 @@ export const PLAN_ITEM_COUNTS: Record<string, number> = {
   basic: 3,
   standard: 5,
   premium: 8,
-  custom: Infinity,
+  custom: 12,
 };
 
 export type ProductDetail = {

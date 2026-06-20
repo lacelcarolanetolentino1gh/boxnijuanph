@@ -85,7 +85,7 @@ export default function PlansPage() {
                 ₱{plan.price}<span className="text-base font-normal text-gray-400">/mo</span>
               </div>
               <p className="text-gray-500 text-sm mb-1">
-                {plan.id === "custom" ? "Unlimited items" : `${plan.items} items per box`}
+                {plan.id === "custom" ? "Up to 12 items, any mix" : `${plan.items} items per box`}
               </p>
               <div className="border-t pt-4 w-full mb-6">
                 {plan.id === "custom" ? (
@@ -182,13 +182,13 @@ export default function PlansPage() {
             <tbody className="divide-y divide-gray-100">
               {[
                 ["Monthly Price", "₱399", "₱599", "₱899", "₱1,299"],
-                ["Items per Box", "3 items", "5 items", "8 items", "Unlimited"],
+                ["Items per Box", "3 items", "5 items", "8 items", "12 items"],
                 ["Full item selection", "✓", "✓", "✓", "✓"],
                 ["Filipino Brand products", "✓", "✓", "✓", "✓"],
                 ["Free Metro Manila delivery", "✓", "✓", "✓", "✓"],
                 ["Cancel anytime", "✓", "✓", "✓", "✓"],
                 ["Subscription dashboard", "✓", "✓", "✓", "✓"],
-                ["No item cap", "—", "—", "—", "✓"],
+                ["No category restrictions", "—", "—", "—", "✓"],
                 ["Save & modify box anytime", "—", "—", "—", "✓"],
               ].map(([feature, basic, standard, premium, custom], i) => (
                 <tr key={feature} className={i % 2 === 0 ? "bg-white" : "bg-[#FAFAF7]"}>
