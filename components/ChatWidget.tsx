@@ -1,69 +1,198 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { PRODUCTS, Product } from "@/lib/data";
 
-type Message = { from: "user" | "bot"; text: string };
+type PageLink = { label: string; href: string };
+type TextMessage = { from: "user" | "bot"; type: "text"; text: string; links?: PageLink[] };
+type ProductMessage = { from: "bot"; type: "products"; text: string; products: Product[] };
+type Message = TextMessage | ProductMessage;
 
-const BOT_RESPONSES: { keywords: string[]; reply: string }[] = [
+const HISTORY_KEY = "boxbotHistory";
+const MAX_HISTORY = 60; // keep last 60 messages
+
+// ── Bot response rules ────────────────────────────────────────────
+const BOT_RESPONSES: { keywords: string[]; reply: string; links?: PageLink[] }[] = [
   {
     keywords: ["order", "status", "where", "track"],
-    reply: "To check your order status, please look for your confirmation email with your order number (BNJ-XXXXXX). Deliveries within Metro Manila take 3–5 business days. 📦",
+    reply: "To check your order status, look for your confirmation email with your order number (BNJ-XXXXXX). Deliveries within Metro Manila take 3–5 business days. 📦",
+    links: [{ label: "View My Box →", href: "/my-box" }, { label: "FAQ: Delivery →", href: "/faq#delivery" }],
   },
   {
     keywords: ["cancel", "cancellation", "stop", "unsubscribe"],
-    reply: "You can cancel your subscription anytime — no lock-in! Just reply to your confirmation email or send us a message at support@boxnijuanph.com with your order number and 'Cancel'. We'll process it within 24 hours. ✅",
+    reply: "You can cancel your subscription anytime — no lock-in! Go to My Box → Manage → Cancel Subscription, or email support@boxnijuanph.com with your order number. We process it within 24 hours. ✅",
+    links: [{ label: "Manage My Box →", href: "/my-box" }, { label: "FAQ: Cancellation →", href: "/faq#cancellation" }],
   },
   {
     keywords: ["refund", "return", "replace", "wrong", "missing", "damaged"],
-    reply: "We're sorry to hear that! For refunds or replacements, please contact us at support@boxnijuanph.com with your order number and a photo of the issue. We process refunds within 5–7 business days. 💚",
+    reply: "Sorry to hear that! For refunds or replacements, email support@boxnijuanph.com with your order number and a photo of the issue. We process refunds within 5–7 business days. 💚",
+    links: [{ label: "Contact Support →", href: "/contact" }, { label: "FAQ: Returns →", href: "/faq#returns" }],
   },
   {
     keywords: ["delivery", "shipping", "deliver", "arrive", "when"],
-    reply: "We deliver within Metro Manila in 3–5 business days after your box is packed. A confirmation email is sent once your box is shipped. 🚚",
+    reply: "We deliver within Metro Manila in 3–5 business days after your box is packed. You'll get a confirmation email once your box ships. 🚚",
+    links: [{ label: "FAQ: Delivery →", href: "/faq#delivery" }],
   },
   {
-    keywords: ["payment", "pay", "charge", "billing", "debit", "credit"],
-    reply: "We accept GCash, PayMaya, and major credit/debit cards. All payments are encrypted and we never store your card details. 🔒",
+    keywords: ["payment", "pay", "charge", "billing", "gcash", "maya", "debit", "credit"],
+    reply: "We accept GCash, Maya, and major credit/debit cards. All payments are encrypted and we never store your card details. 🔒",
+    links: [{ label: "FAQ: Payment →", href: "/faq#payment" }],
   },
   {
-    keywords: ["product", "item", "snack", "skincare", "recovery", "fitness"],
-    reply: "Our boxes include items from 4 categories: Recovery & Fitness, Healthy Snacks, Skincare for Athletes, and Lifestyle & Comfort — all from Filipino local brands! 🇵🇭",
+    keywords: ["plan", "price", "cost", "basic", "standard", "premium", "custom", "how much"],
+    reply: "We have 4 plans:\n• Basic — ₱399/mo (3 items)\n• Standard — ₱599/mo (5 items)\n• Premium — ₱899/mo (8 items)\n• Custom — ₱1,299/mo (unlimited items)\nAll include free Metro Manila delivery! 🎁",
+    links: [{ label: "View All Plans →", href: "/plans" }, { label: "Build Your Box →", href: "/builder" }],
   },
   {
-    keywords: ["plan", "price", "cost", "basic", "standard", "premium"],
-    reply: "We have 3 plans:\n• Basic — ₱399/mo (3 items)\n• Standard — ₱599/mo (5 items)\n• Premium — ₱899/mo (8 items)\nAll include free delivery within Metro Manila! 🎁",
+    keywords: ["hello", "hi", "hey", "kumusta", "good morning", "good afternoon", "good evening", "musta"],
+    reply: "Hi there! 👋 I'm BoxBot, your BoxNiJuanPH assistant. Ask me about orders, delivery, refunds, plans, or products — I'm here to help!",
+    links: [{ label: "Browse Products →", href: "/products" }, { label: "See Plans →", href: "/plans" }],
   },
   {
-    keywords: ["hello", "hi", "hey", "kumusta", "good morning", "good afternoon"],
-    reply: "Hi there! 👋 I'm BoxBot, your BoxNiJuanPH support assistant. How can I help you today? You can ask about orders, delivery, refunds, plans, or products!",
+    keywords: ["thank", "thanks", "salamat", "ty"],
+    reply: "You're welcome! Salamat sa iyong suporta sa BoxNiJuanPH. 💚 Anything else I can help with?",
   },
   {
-    keywords: ["thank", "thanks", "salamat"],
-    reply: "You're welcome! Salamat sa iyong suporta sa BoxNiJuanPH. 💚 Is there anything else I can help you with?",
+    keywords: ["human", "agent", "real person", "talk to someone", "representative", "support"],
+    reply: "To reach a real support agent, email support@boxnijuanph.com or use our Contact page. We respond within 1–2 business days. 😊",
+    links: [{ label: "Contact Us →", href: "/contact" }],
   },
   {
-    keywords: ["human", "agent", "real person", "talk to someone", "representative"],
-    reply: "To speak with a real support agent, please email us at support@boxnijuanph.com or fill out our Contact Us form. We respond within 1–2 business days. 😊",
+    keywords: ["privacy", "data", "personal", "ra 10173"],
+    reply: "Your personal data is protected under RA 10173 (Data Privacy Act of 2012). We only collect information needed for order fulfillment and never share it with third parties. 🔒",
+    links: [{ label: "FAQ: Privacy →", href: "/faq#privacy" }],
+  },
+  {
+    keywords: ["faq", "guide", "help", "how to", "question"],
+    reply: "Our FAQ page has everything you need — delivery timelines, refund process, payment info, and more! 📋",
+    links: [{ label: "Visit FAQ →", href: "/faq" }],
+  },
+  {
+    keywords: ["category", "categories", "types", "kinds"],
+    reply: "Our products fall into 4 categories:\n• 🏃 Recovery & Fitness\n• 🥜 Healthy Snacks\n• ✨ Skincare for Athletes\n• 🕯️ Lifestyle & Comfort\n\nWant me to show you products from a specific category?",
+    links: [{ label: "Browse All Products →", href: "/products" }],
+  },
+  {
+    keywords: ["local", "philippine", "filipino", "ph brand", "local brand"],
+    reply: "We love supporting Filipino brands! 🇵🇭 Most of our products are from local Philippine wellness brands like SarapFit, HilomNaturals, GalosPorta, PadayonPH, and more.",
+    links: [{ label: "Browse Products →", href: "/products" }],
+  },
+  {
+    keywords: ["eco", "sustainable", "green", "environment", "sdg", "csr"],
+    reply: "BoxNiJuanPH is aligned with UN SDG 12 (Responsible Consumption). Many of our products are eco-friendly and sustainably sourced. ♻️",
   },
 ];
 
-const FALLBACK = "I'm not sure about that one! For specific concerns, please visit our Contact Us page or email support@boxnijuanph.com and our team will help you. 😊";
+const FALLBACK = "I'm not sure about that one! For specific concerns, visit our Contact page or email support@boxnijuanph.com. 😊";
 
-function getBotReply(input: string): string {
+// ── Product keyword detection ─────────────────────────────────────
+function findMatchingProducts(input: string): Product[] {
   const lower = input.toLowerCase();
-  for (const r of BOT_RESPONSES) {
-    if (r.keywords.some((k) => lower.includes(k))) return r.reply;
+  // Category shortcuts
+  const categoryMap: Record<string, string> = {
+    "recovery": "Recovery & Fitness",
+    "fitness": "Recovery & Fitness",
+    "snack": "Healthy Snacks",
+    "food": "Healthy Snacks",
+    "skincare": "Skincare for Athletes",
+    "skin care": "Skincare for Athletes",
+    "lifestyle": "Lifestyle & Comfort",
+    "comfort": "Lifestyle & Comfort",
+  };
+  for (const [kw, cat] of Object.entries(categoryMap)) {
+    if (lower.includes(kw)) return PRODUCTS.filter((p) => p.category === cat).slice(0, 4);
   }
-  return FALLBACK;
+  // Specific product name match
+  const matched = PRODUCTS.filter((p) =>
+    p.name.toLowerCase().split(" ").some((word) => word.length > 3 && lower.includes(word)) ||
+    p.brand.toLowerCase().split(" ").some((word) => word.length > 3 && lower.includes(word))
+  );
+  return matched.slice(0, 4);
 }
 
+function getBotReply(input: string): { text: string; products: Product[]; links?: PageLink[] } {
+  const lower = input.toLowerCase();
+
+  // Check product intent first
+  const productTriggers = ["show", "what products", "what items", "do you have", "available", "see product", "see item", "browse", "catalog", "list"];
+  const hasProductIntent = productTriggers.some((t) => lower.includes(t));
+  const matchedProducts = findMatchingProducts(input);
+
+  if (hasProductIntent && matchedProducts.length > 0) {
+    return { text: `Here are some products that match your interest! Click any to explore in the builder. 🛍️`, products: matchedProducts, links: [{ label: "Browse All Products →", href: "/products" }] };
+  }
+  if (matchedProducts.length > 0 && !BOT_RESPONSES.some((r) => r.keywords.some((k) => lower.includes(k)))) {
+    return { text: `Found some products that might interest you! Head to the builder to add them to your box. 🛍️`, products: matchedProducts, links: [{ label: "Build Your Box →", href: "/builder" }] };
+  }
+
+  for (const r of BOT_RESPONSES) {
+    if (r.keywords.some((k) => lower.includes(k))) return { text: r.reply, products: [], links: r.links };
+  }
+  return { text: FALLBACK, products: [], links: [{ label: "Visit FAQ →", href: "/faq" }, { label: "Contact Us →", href: "/contact" }] };
+}
+
+// ── BoxBot icon SVG ───────────────────────────────────────────────
+function BoxBotIcon({ size = 24, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="currentColor" className={className} aria-hidden="true">
+      {/* Head */}
+      <rect x="7" y="9" width="18" height="14" rx="3" fill="currentColor" opacity="0.9" />
+      {/* Eyes */}
+      <circle cx="12" cy="15" r="2" fill="white" />
+      <circle cx="20" cy="15" r="2" fill="white" />
+      <circle cx="12.7" cy="15.7" r="0.8" fill="#7CAE8E" />
+      <circle cx="20.7" cy="15.7" r="0.8" fill="#7CAE8E" />
+      {/* Mouth */}
+      <rect x="11" y="19" width="10" height="1.5" rx="0.75" fill="white" opacity="0.7" />
+      {/* Antenna */}
+      <line x1="16" y1="9" x2="16" y2="5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="16" cy="4" r="1.5" fill="currentColor" />
+      {/* Ears */}
+      <rect x="4" y="13" width="3" height="5" rx="1.5" fill="currentColor" opacity="0.7" />
+      <rect x="25" y="13" width="3" height="5" rx="1.5" fill="currentColor" opacity="0.7" />
+    </svg>
+  );
+}
+
+// ── Product card in chat ──────────────────────────────────────────
+function ProductCard({ product }: { product: Product }) {
+  return (
+    <Link href="/builder" className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl p-2.5 hover:border-[#7CAE8E] hover:shadow-sm transition-all group">
+      <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+        <Image src={product.image} alt={product.name} fill className="object-cover" unoptimized />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-semibold text-[#2D2D2D] leading-tight truncate">{product.name}</p>
+        <p className="text-[10px] text-gray-400 truncate">{product.brand}</p>
+        <p className="text-[10px] text-[#7CAE8E] font-semibold mt-0.5">₱{product.price} · Add to builder →</p>
+      </div>
+    </Link>
+  );
+}
+
+// ── Main ChatWidget ───────────────────────────────────────────────
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    { from: "bot", text: "Hi! 👋 I'm BoxBot. Ask me about your order, delivery, refunds, or our plans. How can I help?" },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Load from localStorage on first render
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem(HISTORY_KEY);
+        if (stored) return JSON.parse(stored);
+      } catch { /* ignore */ }
+    }
+    return [{ from: "bot", type: "text", text: "Hi! 👋 I'm BoxBot. Ask me about orders, delivery, refunds, plans, or products — I'm here to help!" }];
+  });
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Persist history to localStorage whenever messages change
+  useEffect(() => {
+    const toSave = messages.slice(-MAX_HISTORY);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(toSave));
+  }, [messages]);
 
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -72,12 +201,16 @@ export default function ChatWidget() {
   const sendMessage = () => {
     const text = input.trim();
     if (!text) return;
-    setMessages((prev) => [...prev, { from: "user", text }]);
+    const userMsg: Message = { from: "user", type: "text", text };
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setTyping(true);
     setTimeout(() => {
-      const reply = getBotReply(text);
-      setMessages((prev) => [...prev, { from: "bot", text: reply }]);
+      const { text: replyText, products, links } = getBotReply(text);
+      const botMsg: Message = products.length > 0
+        ? { from: "bot", type: "products", text: replyText, products }
+        : { from: "bot", type: "text", text: replyText, links };
+      setMessages((prev) => [...prev, botMsg]);
       setTyping(false);
     }, 900);
   };
@@ -86,60 +219,113 @@ export default function ChatWidget() {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   };
 
+  const handleClearHistory = () => {
+    const initial: Message[] = [{ from: "bot", type: "text", text: "Hi! 👋 I'm BoxBot. How can I help you today?" }];
+    setMessages(initial);
+    localStorage.removeItem(HISTORY_KEY);
+  };
+
   return (
     <>
       {/* Chat panel */}
       {open && (
         <div
           className="fixed bottom-24 right-5 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
-          style={{ maxHeight: "480px" }}
+          style={{ maxHeight: "520px" }}
           role="dialog"
           aria-label="BoxBot customer support chat"
         >
           {/* Header */}
           <div className="bg-[#7CAE8E] px-4 py-3 flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-sm">B</div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
+                <BoxBotIcon size={22} />
+              </div>
               <div>
                 <p className="text-white font-semibold text-sm leading-tight">BoxBot</p>
                 <p className="text-green-100 text-xs">BoxNiJuanPH Support · Always online</p>
               </div>
             </div>
-            <button
-              onClick={() => setOpen(false)}
-              aria-label="Close chat"
-              className="text-white/70 hover:text-white transition-colors p-1"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleClearHistory}
+                aria-label="Clear chat history"
+                title="Clear chat"
+                className="text-white/60 hover:text-white transition-colors p-1 text-xs"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+                </svg>
+              </button>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close chat"
+                className="text-white/70 hover:text-white transition-colors p-1"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-[#FAFAF7]">
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
-                    msg.from === "user"
-                      ? "bg-[#7CAE8E] text-white rounded-br-sm"
-                      : "bg-white text-[#2D2D2D] border border-gray-100 rounded-bl-sm shadow-sm"
-                  }`}
-                >
-                  {msg.text}
+                {msg.from === "bot" && (
+                  <div className="w-6 h-6 rounded-full bg-[#7CAE8E] text-white flex items-center justify-center shrink-0 mr-2 mt-0.5">
+                    <BoxBotIcon size={14} />
+                  </div>
+                )}
+                <div className="max-w-[80%] space-y-2">
+                  {msg.type === "products" ? (
+                    <>
+                      <div className="bg-white text-[#2D2D2D] border border-gray-100 rounded-2xl rounded-bl-sm shadow-sm px-3 py-2 text-sm leading-relaxed">
+                        {msg.text}
+                      </div>
+                      <div className="space-y-2">
+                        {msg.products.map((p) => <ProductCard key={p.id} product={p} />)}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div
+                        className={`px-3 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
+                          msg.from === "user"
+                            ? "bg-[#7CAE8E] text-white rounded-br-sm"
+                            : "bg-white text-[#2D2D2D] border border-gray-100 rounded-bl-sm shadow-sm"
+                        }`}
+                      >
+                        {msg.text}
+                      </div>
+                      {msg.from === "bot" && msg.links && msg.links.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-1">
+                          {msg.links.map((link) => (
+                            <Link
+                              key={link.href}
+                              href={link.href}
+                              className="text-[11px] font-medium text-[#5F8F72] border border-[#7CAE8E] px-2.5 py-1 rounded-full hover:bg-[#7CAE8E] hover:text-white transition-colors"
+                            >
+                              {link.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             ))}
             {typing && (
               <div className="flex justify-start">
+                <div className="w-6 h-6 rounded-full bg-[#7CAE8E] text-white flex items-center justify-center shrink-0 mr-2">
+                  <BoxBotIcon size={14} />
+                </div>
                 <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-2.5 shadow-sm flex gap-1 items-center">
                   {[0, 1, 2].map((i) => (
-                    <span
-                      key={i}
-                      className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
-                      style={{ animationDelay: `${i * 0.15}s` }}
-                    />
+                    <span key={i} className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+                      style={{ animationDelay: `${i * 0.15}s` }} />
                   ))}
                 </div>
               </div>
@@ -149,10 +335,10 @@ export default function ChatWidget() {
 
           {/* Quick replies */}
           <div className="px-4 pt-2 pb-1 flex gap-2 flex-wrap bg-white border-t border-gray-50 shrink-0">
-            {["Order status", "Cancel subscription", "Refund", "Delivery"].map((q) => (
+            {["Order status", "Plans & pricing", "Show products", "Delivery", "Refund", "FAQ"].map((q) => (
               <button
                 key={q}
-                onClick={() => { setInput(q); }}
+                onClick={() => setInput(q)}
                 className="text-xs border border-[#7CAE8E] text-[#7CAE8E] px-2.5 py-1 rounded-full hover:bg-[#7CAE8E] hover:text-white transition-colors"
               >
                 {q}
@@ -188,7 +374,7 @@ export default function ChatWidget() {
       {/* Floating button */}
       <button
         onClick={() => setOpen((v) => !v)}
-        aria-label={open ? "Close customer support chat" : "Open customer support chat"}
+        aria-label={open ? "Close BoxBot chat" : "Open BoxBot chat"}
         className="fixed bottom-5 right-5 z-50 w-14 h-14 bg-[#7CAE8E] hover:bg-[#5F8F72] text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
       >
         {open ? (
@@ -196,11 +382,8 @@ export default function ChatWidget() {
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
         ) : (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z" />
-          </svg>
+          <BoxBotIcon size={26} className="text-white" />
         )}
-        {/* Unread dot — shown when closed */}
         {!open && (
           <span className="absolute top-1 right-1 w-3 h-3 bg-red-400 rounded-full border-2 border-white" aria-hidden="true" />
         )}

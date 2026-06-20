@@ -67,6 +67,7 @@ export default function Navbar() {
           <Link href="/" className={`hover:text-[#7CAE8E] font-medium transition-colors ${pathname === "/" ? "text-[#7CAE8E]" : ""}`}>Home</Link>
           <Link href="/plans" className={`hover:text-[#7CAE8E] font-medium transition-colors ${pathname === "/plans" ? "text-[#7CAE8E]" : ""}`}>Plans</Link>
           <Link href="/products" className={`hover:text-[#7CAE8E] font-medium transition-colors ${pathname === "/products" ? "text-[#7CAE8E]" : ""}`}>Products</Link>
+          <Link href="/faq" className={`hover:text-[#7CAE8E] font-medium transition-colors ${pathname === "/faq" ? "text-[#7CAE8E]" : ""}`}>FAQ</Link>
           <Link href="/contact" className={`hover:text-[#7CAE8E] font-medium transition-colors ${pathname === "/contact" ? "text-[#7CAE8E]" : ""}`}>Contact</Link>
 
           {user ? (
@@ -131,6 +132,7 @@ export default function Navbar() {
           <Link href="/" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">Home</Link>
           <Link href="/plans" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">Plans</Link>
           <Link href="/products" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">Products</Link>
+          <Link href="/faq" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">FAQ</Link>
           <Link href="/contact" onClick={() => setMenuOpen(false)} className="font-medium text-gray-700 hover:text-[#7CAE8E]">Contact</Link>
           {user ? (
             <>
