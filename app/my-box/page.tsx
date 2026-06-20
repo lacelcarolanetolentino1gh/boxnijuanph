@@ -144,8 +144,12 @@ function MyBoxContent() {
     const restoredSelected = items.map((item) => {
       const dashIdx = item.name.lastIndexOf(" — ");
       const baseName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
-      const variant = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : (item.variants?.[0] ?? "");
-      return { product: { ...item, name: baseName }, variant };
+      const variantRaw = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : (item.variants?.[0] ?? "");
+      // Parse "Variant ×qty" format
+      const qtyMatch = variantRaw.match(/^(.*)\s×(\d+)$/);
+      const variant = qtyMatch ? qtyMatch[1] : variantRaw;
+      const qty = qtyMatch ? parseInt(qtyMatch[2], 10) : 1;
+      return { product: { ...item, name: baseName }, variant, qty };
     });
     localStorage.setItem("selectedItems", JSON.stringify(restoredSelected));
     router.push("/builder");

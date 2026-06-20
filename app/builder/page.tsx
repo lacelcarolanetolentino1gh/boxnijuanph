@@ -6,7 +6,7 @@ import Image from "next/image";
 import { PRODUCTS, CATEGORIES, BRANDS, PLAN_ITEM_COUNTS, Product } from "@/lib/data";
 import StepIndicator from "@/components/StepIndicator";
 
-type SelectedItem = { product: Product; variant: string };
+type SelectedItem = { product: Product; variant: string; qty: number };
 
 // ── Tooltip ──────────────────────────────────────────────────────
 function ProductTooltip({ product }: { product: Product }) {
@@ -88,14 +88,19 @@ function ProductTooltip({ product }: { product: Product }) {
 // ── Variant Modal ─────────────────────────────────────────────────
 function VariantModal({
   product,
+  takenVariants,
   onConfirm,
   onClose,
 }: {
   product: Product;
-  onConfirm: (variant: string) => void;
+  takenVariants: string[];
+  onConfirm: (variant: string, qty: number) => void;
   onClose: () => void;
 }) {
-  const [chosen, setChosen] = useState(product.variants[0]);
+  // Default to first variant not already in the box, or the first one
+  const firstAvailable = product.variants.find((v) => !takenVariants.includes(v)) ?? product.variants[0];
+  const [chosen, setChosen] = useState(firstAvailable);
+  const [qty, setQty] = useState(1);
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Close on backdrop click
@@ -109,6 +114,8 @@ function VariantModal({
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
+
+  const isTaken = (v: string) => takenVariants.includes(v);
 
   return (
     <div
@@ -144,35 +151,71 @@ function VariantModal({
         </div>
 
         {/* Variant picker */}
-        <div className="p-5">
+        <div className="p-5 pb-3">
           <p className="text-xs font-bold text-[#7CAE8E] uppercase tracking-wide mb-3">Choose a Variant</p>
           <div className="flex flex-col gap-2">
-            {product.variants.map((v) => (
-              <button
-                key={v}
-                onClick={() => setChosen(v)}
-                className={`w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
-                  chosen === v
-                    ? "border-[#7CAE8E] bg-[#7CAE8E]/10 text-[#2D2D2D]"
-                    : "border-gray-100 text-gray-600 hover:border-[#7CAE8E]/50"
-                }`}
-              >
-                <span className={`mr-2 ${chosen === v ? "text-[#7CAE8E]" : "text-gray-300"}`}>
-                  {chosen === v ? "●" : "○"}
-                </span>
-                {v}
-              </button>
-            ))}
+            {product.variants.map((v) => {
+              const taken = isTaken(v);
+              return (
+                <button
+                  key={v}
+                  onClick={() => { if (!taken) setChosen(v); }}
+                  disabled={taken}
+                  className={`w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
+                    taken
+                      ? "border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed"
+                      : chosen === v
+                      ? "border-[#7CAE8E] bg-[#7CAE8E]/10 text-[#2D2D2D]"
+                      : "border-gray-100 text-gray-600 hover:border-[#7CAE8E]/50"
+                  }`}
+                >
+                  <span className={`mr-2 ${taken ? "text-gray-200" : chosen === v ? "text-[#7CAE8E]" : "text-gray-300"}`}>
+                    {taken ? "✓" : chosen === v ? "●" : "○"}
+                  </span>
+                  {v}
+                  {taken && <span className="ml-2 text-[10px] text-gray-300">already in box</span>}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Quantity stepper */}
+        <div className="px-5 pb-4">
+          <p className="text-xs font-bold text-[#7CAE8E] uppercase tracking-wide mb-3">Quantity</p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setQty((q) => Math.max(1, q - 1))}
+              aria-label="Decrease quantity"
+              className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] transition-colors font-bold text-lg disabled:opacity-40"
+              disabled={qty <= 1}
+            >
+              −
+            </button>
+            <span className="text-xl font-extrabold text-[#2D2D2D] w-8 text-center" aria-live="polite">{qty}</span>
+            <button
+              onClick={() => setQty((q) => q + 1)}
+              aria-label="Increase quantity"
+              className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] transition-colors font-bold text-lg"
+            >
+              +
+            </button>
+            <span className="text-xs text-gray-400 ml-1">pcs</span>
           </div>
         </div>
 
         {/* Confirm */}
         <div className="px-5 pb-5">
           <button
-            onClick={() => onConfirm(chosen)}
-            className="w-full min-h-[52px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white font-bold rounded-full transition-colors"
+            onClick={() => onConfirm(chosen, qty)}
+            disabled={isTaken(chosen)}
+            className={`w-full min-h-[52px] font-bold rounded-full transition-colors ${
+              isTaken(chosen)
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-[#7CAE8E] hover:bg-[#5F8F72] text-white"
+            }`}
           >
-            Add to Box →
+            Add to Box {qty > 1 ? `(×${qty})` : ""} →
           </button>
         </div>
       </div>
@@ -185,13 +228,13 @@ function ProductCard({
   product,
   sel,
   disabled,
-  selectedVariant,
+  selectedVariants,
   onCardClick,
 }: {
   product: Product;
   sel: boolean;
   disabled: boolean;
-  selectedVariant?: string;
+  selectedVariants: { variant: string; qty: number }[];
   onCardClick: () => void;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -205,6 +248,9 @@ function ProductCard({
     setShowTooltip(false);
   };
 
+  const totalQty = selectedVariants.reduce((sum, s) => sum + s.qty, 0);
+  const allVariantsTaken = product.variants.every((v) => selectedVariants.some((s) => s.variant === v));
+
   return (
     <div className="relative">
       {/* Tooltip */}
@@ -216,9 +262,9 @@ function ProductCard({
         onClick={onCardClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        disabled={disabled}
+        disabled={disabled && !sel}
         aria-pressed={sel}
-        aria-label={`${product.name}${selectedVariant ? ` — ${selectedVariant}` : ""}${sel ? ", selected" : ""}${disabled ? ", unavailable — box is full" : ""}`}
+        aria-label={`${product.name}${selectedVariants.length > 0 ? ` — ${selectedVariants.map((s) => `${s.variant}${s.qty > 1 ? ` ×${s.qty}` : ""}`).join(", ")}` : ""}${sel ? ", selected" : ""}${disabled && !sel ? ", unavailable — box is full" : ""}`}
         className={`w-full bg-white rounded-2xl text-left border-2 transition-all shadow-sm overflow-hidden ${
           sel
             ? "border-[#7CAE8E] ring-2 ring-[#7CAE8E]/20"
@@ -232,14 +278,22 @@ function ProductCard({
           <Image src={product.image} alt={product.name} fill className="object-cover" unoptimized />
           {sel && (
             <div className="absolute inset-0 bg-[#7CAE8E]/20 flex items-center justify-center">
-              <div className="w-8 h-8 bg-[#7CAE8E] rounded-full flex items-center justify-center text-white font-bold text-sm">✓</div>
+              <div className="w-8 h-8 bg-[#7CAE8E] rounded-full flex items-center justify-center text-white font-bold text-sm">
+                {selectedVariants.length > 1 ? selectedVariants.length : "✓"}
+              </div>
+            </div>
+          )}
+          {/* Qty badge */}
+          {totalQty > 1 && (
+            <div className="absolute top-2 right-2 bg-[#2D2D2D] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+              ×{totalQty}
             </div>
           )}
           {product.isLocal && (
             <span className="absolute top-2 left-2 text-xs bg-[#7CAE8E] text-white px-2 py-0.5 rounded-full">🇵🇭</span>
           )}
           {product.isEco && (
-            <span className="absolute top-2 right-2 text-xs bg-white text-green-700 px-2 py-0.5 rounded-full border border-green-200">♻️</span>
+            <span className={`absolute text-xs bg-white text-green-700 px-2 py-0.5 rounded-full border border-green-200 ${totalQty > 1 ? "top-7 right-2" : "top-2 right-2"}`}>♻️</span>
           )}
           {/* Info hint */}
           {!disabled && (
@@ -249,8 +303,17 @@ function ProductCard({
 
         <div className="p-3">
           <p className="font-semibold text-sm text-[#2D2D2D] mb-0.5">{product.name}</p>
-          {selectedVariant ? (
-            <p className="text-xs text-[#7CAE8E] font-medium truncate">{selectedVariant}</p>
+          {selectedVariants.length > 0 ? (
+            <div className="flex flex-col gap-0.5">
+              {selectedVariants.map((s) => (
+                <p key={s.variant} className="text-xs text-[#7CAE8E] font-medium truncate">
+                  {s.variant}{s.qty > 1 ? ` ×${s.qty}` : ""}
+                </p>
+              ))}
+              {!allVariantsTaken && !disabled && (
+                <p className="text-[10px] text-gray-400 mt-0.5">+ Add another variant</p>
+              )}
+            </div>
           ) : (
             <p className="text-xs text-gray-400 truncate">{product.brand} · {product.category}</p>
           )}
@@ -285,14 +348,19 @@ export default function BuilderPage() {
         // Support both SelectedItem[] {product, variant} and flat Product[] formats
         if (Array.isArray(parsed) && parsed.length > 0) {
           if ("product" in parsed[0]) {
-            setSelected(parsed);
+            // Ensure qty exists (backwards compat with old saves that lack qty)
+            setSelected(parsed.map((s: SelectedItem) => ({ ...s, qty: s.qty ?? 1 })));
           } else {
             // Flat product array — convert to SelectedItem[]
             const converted = parsed.map((item: Product) => {
               const dashIdx = item.name.lastIndexOf(" — ");
               const baseName = dashIdx !== -1 ? item.name.slice(0, dashIdx) : item.name;
-              const variant = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : (item.variants?.[0] ?? "");
-              return { product: { ...item, name: baseName }, variant };
+              const variantRaw = dashIdx !== -1 ? item.name.slice(dashIdx + 3) : (item.variants?.[0] ?? "");
+              // Parse "Variant ×qty" format
+              const qtyMatch = variantRaw.match(/^(.*)\s×(\d+)$/);
+              const variant = qtyMatch ? qtyMatch[1] : variantRaw;
+              const qty = qtyMatch ? parseInt(qtyMatch[2], 10) : 1;
+              return { product: { ...item, name: baseName }, variant, qty };
             });
             setSelected(converted);
           }
@@ -316,26 +384,49 @@ export default function BuilderPage() {
   const hasFilters = activeCategory !== "All" || activeBrand !== "All" || localOnly || query.trim() !== "";
 
   const isSelected = (id: string) => selected.some((s) => s.product.id === id);
-  const getVariant = (id: string) => selected.find((s) => s.product.id === id)?.variant;
+  const getSelectedVariants = (id: string) =>
+    selected.filter((s) => s.product.id === id).map((s) => ({ variant: s.variant, qty: s.qty }));
+  const getTakenVariants = (id: string) => selected.filter((s) => s.product.id === id).map((s) => s.variant);
 
   const handleCardClick = (product: Product) => {
-    if (isSelected(product.id)) {
+    const productEntries = selected.filter((s) => s.product.id === product.id);
+    const allVariantsTaken = product.variants.every((v) => productEntries.some((s) => s.variant === v));
+
+    if (productEntries.length > 0 && allVariantsTaken) {
+      // All variants taken — clicking removes all entries for this product
       setSelected(selected.filter((s) => s.product.id !== product.id));
-    } else if (isCustom || selected.length < maxItems) {
+    } else if (productEntries.length === 0 && !isCustom && selected.length >= maxItems) {
+      // Box full, not selected yet — do nothing
+    } else {
+      // Open modal to pick a (new) variant
       setModalProduct(product);
     }
   };
 
-  const handleVariantConfirm = (variant: string) => {
+  const handleVariantConfirm = (variant: string, qty: number) => {
     if (!modalProduct) return;
-    setSelected([...selected, { product: modalProduct, variant }]);
+    setSelected([...selected, { product: modalProduct, variant, qty }]);
     setModalProduct(null);
+  };
+
+  const handleQtyChange = (productId: string, variant: string, delta: number) => {
+    setSelected(selected.map((s) => {
+      if (s.product.id === productId && s.variant === variant) {
+        const newQty = Math.max(1, s.qty + delta);
+        return { ...s, qty: newQty };
+      }
+      return s;
+    }));
+  };
+
+  const handleRemoveVariant = (productId: string, variant: string) => {
+    setSelected(selected.filter((s) => !(s.product.id === productId && s.variant === variant)));
   };
 
   const handleContinue = () => {
     const items = selected.map((s) => ({
       ...s.product,
-      name: `${s.product.name} — ${s.variant}`,
+      name: `${s.product.name} — ${s.variant}${s.qty > 1 ? ` ×${s.qty}` : ""}`,
     }));
     localStorage.setItem("selectedItems", JSON.stringify(items));
     router.push("/summary");
@@ -345,7 +436,7 @@ export default function BuilderPage() {
   const handleSaveCustom = () => {
     const items = selected.map((s) => ({
       ...s.product,
-      name: `${s.product.name} — ${s.variant}`,
+      name: `${s.product.name} — ${s.variant}${s.qty > 1 ? ` ×${s.qty}` : ""}`,
     }));
     localStorage.setItem("selectedItems", JSON.stringify(items));
     // Also mark as custom subscription saved
@@ -494,14 +585,16 @@ export default function BuilderPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {filteredProducts.map((product) => {
               const sel = isSelected(product.id);
-              const disabled = !sel && !isCustom && selected.length >= maxItems;
+              const slots = selected.length;
+              // Disabled if box is full AND product not yet selected at all
+              const disabled = !sel && !isCustom && slots >= maxItems;
               return (
                 <ProductCard
                   key={product.id}
                   product={product}
                   sel={sel}
                   disabled={disabled}
-                  selectedVariant={getVariant(product.id)}
+                  selectedVariants={getSelectedVariants(product.id)}
                   onCardClick={() => handleCardClick(product)}
                 />
               );
@@ -524,18 +617,32 @@ export default function BuilderPage() {
             ) : (
               <ul className="space-y-3 mb-4" aria-label="Selected items">
                 {selected.map((s) => (
-                  <li key={s.product.id} className="flex items-center gap-2 text-sm">
-                    <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+                  <li key={`${s.product.id}-${s.variant}`} className="flex items-start gap-2 text-sm">
+                    <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-gray-100 mt-0.5">
                       <Image src={s.product.image} alt={s.product.name} fill className="object-cover" unoptimized />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[#2D2D2D] text-xs font-medium leading-tight truncate">{s.product.name}</p>
-                      <p className="text-[10px] text-[#7CAE8E] truncate">{s.variant}</p>
+                      <p className="text-[10px] text-[#7CAE8E] truncate mb-1">{s.variant}</p>
+                      {/* Qty stepper */}
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => handleQtyChange(s.product.id, s.variant, -1)}
+                          aria-label={`Decrease qty of ${s.variant}`}
+                          className="w-5 h-5 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] text-xs font-bold transition-colors"
+                        >−</button>
+                        <span className="text-xs font-bold text-[#2D2D2D] min-w-[16px] text-center">{s.qty}</span>
+                        <button
+                          onClick={() => handleQtyChange(s.product.id, s.variant, 1)}
+                          aria-label={`Increase qty of ${s.variant}`}
+                          className="w-5 h-5 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] text-xs font-bold transition-colors"
+                        >+</button>
+                      </div>
                     </div>
                     <button
-                      onClick={() => setSelected(selected.filter((x) => x.product.id !== s.product.id))}
-                      aria-label={`Remove ${s.product.name}`}
-                      className="text-gray-300 hover:text-red-400 text-xs shrink-0 min-w-[24px] min-h-[24px] flex items-center justify-center"
+                      onClick={() => handleRemoveVariant(s.product.id, s.variant)}
+                      aria-label={`Remove ${s.product.name} — ${s.variant}`}
+                      className="text-gray-300 hover:text-red-400 text-xs shrink-0 min-w-[24px] min-h-[24px] flex items-center justify-center mt-0.5"
                     >✕</button>
                   </li>
                 ))}
@@ -636,6 +743,7 @@ export default function BuilderPage() {
       {modalProduct && (
         <VariantModal
           product={modalProduct}
+          takenVariants={getTakenVariants(modalProduct.id)}
           onConfirm={handleVariantConfirm}
           onClose={() => setModalProduct(null)}
         />
