@@ -122,6 +122,11 @@ function getBotReply(input: string): { text: string; products: Product[]; links?
   if (hasProductIntent && matchedProducts.length > 0) {
     return { text: `Here are some products that match your interest! Click any to explore in the builder. 🛍️`, products: matchedProducts, links: [{ label: "Browse All Products →", href: "/products" }] };
   }
+  if (hasProductIntent) {
+    // No specific match — show a sample of all products
+    const sample = PRODUCTS.slice(0, 4);
+    return { text: `Here's a sample of what's in our catalog! Head to the Products page to see everything. 🛍️`, products: sample, links: [{ label: "Browse All Products →", href: "/products" }, { label: "Build Your Box →", href: "/builder" }] };
+  }
   if (matchedProducts.length > 0 && !BOT_RESPONSES.some((r) => r.keywords.some((k) => lower.includes(k)))) {
     return { text: `Found some products that might interest you! Head to the builder to add them to your box. 🛍️`, products: matchedProducts, links: [{ label: "Build Your Box →", href: "/builder" }] };
   }
