@@ -355,7 +355,22 @@ function MyBoxContent() {
     setShowAddressForm(true);
   };
 
+  const [profileErrors, setProfileErrors] = useState<{ displayName?: string; phone?: string }>({});
+
+  // Reuse same PH phone validation as checkout
+  const isValidPHPhone = (val: string) => /^(09\d{9}|\+639\d{9})$/.test(val.replace(/[\s\-()]/g, ""));
+
   const handleProfileSave = () => {
+    const errors: { displayName?: string; phone?: string } = {};
+    if (!profile.displayName.trim() || profile.displayName.trim().length < 2)
+      errors.displayName = "Display name must be at least 2 characters";
+    if (profile.phone && !isValidPHPhone(profile.phone))
+      errors.phone = "Enter a valid PH number (e.g. 09171234567 or +639171234567)";
+    if (Object.keys(errors).length > 0) {
+      setProfileErrors(errors);
+      return;
+    }
+    setProfileErrors({});
     const em = getEmail();
     localStorage.setItem(`boxProfile_${em}`, JSON.stringify(profile));
     if (user) {
@@ -937,11 +952,14 @@ function MyBoxContent() {
                     id="displayName"
                     name="displayName"
                     value={profile.displayName}
-                    onChange={handleProfileChange}
+                    onChange={(e) => { handleProfileChange(e); setProfileErrors((er) => ({ ...er, displayName: undefined })); }}
                     disabled={!profileEditing}
                     placeholder="Your name"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px] disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 min-h-[48px] disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors ${
+                      profileErrors.displayName ? "border-red-400 focus:border-red-400 focus:ring-red-400/20" : "border-gray-200 focus:border-[#7CAE8E] focus:ring-[#7CAE8E]/20"
+                    }`}
                   />
+                  {profileErrors.displayName && <p className="text-xs text-red-500 mt-1 ml-1">{profileErrors.displayName}</p>}
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-xs font-medium text-gray-600 mb-1">
@@ -952,11 +970,14 @@ function MyBoxContent() {
                     name="phone"
                     type="tel"
                     value={profile.phone}
-                    onChange={handleProfileChange}
+                    onChange={(e) => { handleProfileChange(e); setProfileErrors((er) => ({ ...er, phone: undefined })); }}
                     disabled={!profileEditing}
-                    placeholder="09XX-XXX-XXXX"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px] disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    placeholder="09171234567"
+                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 min-h-[48px] disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors ${
+                      profileErrors.phone ? "border-red-400 focus:border-red-400 focus:ring-red-400/20" : "border-gray-200 focus:border-[#7CAE8E] focus:ring-[#7CAE8E]/20"
+                    }`}
                   />
+                  {profileErrors.phone && <p className="text-xs text-red-500 mt-1 ml-1">{profileErrors.phone}</p>}
                 </div>
               </div>
             </div>
@@ -1144,7 +1165,7 @@ function MyBoxContent() {
             {profileEditing && (
               <div className="flex gap-3">
                 <button
-                  onClick={() => setProfileEditing(false)}
+                  onClick={() => { setProfileEditing(false); setProfileErrors({}); }}
                   className="flex-1 min-h-[48px] border-2 border-gray-200 text-gray-600 rounded-full font-semibold text-sm hover:border-gray-300 transition-colors"
                 >
                   Cancel
