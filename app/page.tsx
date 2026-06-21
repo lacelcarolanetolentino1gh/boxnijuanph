@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { PLANS, CSR_COMMITMENTS, PRODUCTS } from "@/lib/data";
+import WellnessQuiz from "@/components/WellnessQuiz";
 
 export default function Home() {
   const featuredProducts = PRODUCTS.filter((p) => p.isLocal).slice(0, 4);
@@ -111,6 +112,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <WellnessQuiz />
 
       {/* ── Wellness Video Section ───────────────────────────── */}
       <section className="bg-[#FAFAF7] py-20 px-6">
