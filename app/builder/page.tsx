@@ -663,7 +663,7 @@ export default function BuilderPage() {
             {/* Clear filters */}
             {hasFilters && (
               <button
-                onClick={() => { setActiveCategory("All"); setActiveBrand("All"); setLocalOnly(false); setQuery(""); }}
+                onClick={() => { setActiveCategory("All"); setActiveBrand("All"); setQuery(""); }}
                 className="ml-auto text-xs text-gray-400 hover:text-red-400 transition-colors underline"
               >
                 Clear filters

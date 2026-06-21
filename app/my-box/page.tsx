@@ -47,7 +47,7 @@ function MyBoxContent() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelled, setCancelled] = useState(false);
   const [hydrated, setHydrated] = useState(false);
-  const [activeTab, setActiveTab] = useState<"box" | "profile">("box");
+  const [activeTab, setActiveTab] = useState<"box" | "profile" | "inquiries">("box");
   const [showPauseModal, setShowPauseModal] = useState(false);
   const [pauseMonths, setPauseMonths] = useState(1);
   const [pausedUntil, setPausedUntil] = useState<string | null>(null);
@@ -71,6 +71,7 @@ function MyBoxContent() {
 
   // Address book
   const [addresses, setAddresses] = useState<SavedAddress[]>([]);
+  const [inquiries, setInquiries] = useState<Record<string, unknown>[]>([]);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<SavedAddress | null>(null);
   const [addressForm, setAddressForm] = useState({ label: "Home", address: "", city: "", zipCode: "" });
@@ -109,6 +110,7 @@ function MyBoxContent() {
     setHydrated(true);
     // Open profile tab if ?tab=profile in URL
     if (searchParams.get("tab") === "profile") setActiveTab("profile");
+    if (searchParams.get("tab") === "inquiries") setActiveTab("inquiries");
 
     const storedUser = localStorage.getItem("boxUser");
     if (!storedUser) {
@@ -206,6 +208,12 @@ function MyBoxContent() {
     if (storedHistory) {
       try { setOrderHistory(JSON.parse(storedHistory)); } catch { /* ignore */ }
     }
+
+    // Load inquiries
+    try {
+      const storedInquiries = JSON.parse(localStorage.getItem("bnj_inquiries") || "[]");
+      setInquiries(storedInquiries);
+    } catch { /* ignore */ }
   }, [router]);
 
   const planData = plan ? PLANS.find((p) => p.id === plan) : null;
@@ -554,6 +562,21 @@ function MyBoxContent() {
           }`}
         >
           👤 Profile
+        </button>
+        <button
+          role="tab"
+          aria-selected={activeTab === "inquiries"}
+          onClick={() => setActiveTab("inquiries")}
+          className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors min-h-[36px] relative ${
+            activeTab === "inquiries" ? "bg-white text-[#2D2D2D] shadow-sm" : "text-gray-500 hover:text-[#2D2D2D]"
+          }`}
+        >
+          📩 Inquiries
+          {inquiries.length > 0 && activeTab !== "inquiries" && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#7CAE8E] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              {inquiries.length > 9 ? "9+" : inquiries.length}
+            </span>
+          )}
         </button>
       </div>
 
@@ -1237,6 +1260,98 @@ function MyBoxContent() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ── INQUIRIES TAB ── */}
+      {activeTab === "inquiries" && (
+        <div className="space-y-6 max-w-3xl">
+
+          {/* Refund / Return Process info card */}
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6">
+            <h2 className="font-[var(--font-dm-sans)] font-extrabold text-[#2D2D2D] text-lg mb-1">↩️ Refund & Return Process</h2>
+            <p className="text-sm text-gray-500 mb-4">Here's how to request a refund or replacement for your order.</p>
+            <ol className="space-y-3">
+              {[
+                { step: "1", title: "Submit within 7 days", desc: "Refund and replacement requests must be submitted within 7 days of receiving your box." },
+                { step: "2", title: "Use Contact Us or Report an Issue", desc: "Go to Contact Us and select \"Refund or Replacement\" as the topic — or tap the ↩️ Report an Issue button on this page." },
+                { step: "3", title: "Include your order number", desc: "Provide your BNJ-XXXXXX order number and a brief description of the issue (wrong item, damaged, missing, etc.)." },
+                { step: "4", title: "We review within 1–2 business days", desc: "Our support team will review your request and respond to your email within 1–2 business days." },
+                { step: "5", title: "Refund or replacement issued", desc: "Once approved, refunds are processed within 5–7 business days. Replacements are shipped with your next box." },
+              ].map(({ step, title, desc }) => (
+                <li key={step} className="flex gap-3">
+                  <span className="w-7 h-7 rounded-full bg-amber-200 text-amber-800 text-xs font-bold flex items-center justify-center shrink-0">{step}</span>
+                  <div>
+                    <p className="text-sm font-semibold text-[#2D2D2D]">{title}</p>
+                    <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <div className="mt-5 flex flex-col sm:flex-row gap-3">
+              <Link href="/contact?topic=refund">
+                <button className="min-h-[44px] bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold px-5 py-2.5 rounded-full transition-colors">
+                  ↩️ Request Refund / Replacement →
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Submitted inquiries list */}
+          <div>
+            <h2 className="font-[var(--font-dm-sans)] font-extrabold text-[#2D2D2D] text-lg mb-4">My Submitted Inquiries</h2>
+
+            {inquiries.length === 0 ? (
+              <div className="bg-white border border-gray-100 rounded-2xl p-10 text-center shadow-sm">
+                <p className="text-4xl mb-3">📭</p>
+                <p className="text-sm font-semibold text-gray-500">No inquiries yet</p>
+                <p className="text-xs text-gray-400 mt-1 mb-5">Messages you send via Contact Us will appear here.</p>
+                <Link href="/contact">
+                  <button className="min-h-[44px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white text-sm font-bold px-5 py-2.5 rounded-full transition-colors">
+                    Contact Us →
+                  </button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {inquiries.map((inq) => {
+                  const i = inq as { id: string; topic: string; message: string; order?: string; status: string; submittedAt: string };
+                  const date = new Date(i.submittedAt).toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "numeric" });
+                  const time = new Date(i.submittedAt).toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit" });
+                  const statusColor =
+                    i.status === "Resolved" ? "bg-green-100 text-green-700" :
+                    i.status === "In Review" ? "bg-amber-100 text-amber-700" :
+                    "bg-gray-100 text-gray-500";
+                  return (
+                    <div key={i.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <div>
+                          <p className="text-xs font-bold text-[#7CAE8E] uppercase tracking-wide">{i.topic}</p>
+                          <p className="text-xs text-gray-400 mt-0.5">{i.id} · {date} at {time}</p>
+                          {i.order && <p className="text-xs text-gray-400">Order: {i.order}</p>}
+                        </div>
+                        <span className={`text-xs font-semibold px-3 py-1 rounded-full shrink-0 ${statusColor}`}>{i.status}</span>
+                      </div>
+                      <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">{i.message}</p>
+                      {i.status !== "Resolved" && (
+                        <p className="text-xs text-gray-400 mt-3">Expected response within <strong>1–2 business days</strong> to your registered email.</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm text-center">
+            <p className="text-xs text-gray-400 mb-3">Have a new concern?</p>
+            <Link href="/contact">
+              <button className="min-h-[44px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white text-sm font-bold px-5 py-2.5 rounded-full transition-colors">
+                Send a New Message →
+              </button>
+            </Link>
+          </div>
+
         </div>
       )}
 

@@ -37,6 +37,24 @@ function ContactForm() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setErrors({});
+
+    // Save to localStorage so user can track it in My Box → Inquiries
+    const inquiry = {
+      id: `INQ-${Date.now()}`,
+      name: form.name,
+      email: form.email,
+      order: form.order,
+      topic: form.topic,
+      message: form.message,
+      status: "In Review",
+      submittedAt: new Date().toISOString(),
+    };
+    try {
+      const existing = JSON.parse(localStorage.getItem("bnj_inquiries") || "[]");
+      existing.unshift(inquiry);
+      localStorage.setItem("bnj_inquiries", JSON.stringify(existing));
+    } catch { /* ignore */ }
+
     setSubmitted(true);
   };
 
@@ -52,8 +70,14 @@ function ContactForm() {
         </p>
         <p className="text-gray-400 text-sm mb-8">
           Our support team will get back to you at <strong>{form.email}</strong> within <strong>1–2 business days</strong>.
+          You can track your inquiry status in <strong>My Box → Inquiries</strong>.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link href="/my-box?tab=inquiries">
+            <button className="min-h-[48px] bg-[#7CAE8E] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#5F8F72] transition-colors">
+              Track My Inquiry →
+            </button>
+          </Link>
           <Link href="/">
             <button className="min-h-[48px] border-2 border-[#7CAE8E] text-[#7CAE8E] px-6 py-3 rounded-full font-semibold hover:bg-[#7CAE8E] hover:text-white transition-colors">
               Back to Home
@@ -61,9 +85,9 @@ function ContactForm() {
           </Link>
           <button
             onClick={() => { setSubmitted(false); setForm({ name: "", email: "", order: "", topic: "", message: "" }); }}
-            className="min-h-[48px] bg-[#7CAE8E] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#5F8F72] transition-colors"
+            className="min-h-[48px] border-2 border-gray-200 text-gray-500 px-6 py-3 rounded-full font-semibold hover:bg-gray-50 transition-colors"
           >
-            Send Another Message
+            Send Another
           </button>
         </div>
       </div>
