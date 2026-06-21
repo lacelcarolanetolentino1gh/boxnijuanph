@@ -948,7 +948,7 @@ function MyBoxContent() {
               <div className="space-y-4">
                 <div>
                   <label htmlFor="displayName" className="block text-xs font-medium text-gray-600 mb-1">
-                    Display Name
+                    Display Name <span className="text-red-400">*</span>
                   </label>
                   <input
                     id="displayName"
