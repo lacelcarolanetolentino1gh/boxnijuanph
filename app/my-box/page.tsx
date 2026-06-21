@@ -173,16 +173,17 @@ function MyBoxContent() {
       localStorage.removeItem("boxDraftRestored");
     }
 
-    // Load saved addresses — migrate from old generic key if needed
-    const storedAddresses = localStorage.getItem(`boxAddresses_${em}`)
-      || localStorage.getItem("boxAddresses");
+    // Load saved addresses — always migrate old generic key if it exists
+    const oldAddresses = localStorage.getItem("boxAddresses");
+    const newAddresses = localStorage.getItem(`boxAddresses_${em}`);
+    const storedAddresses = oldAddresses || newAddresses;
     if (storedAddresses) {
       try {
         const parsed = JSON.parse(storedAddresses);
         setAddresses(parsed);
-        // Migrate to email-keyed key if it was under the old generic key
-        if (!localStorage.getItem(`boxAddresses_${em}`)) {
-          localStorage.setItem(`boxAddresses_${em}`, storedAddresses);
+        // Always migrate old key to email-keyed and remove old key
+        if (oldAddresses) {
+          localStorage.setItem(`boxAddresses_${em}`, oldAddresses);
           localStorage.removeItem("boxAddresses");
         }
       } catch { /* ignore */ }
