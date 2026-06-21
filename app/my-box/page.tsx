@@ -48,6 +48,9 @@ function MyBoxContent() {
   const [cancelled, setCancelled] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [activeTab, setActiveTab] = useState<"box" | "profile">("box");
+  const [showPauseModal, setShowPauseModal] = useState(false);
+  const [pauseMonths, setPauseMonths] = useState(1);
+  const [pausedUntil, setPausedUntil] = useState<string | null>(null);
 
   const [draftRestored, setDraftRestored] = useState(false);
 
@@ -150,6 +153,10 @@ function MyBoxContent() {
     if (storedAddresses) {
       try { setAddresses(JSON.parse(storedAddresses)); } catch { /* ignore */ }
     }
+
+    // Load pause state
+    const storedPause = localStorage.getItem("boxPausedUntil");
+    if (storedPause) setPausedUntil(storedPause);
   }, [router]);
 
   const planData = plan ? PLANS.find((p) => p.id === plan) : null;
@@ -184,9 +191,29 @@ function MyBoxContent() {
     localStorage.removeItem("selectedItems");
     localStorage.removeItem("selectedPlan");
     localStorage.removeItem("customBoxSaved");
+    localStorage.removeItem("boxPausedUntil");
     setCancelled(true);
     setShowCancelConfirm(false);
   };
+
+  const handleConfirmPause = () => {
+    const until = new Date();
+    until.setMonth(until.getMonth() + pauseMonths);
+    const dateStr = until.toISOString();
+    localStorage.setItem("boxPausedUntil", dateStr);
+    setPausedUntil(dateStr);
+    setShowPauseModal(false);
+  };
+
+  const handleResume = () => {
+    localStorage.removeItem("boxPausedUntil");
+    setPausedUntil(null);
+  };
+
+  const isPaused = !!pausedUntil && new Date(pausedUntil) > new Date();
+  const pausedUntilLabel = pausedUntil
+    ? new Date(pausedUntil).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" })
+    : null;
 
   const saveAddresses = (updated: SavedAddress[]) => {
     setAddresses(updated);
@@ -382,11 +409,21 @@ function MyBoxContent() {
               <div className="md:col-span-2 space-y-6">
                 {/* Plan status card */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                  <div className="h-1.5 w-full bg-[#7CAE8E]" />
+                  <div className={`h-1.5 w-full ${isPaused ? "bg-amber-400" : "bg-[#7CAE8E]"}`} />
                   <div className="p-5">
+                    {/* Paused notice banner */}
+                    {isPaused && (
+                      <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 mb-4 text-sm text-amber-800">
+                        <span>⏸</span>
+                        <span className="flex-1 text-xs font-semibold">Subscription paused · Resumes on {pausedUntilLabel}</span>
+                        <button onClick={handleResume} className="text-xs text-[#7CAE8E] font-bold hover:underline shrink-0">Resume now</button>
+                      </div>
+                    )}
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <p className="text-xs text-[#7CAE8E] font-bold uppercase tracking-widest mb-1">Active Plan</p>
+                        <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${isPaused ? "text-amber-500" : "text-[#7CAE8E]"}`}>
+                          {isPaused ? "Paused Plan" : "Active Plan"}
+                        </p>
                         <h2 className="font-[var(--font-dm-sans)] text-xl font-extrabold text-[#2D2D2D]">
                           {planData?.name || "Custom"} {isCustom && <span className="text-sm font-normal text-[#7CAE8E]">· No Limit</span>}
                         </h2>
@@ -397,9 +434,15 @@ function MyBoxContent() {
                           <p className="text-xs text-gray-400 mt-0.5">Unlimited items · Modify anytime</p>
                         )}
                       </div>
-                      <span className="bg-[#7CAE8E]/10 text-[#5F8F72] text-xs font-bold px-3 py-1 rounded-full border border-[#7CAE8E]/30">
-                        ✓ Active
-                      </span>
+                      {isPaused ? (
+                        <span className="bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-full border border-amber-300">
+                          ⏸ Paused
+                        </span>
+                      ) : (
+                        <span className="bg-[#7CAE8E]/10 text-[#5F8F72] text-xs font-bold px-3 py-1 rounded-full border border-[#7CAE8E]/30">
+                          ✓ Active
+                        </span>
+                      )}
                     </div>
                     {!isCustom && (
                       <div className="flex gap-4 text-sm text-gray-500 border-t border-gray-50 pt-4 flex-wrap">
@@ -409,7 +452,7 @@ function MyBoxContent() {
                         </div>
                         <div>
                           <p className="text-xs text-gray-400 mb-0.5">Next delivery</p>
-                          <p className="font-semibold text-[#2D2D2D]">{deliveryLabel}</p>
+                          <p className="font-semibold text-[#2D2D2D]">{isPaused ? "—" : deliveryLabel}</p>
                         </div>
                         {orderDetails && (orderDetails as { form?: { address?: string } }).form?.address && (
                           <div>
@@ -488,6 +531,21 @@ function MyBoxContent() {
                         className="w-full min-h-[44px] border border-gray-200 text-gray-500 hover:border-[#7CAE8E] hover:text-[#7CAE8E] py-2.5 rounded-full text-sm transition-colors"
                       >
                         Switch to Custom Box
+                      </button>
+                    )}
+                    {isPaused ? (
+                      <button
+                        onClick={handleResume}
+                        className="w-full min-h-[44px] border-2 border-amber-400 text-amber-600 hover:bg-amber-50 py-2.5 rounded-full text-sm font-bold transition-colors"
+                      >
+                        ▶ Resume Subscription
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setShowPauseModal(true)}
+                        className="w-full min-h-[44px] border border-gray-200 text-gray-500 hover:border-amber-400 hover:text-amber-600 py-2.5 rounded-full text-sm transition-colors"
+                      >
+                        ⏸ Pause Subscription
                       </button>
                     )}
                     <button
@@ -871,6 +929,64 @@ function MyBoxContent() {
                 className="w-full min-h-[40px] border border-red-200 text-red-400 hover:bg-red-50 hover:text-red-500 rounded-full text-sm font-semibold transition-colors"
               >
                 Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pause subscription modal */}
+      {showPauseModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowPauseModal(false); }}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Pause subscription"
+        >
+          <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6">
+            <div className="w-14 h-14 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">⏸</span>
+            </div>
+            <h3 className="font-[var(--font-dm-sans)] font-bold text-[#2D2D2D] text-center mb-1">Pause Subscription</h3>
+            <p className="text-sm text-gray-500 text-center mb-5">No deliveries or charges during your pause. Resumes automatically.</p>
+            <div className="mb-5">
+              <p className="text-xs font-semibold text-gray-600 mb-3">How long do you want to pause?</p>
+              <div className="space-y-2">
+                {[1, 2, 3].map((m) => (
+                  <label
+                    key={m}
+                    className={`flex items-center gap-3 border-2 rounded-xl px-4 py-3 cursor-pointer transition-colors ${
+                      pauseMonths === m ? "border-amber-400 bg-amber-50" : "border-gray-200 hover:border-amber-300"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="pauseMonths"
+                      value={m}
+                      checked={pauseMonths === m}
+                      onChange={() => setPauseMonths(m)}
+                      className="accent-amber-500 w-4 h-4"
+                    />
+                    <span className="text-sm font-medium text-[#2D2D2D]">
+                      {m} month{m > 1 ? "s" : ""}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowPauseModal(false)}
+                className="flex-1 min-h-[48px] border-2 border-gray-200 text-gray-600 rounded-full font-semibold hover:border-gray-300 transition-colors text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmPause}
+                className="flex-1 min-h-[48px] bg-amber-400 hover:bg-amber-500 text-white rounded-full font-bold transition-colors text-sm"
+              >
+                Pause for {pauseMonths}mo
               </button>
             </div>
           </div>
