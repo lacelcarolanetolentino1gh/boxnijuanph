@@ -90,10 +90,12 @@ function LoginContent() {
     const firstName = name.trim().split(" ")[0];
     const em = email.trim();
     localStorage.setItem("loginToast", isSignup ? `welcome:${firstName}` : `welcome-back:${firstName}`);
-    // Clear any leftover session-level box selections
+    // Clear session-level selections — each user's persistent data lives under email-keyed keys
+    // DO NOT clear boxOrder_${em}, boxProfile_${em}, boxAddresses_${em} here — those must persist
     localStorage.removeItem("selectedItems");
     localStorage.removeItem("selectedPlan");
     // Restore saved draft for this specific user if they have no active order
+    // DO NOT change boxOrder_${em} check to "orderDetails" — orderDetails is the old generic key
     const draft = localStorage.getItem(`boxDraft_${em}`);
     if (draft && !localStorage.getItem(`boxOrder_${em}`)) {
       try {

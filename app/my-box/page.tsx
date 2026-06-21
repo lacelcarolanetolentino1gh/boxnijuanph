@@ -117,13 +117,18 @@ function MyBoxContent() {
     const em = parsedUser.email;
     setUser(parsedUser);
 
-    // Load saved profile — migrate from old generic key if needed
+    // ─── DATA MIGRATION (DO NOT REMOVE) ───────────────────────────────────────
+    // All user data is keyed by email (e.g. boxOrder_test@email.com) to prevent
+    // data bleeding between users on the same device. These migration blocks copy
+    // any old generic keys to the correct email-keyed slot on first login after
+    // the migration was deployed. Safe to keep forever — only runs if old key
+    // exists AND the email-keyed key is missing.
+    // ──────────────────────────────────────────────────────────────────────────
     const storedProfile = localStorage.getItem(`boxProfile_${em}`)
       || localStorage.getItem("boxProfile");
     const storedOrder = localStorage.getItem(`boxOrder_${em}`)
       || localStorage.getItem("orderDetails");
 
-    // Migrate old generic keys to email-keyed
     if (!localStorage.getItem(`boxProfile_${em}`) && localStorage.getItem("boxProfile")) {
       localStorage.setItem(`boxProfile_${em}`, localStorage.getItem("boxProfile")!);
       localStorage.removeItem("boxProfile");
@@ -142,6 +147,7 @@ function MyBoxContent() {
       localStorage.setItem(`boxOrderHistory_${em}`, storedHistoryOld);
       localStorage.removeItem("boxOrderHistory");
     }
+    // ─── END MIGRATION ────────────────────────────────────────────────────────
 
     if (storedProfile) {
       setProfile(JSON.parse(storedProfile));

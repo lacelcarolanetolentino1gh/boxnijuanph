@@ -58,6 +58,7 @@ export default function Navbar() {
     if (storedUser) {
       const u = JSON.parse(storedUser);
       // Save incomplete box as a draft keyed by email before clearing
+      // DO NOT check "orderDetails" here — use boxOrder_${email} (email-keyed)
       if (!localStorage.getItem(`boxOrder_${u.email}`)) {
         const items = localStorage.getItem("selectedItems");
         const plan = localStorage.getItem("selectedPlan");
@@ -67,6 +68,8 @@ export default function Navbar() {
       }
       localStorage.setItem("logoutToast", u.name.split(" ")[0]);
     }
+    // Only clear session-level keys — persistent user data (boxOrder_, boxProfile_,
+    // boxAddresses_, etc.) stays in localStorage keyed by email so it survives logout
     localStorage.removeItem("boxUser");
     localStorage.removeItem("selectedItems");
     localStorage.removeItem("selectedPlan");
