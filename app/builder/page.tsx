@@ -403,7 +403,7 @@ export default function BuilderPage() {
   const [selected, setSelected] = useState<SelectedItem[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [activeBrand, setActiveBrand] = useState<string>("All");
-  const [localOnly, setLocalOnly] = useState(false);
+
   const [query, setQuery] = useState("");
   const [modalProduct, setModalProduct] = useState<Product | null>(null);
   const [infoProduct, setInfoProduct] = useState<Product | null>(null);
@@ -447,14 +447,13 @@ export default function BuilderPage() {
   const filteredProducts = PRODUCTS
     .filter((p) => activeCategory === "All" || p.category === activeCategory)
     .filter((p) => activeBrand === "All" || p.brand === activeBrand)
-    .filter((p) => !localOnly || p.isLocal)
     .filter((p) => {
       if (!query.trim()) return true;
       const q = query.toLowerCase();
       return p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.details.description.toLowerCase().includes(q);
     });
 
-  const hasFilters = activeCategory !== "All" || activeBrand !== "All" || localOnly || query.trim() !== "";
+  const hasFilters = activeCategory !== "All" || activeBrand !== "All" || query.trim() !== "";
 
   const isSelected = (id: string) => selected.some((s) => s.product.id === id);
   const getSelectedVariants = (id: string) =>
@@ -660,17 +659,6 @@ export default function BuilderPage() {
               </select>
               <span className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs ${activeBrand !== "All" ? "text-white" : "text-gray-400"}`}>▾</span>
             </div>
-
-            {/* Local only toggle */}
-            <label className="flex items-center gap-2 cursor-pointer ml-1">
-              <input
-                type="checkbox"
-                checked={localOnly}
-                onChange={(e) => setLocalOnly(e.target.checked)}
-                className="accent-[#7CAE8E] w-4 h-4"
-              />
-              <span className="text-sm text-gray-600 font-medium">🇵🇭 Local brands only</span>
-            </label>
 
             {/* Clear filters */}
             {hasFilters && (
