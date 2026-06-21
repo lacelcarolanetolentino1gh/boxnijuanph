@@ -392,6 +392,16 @@ export default function BuilderPage() {
     setModalProduct(null);
   };
 
+  // Auto-save selections to localStorage as user picks items
+  useEffect(() => {
+    if (selected.length === 0) return;
+    const items = selected.map((s) => ({
+      ...s.product,
+      name: `${s.product.name} — ${s.variant}${s.qty > 1 ? ` ×${s.qty}` : ""}`,
+    }));
+    localStorage.setItem("selectedItems", JSON.stringify(items));
+  }, [selected]);
+
   const handleQtyChange = (productId: string, variant: string, delta: number) => {
     setSelected(selected.map((s) => {
       if (s.product.id === productId && s.variant === variant) {
