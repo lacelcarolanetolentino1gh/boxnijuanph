@@ -982,6 +982,24 @@ function MyBoxContent() {
                   {profileErrors.phone && <p className="text-xs text-red-500 mt-1 ml-1">{profileErrors.phone}</p>}
                 </div>
               </div>
+
+              {/* Save/Cancel inside Personal Information card */}
+              {profileEditing && (
+                <div className="flex gap-3 mt-5">
+                  <button
+                    onClick={() => { setProfileEditing(false); setProfileErrors({}); }}
+                    className="flex-1 min-h-[44px] border-2 border-gray-200 text-gray-600 rounded-full font-semibold text-sm hover:border-gray-300 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleProfileSave}
+                    className="flex-1 min-h-[44px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white rounded-full font-semibold text-sm transition-colors"
+                  >
+                    Save Changes ✓
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Address book */}
@@ -1162,24 +1180,6 @@ function MyBoxContent() {
                 </div>
               )}
             </div>
-
-            {/* Save / Cancel buttons — Personal Information only, not payment */}
-            {profileEditing && (
-              <div className="flex gap-3">
-                <button
-                  onClick={() => { setProfileEditing(false); setProfileErrors({}); }}
-                  className="flex-1 min-h-[48px] border-2 border-gray-200 text-gray-600 rounded-full font-semibold text-sm hover:border-gray-300 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleProfileSave}
-                  className="flex-1 min-h-[48px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white rounded-full font-semibold text-sm transition-colors"
-                >
-                  Save Changes ✓
-                </button>
-              </div>
-            )}
 
           </div>
 
