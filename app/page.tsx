@@ -207,7 +207,7 @@ export default function Home() {
                     <h3 className="font-[var(--font-dm-sans)] font-bold text-white text-lg">{plan.name}</h3>
                     <span className="font-extrabold text-[#7CAE8E] text-xl">₱{plan.price}<span className="text-sm font-normal text-gray-400">/mo</span></span>
                   </div>
-                  <p className="text-gray-400 text-xs mb-3">{plan.id === "custom" ? "Unlimited items" : `${plan.items} items`} · {plan.description}</p>
+                  <p className="text-gray-400 text-xs mb-3">{plan.id === "custom" ? "Up to 12 items" : `${plan.items} items`} · {plan.description}</p>
                   <Link href="/plans">
                     <button className="w-full bg-[#7CAE8E] hover:bg-[#5F8F72] text-white py-2.5 rounded-full text-sm font-bold transition-colors min-h-[44px]">
                       Choose {plan.name}

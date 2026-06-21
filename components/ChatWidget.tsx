@@ -44,7 +44,7 @@ const BOT_RESPONSES: { keywords: string[]; reply: string; links?: PageLink[] }[]
   },
   {
     keywords: ["plan", "price", "cost", "basic", "standard", "premium", "custom", "how much"],
-    reply: "We have 4 plans:\n• Basic — ₱399/mo (3 items)\n• Standard — ₱599/mo (5 items)\n• Premium — ₱899/mo (8 items)\n• Custom — ₱1,299/mo (unlimited items)\nAll include free Metro Manila delivery! 🎁",
+    reply: "We have 4 plans:\n• Basic — ₱399/mo (3 items)\n• Standard — ₱599/mo (5 items)\n• Premium — ₱899/mo (8 items)\n• Custom — ₱1,299/mo (up to 12 items)\nAll include free Metro Manila delivery! 🎁",
     links: [{ label: "View All Plans →", href: "/plans" }, { label: "Build Your Box →", href: "/builder" }],
   },
   {

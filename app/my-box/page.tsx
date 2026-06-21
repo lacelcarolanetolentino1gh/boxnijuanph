@@ -624,13 +624,13 @@ function MyBoxContent() {
                           {isPaused ? "Paused Plan" : "Active Plan"}
                         </p>
                         <h2 className="font-[var(--font-dm-sans)] text-xl font-extrabold text-[#2D2D2D]">
-                          {planData?.name || "Custom"} {isCustom && <span className="text-sm font-normal text-[#7CAE8E]">· No Limit</span>}
+                          {planData?.name || "Custom"} {isCustom && <span className="text-sm font-normal text-[#7CAE8E]">· Up to 12 items</span>}
                         </h2>
                         <p className="text-[#7CAE8E] font-bold text-lg mt-0.5">
                           ₱{planData?.price}<span className="text-xs font-normal text-gray-400">/mo</span>
                         </p>
                         {isCustom && (
-                          <p className="text-xs text-gray-400 mt-0.5">Unlimited items · Modify anytime</p>
+                          <p className="text-xs text-gray-400 mt-0.5">Up to 12 items · Modify anytime</p>
                         )}
                       </div>
                       {isPaused ? (
@@ -671,7 +671,7 @@ function MyBoxContent() {
                         </div>
                         <div>
                           <p className="text-xs text-gray-400 mb-0.5">Box type</p>
-                          <p className="font-semibold text-[#7CAE8E]">Custom · Unlimited</p>
+                          <p className="font-semibold text-[#7CAE8E]">Custom · Up to 12 items</p>
                         </div>
                       </div>
                     )}

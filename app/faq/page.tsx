@@ -104,7 +104,7 @@ const FAQS = [
     questions: [
       {
         q: "What plans are available?",
-        a: "We have 4 plans:\n• Basic — ₱399/mo (3 items)\n• Standard — ₱599/mo (5 items)\n• Premium — ₱899/mo (8 items)\n• Custom — ₱1,299/mo (unlimited items)\nAll plans include free Metro Manila delivery.",
+        a: "We have 4 plans:\n• Basic — ₱399/mo (3 items)\n• Standard — ₱599/mo (5 items)\n• Premium — ₱899/mo (8 items)\n• Custom — ₱1,299/mo (up to 12 items)\nAll plans include free Metro Manila delivery.",
       },
       {
         q: "Can I choose which products go in my box?",
