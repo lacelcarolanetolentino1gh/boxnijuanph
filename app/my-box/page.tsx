@@ -217,7 +217,10 @@ function MyBoxContent() {
     year: "numeric", month: "long", day: "numeric",
   });
 
+  const [editingBox, setEditingBox] = useState(false);
+
   const handleEditBox = () => {
+    setEditingBox(true);
     if (plan) localStorage.setItem("selectedPlan", plan);
     const restoredSelected = items.map((item) => {
       const dashIdx = item.name.lastIndexOf(" — ");
@@ -675,9 +678,10 @@ function MyBoxContent() {
                   <div className="space-y-3">
                     <button
                       onClick={handleEditBox}
-                      className="w-full min-h-[48px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white py-3 rounded-full text-sm font-bold transition-colors"
+                      disabled={editingBox}
+                      className="w-full min-h-[48px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white py-3 rounded-full text-sm font-bold transition-colors disabled:opacity-70 disabled:cursor-wait"
                     >
-                      Edit My Box ✏️
+                      {editingBox ? "Loading…" : "Edit My Box ✏️"}
                     </button>
                     <Link href="/plans" className="block">
                       <button className="w-full min-h-[48px] border-2 border-[#7CAE8E] text-[#7CAE8E] hover:bg-[#7CAE8E] hover:text-white py-3 rounded-full text-sm font-bold transition-colors">
