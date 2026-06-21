@@ -17,11 +17,11 @@ export default function Navbar() {
   useEffect(() => {
     const load = () => {
       const stored = localStorage.getItem("boxUser");
-      setUser(stored ? JSON.parse(stored) : null);
-      const prof = localStorage.getItem("boxProfile");
-      if (prof) {
-        const parsed = JSON.parse(prof);
-        setProfilePic(parsed.profilePic || null);
+      const parsedUser = stored ? JSON.parse(stored) : null;
+      setUser(parsedUser);
+      if (parsedUser?.email) {
+        const prof = localStorage.getItem(`boxProfile_${parsedUser.email}`);
+        setProfilePic(prof ? (JSON.parse(prof).profilePic || null) : null);
       } else {
         setProfilePic(null);
       }
