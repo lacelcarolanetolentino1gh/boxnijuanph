@@ -5,6 +5,14 @@ import Image from "next/image";
 import { PLANS } from "@/lib/data";
 import StepIndicator from "@/components/StepIndicator";
 
+// One-time retail equivalent prices per plan (for savings badge)
+const ONE_TIME_PRICES: Record<string, number> = {
+  basic: 549,
+  standard: 799,
+  premium: 1199,
+  custom: 1799,
+};
+
 export default function PlansPage() {
   const router = useRouter();
   const [pendingPlanId, setPendingPlanId] = useState<string | null>(null);
@@ -84,6 +92,13 @@ export default function PlansPage() {
               <div className="text-4xl font-extrabold text-[#7CAE8E] my-2">
                 ₱{plan.price}<span className="text-base font-normal text-gray-400">/mo</span>
               </div>
+              {/* Savings badge */}
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-xs text-gray-400 line-through">₱{ONE_TIME_PRICES[plan.id]}/mo one-time</span>
+                <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                  Save ₱{ONE_TIME_PRICES[plan.id] - plan.price}
+                </span>
+              </div>
               <p className="text-gray-500 text-sm mb-1">
                 {plan.id === "custom" ? "Up to 12 items, any mix" : `${plan.items} items per box`}
               </p>
@@ -115,7 +130,24 @@ export default function PlansPage() {
 
       <p className="text-center text-gray-400 text-xs mt-8">All plans include free delivery within Metro Manila. Cancel anytime.</p>
 
-      {/* ── Pending box warning modal ─────────────────────────────── */}
+      {/* ── Loyalty Perks Strip ───────────────────────────────────── */}
+      <div className="mt-8 bg-[#EAF2ED] rounded-2xl px-6 py-5">
+        <p className="text-center text-xs font-bold text-[#5F8F72] uppercase tracking-widest mb-4">Subscriber Perks — included in every plan</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          {[
+            { icon: "🎁", label: "Birthday Box Voucher", desc: "Surprise discount on your birthday month" },
+            { icon: "🔁", label: "Loyalty Points", desc: "Earn points every box, redeem for free items" },
+            { icon: "🏷️", label: "Subscriber-Only Deals", desc: "Exclusive discounts on new product launches" },
+            { icon: "⏸️", label: "Pause Anytime", desc: "Pause up to 3 months, no penalty" },
+          ].map((perk) => (
+            <div key={perk.label} className="flex flex-col items-center gap-1">
+              <span className="text-2xl">{perk.icon}</span>
+              <p className="text-xs font-semibold text-[#2D2D2D]">{perk.label}</p>
+              <p className="text-xs text-gray-500 leading-tight">{perk.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
       {pendingPlanId && (() => {
         const newPlan = PLANS.find((p) => p.id === pendingPlanId);
         return (
