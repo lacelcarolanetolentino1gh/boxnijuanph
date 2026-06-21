@@ -209,9 +209,10 @@ function MyBoxContent() {
       try { setOrderHistory(JSON.parse(storedHistory)); } catch { /* ignore */ }
     }
 
-    // Load inquiries
+    // Load inquiries (keyed by email so each user only sees their own)
     try {
-      const storedInquiries = JSON.parse(localStorage.getItem("bnj_inquiries") || "[]");
+      const key = `bnj_inquiries_${em.toLowerCase().trim()}`;
+      const storedInquiries = JSON.parse(localStorage.getItem(key) || "[]");
       setInquiries(storedInquiries);
     } catch { /* ignore */ }
   }, [router]);

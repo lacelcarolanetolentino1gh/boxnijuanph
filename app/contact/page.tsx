@@ -38,7 +38,7 @@ function ContactForm() {
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setErrors({});
 
-    // Save to localStorage so user can track it in My Box → Inquiries
+    // Save to localStorage keyed by email so each user only sees their own inquiries
     const inquiry = {
       id: `INQ-${Date.now()}`,
       name: form.name,
@@ -50,9 +50,10 @@ function ContactForm() {
       submittedAt: new Date().toISOString(),
     };
     try {
-      const existing = JSON.parse(localStorage.getItem("bnj_inquiries") || "[]");
+      const key = `bnj_inquiries_${form.email.toLowerCase().trim()}`;
+      const existing = JSON.parse(localStorage.getItem(key) || "[]");
       existing.unshift(inquiry);
-      localStorage.setItem("bnj_inquiries", JSON.stringify(existing));
+      localStorage.setItem(key, JSON.stringify(existing));
     } catch { /* ignore */ }
 
     setSubmitted(true);
