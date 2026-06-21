@@ -66,6 +66,8 @@ function MyBoxContent() {
   });
   const [profileSaved, setProfileSaved] = useState(false);
   const [profileEditing, setProfileEditing] = useState(false);
+  const [paymentEditing, setPaymentEditing] = useState(false);
+  const [paymentSaved, setPaymentSaved] = useState(false);
 
   // Address book
   const [addresses, setAddresses] = useState<SavedAddress[]>([]);
@@ -1045,19 +1047,36 @@ function MyBoxContent() {
 
             {/* Default payment */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-              <h3 className="font-[var(--font-dm-sans)] font-bold text-[#2D2D2D] mb-1">Default Payment Method</h3>
-              <p className="text-xs text-gray-400 mb-5">Pre-selected at checkout. You can always change it before placing an order.</p>
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="font-[var(--font-dm-sans)] font-bold text-[#2D2D2D]">Default Payment Method</h3>
+                {!paymentEditing && (
+                  <button
+                    onClick={() => setPaymentEditing(true)}
+                    className="text-xs text-[#7CAE8E] font-semibold hover:underline"
+                  >
+                    Edit ✏️
+                  </button>
+                )}
+              </div>
+              <p className="text-xs text-gray-400 mb-4">Pre-selected at checkout. You can always change it before placing an order.</p>
+
+              {paymentSaved && (
+                <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-2.5 mb-4 text-sm text-green-700">
+                  <span>✓</span> Payment preference saved!
+                </div>
+              )}
+
               <div className="space-y-2" role="radiogroup" aria-label="Default payment method">
                 {PAYMENT_OPTIONS.map((opt) => (
                   <label
                     key={opt.value}
                     className={`flex items-center gap-3 border rounded-xl px-4 py-3 min-h-[52px] transition-colors ${
-                      profileEditing ? "cursor-pointer" : "cursor-default pointer-events-none opacity-70"
+                      paymentEditing ? "cursor-pointer" : "cursor-default pointer-events-none opacity-70"
                     } ${
                       profile.defaultPayment === opt.value
                         ? "border-[#7CAE8E] bg-green-50"
                         : "border-gray-200"
-                    } ${profileEditing && profile.defaultPayment !== opt.value ? "hover:border-[#7CAE8E]" : ""}`}
+                    } ${paymentEditing && profile.defaultPayment !== opt.value ? "hover:border-[#7CAE8E]" : ""}`}
                   >
                     <input
                       type="radio"
@@ -1075,9 +1094,33 @@ function MyBoxContent() {
                   </label>
                 ))}
               </div>
+
+              {/* Independent Save/Cancel for payment — does not affect Personal Information edit state */}
+              {paymentEditing && (
+                <div className="flex gap-3 mt-4">
+                  <button
+                    onClick={() => setPaymentEditing(false)}
+                    className="flex-1 min-h-[44px] border-2 border-gray-200 text-gray-600 rounded-full font-semibold text-sm hover:border-gray-300 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      const em = getEmail();
+                      localStorage.setItem(`boxProfile_${em}`, JSON.stringify(profile));
+                      setPaymentEditing(false);
+                      setPaymentSaved(true);
+                      setTimeout(() => setPaymentSaved(false), 3000);
+                    }}
+                    className="flex-1 min-h-[44px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white rounded-full font-semibold text-sm transition-colors"
+                  >
+                    Save ✓
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Save / Cancel buttons */}
+            {/* Save / Cancel buttons — Personal Information only, not payment */}
             {profileEditing && (
               <div className="flex gap-3">
                 <button
