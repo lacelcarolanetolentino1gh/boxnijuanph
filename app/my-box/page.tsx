@@ -53,6 +53,7 @@ function MyBoxContent() {
   const [pausedUntil, setPausedUntil] = useState<string | null>(null);
 
   const [draftRestored, setDraftRestored] = useState(false);
+  const [orderHistory, setOrderHistory] = useState<Record<string, unknown>[]>([]);
 
   // Profile form state
   const [profile, setProfile] = useState<BoxProfile>({
@@ -157,6 +158,12 @@ function MyBoxContent() {
     // Load pause state
     const storedPause = localStorage.getItem("boxPausedUntil");
     if (storedPause) setPausedUntil(storedPause);
+
+    // Load order history
+    const storedHistory = localStorage.getItem("boxOrderHistory");
+    if (storedHistory) {
+      try { setOrderHistory(JSON.parse(storedHistory)); } catch { /* ignore */ }
+    }
   }, [router]);
 
   const planData = plan ? PLANS.find((p) => p.id === plan) : null;
@@ -187,6 +194,18 @@ function MyBoxContent() {
   };
 
   const handleCancelSubscription = () => {
+    // Archive current order to history before clearing
+    const storedOrder = localStorage.getItem("orderDetails");
+    if (storedOrder) {
+      try {
+        const order = JSON.parse(storedOrder);
+        const history = JSON.parse(localStorage.getItem("boxOrderHistory") || "[]");
+        const archived = { ...order, cancelledAt: new Date().toISOString() };
+        const updated = [archived, ...history];
+        localStorage.setItem("boxOrderHistory", JSON.stringify(updated));
+        setOrderHistory(updated);
+      } catch { /* ignore */ }
+    }
     localStorage.removeItem("orderDetails");
     localStorage.removeItem("selectedItems");
     localStorage.removeItem("selectedPlan");
@@ -285,20 +304,111 @@ function MyBoxContent() {
   if (!user) return null;
 
   if (cancelled) {
+    const lastOrder = orderHistory[0];
+    const lastPlanData = lastOrder ? PLANS.find((p) => p.id === (lastOrder as { plan?: string }).plan) : null;
+    const lastItems: Product[] = lastOrder ? ((lastOrder as { items?: Product[] }).items || []) : [];
+    const lastOrderNumber = (lastOrder as { orderNumber?: string })?.orderNumber;
+    const cancelledAtLabel = lastOrder
+      ? new Date((lastOrder as { cancelledAt?: string }).cancelledAt || Date.now()).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" })
+      : null;
+
     return (
-      <div className="max-w-lg mx-auto px-6 py-20 text-center">
-        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <span className="text-3xl">📦</span>
+      <div className="max-w-2xl mx-auto px-6 py-16">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">📦</span>
+          </div>
+          <h1 className="font-[var(--font-dm-sans)] text-2xl font-bold text-[#2D2D2D] mb-2">Subscription Cancelled</h1>
+          <p className="text-gray-500 text-sm">
+            We&apos;re sad to see you go{user ? `, ${user.name.split(" ")[0]}` : ""}! You can resubscribe anytime.
+          </p>
         </div>
-        <h1 className="font-[var(--font-dm-sans)] text-2xl font-bold text-[#2D2D2D] mb-3">Subscription Cancelled</h1>
-        <p className="text-gray-500 text-sm mb-8">
-          Your subscription has been cancelled. We&apos;re sad to see you go{user ? `, ${user.name.split(" ")[0]}` : ""}!
-        </p>
-        <Link href="/plans">
-          <button className="min-h-[48px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white px-8 py-3 rounded-full font-bold transition-colors">
-            Start a New Box →
-          </button>
-        </Link>
+
+        {/* Last order card */}
+        {lastOrder && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+            <div className="h-1 w-full bg-gray-200" />
+            <div className="p-5">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <p className="text-xs text-gray-400 font-semibold uppercase tracking-widest mb-0.5">Last Order</p>
+                  <p className="font-[var(--font-dm-sans)] font-bold text-[#2D2D2D]">{lastPlanData?.name || "Custom"} Plan</p>
+                  <p className="text-[#7CAE8E] font-bold">₱{lastPlanData?.price}<span className="text-xs font-normal text-gray-400">/mo</span></p>
+                </div>
+                <div className="text-right">
+                  {lastOrderNumber && <p className="text-xs font-mono text-gray-400">{lastOrderNumber}</p>}
+                  {cancelledAtLabel && <p className="text-xs text-gray-400 mt-0.5">Cancelled {cancelledAtLabel}</p>}
+                  <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-semibold mt-1 inline-block">Cancelled</span>
+                </div>
+              </div>
+              {lastItems.length > 0 && (
+                <div className="border-t border-gray-50 pt-3 mt-2">
+                  <p className="text-xs text-gray-400 mb-2">{lastItems.length} item{lastItems.length !== 1 ? "s" : ""} in this box</p>
+                  <div className="flex flex-wrap gap-2">
+                    {lastItems.slice(0, 6).map((item, idx) => (
+                      <div key={`${item.id}-${idx}`} className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-50 border border-gray-100 shrink-0">
+                        <Image src={item.image} alt={item.name} fill className="object-cover" unoptimized />
+                      </div>
+                    ))}
+                    {lastItems.length > 6 && (
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-500 font-semibold shrink-0">
+                        +{lastItems.length - 6}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-8">
+          {lastOrder && (
+            <button
+              onClick={() => {
+                const p = (lastOrder as { plan?: string }).plan;
+                if (p) localStorage.setItem("selectedPlan", p);
+                router.push("/builder");
+              }}
+              className="flex-1 min-h-[52px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white rounded-full font-bold text-sm transition-colors"
+            >
+              Resubscribe to {lastPlanData?.name || "Same"} Plan →
+            </button>
+          )}
+          <Link href="/plans" className="flex-1">
+            <button className="w-full min-h-[52px] border-2 border-[#7CAE8E] text-[#7CAE8E] hover:bg-[#7CAE8E] hover:text-white rounded-full font-bold text-sm transition-colors">
+              Choose a New Plan
+            </button>
+          </Link>
+        </div>
+
+        {/* Full history */}
+        {orderHistory.length > 1 && (
+          <div>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Previous Orders</p>
+            <div className="space-y-3">
+              {orderHistory.slice(1).map((order, idx) => {
+                const pd = PLANS.find((p) => p.id === (order as { plan?: string }).plan);
+                const on = (order as { orderNumber?: string }).orderNumber;
+                const cat = (order as { cancelledAt?: string }).cancelledAt;
+                return (
+                  <div key={idx} className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-4 py-3">
+                    <div>
+                      <p className="text-sm font-semibold text-[#2D2D2D]">{pd?.name || "Custom"} Plan</p>
+                      {on && <p className="text-xs font-mono text-gray-400">{on}</p>}
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-400">{cat ? new Date(cat).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" }) : ""}</p>
+                      <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-semibold">Cancelled</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -587,6 +697,58 @@ function MyBoxContent() {
                     <button className="text-xs text-[#7CAE8E] font-semibold hover:underline">Contact Support →</button>
                   </Link>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Order history — shown whenever there are past orders */}
+          {orderHistory.length > 0 && (
+            <div className="mt-8">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Order History</p>
+              <div className="space-y-3">
+                {orderHistory.map((order, idx) => {
+                  const pd = PLANS.find((p) => p.id === (order as { plan?: string }).plan);
+                  const on = (order as { orderNumber?: string }).orderNumber;
+                  const cat = (order as { cancelledAt?: string }).cancelledAt;
+                  const pastItems: Product[] = (order as { items?: Product[] }).items || [];
+                  return (
+                    <div key={idx} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="text-sm font-bold text-[#2D2D2D]">{pd?.name || "Custom"} Plan</p>
+                          <p className="text-xs text-[#7CAE8E] font-semibold">₱{pd?.price}/mo</p>
+                          {on && <p className="text-xs font-mono text-gray-400 mt-0.5">{on}</p>}
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-semibold">Cancelled</span>
+                          {cat && <p className="text-xs text-gray-400 mt-1">{new Date(cat).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" })}</p>}
+                        </div>
+                      </div>
+                      {pastItems.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {pastItems.slice(0, 5).map((item, i) => (
+                            <div key={`${item.id}-${i}`} className="relative w-8 h-8 rounded-lg overflow-hidden bg-gray-50 border border-gray-100 shrink-0">
+                              <Image src={item.image} alt={item.name} fill className="object-cover" unoptimized />
+                            </div>
+                          ))}
+                          {pastItems.length > 5 && (
+                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] text-gray-500 font-semibold">+{pastItems.length - 5}</div>
+                          )}
+                        </div>
+                      )}
+                      <button
+                        onClick={() => {
+                          const p = (order as { plan?: string }).plan;
+                          if (p) localStorage.setItem("selectedPlan", p);
+                          router.push("/builder");
+                        }}
+                        className="text-xs text-[#7CAE8E] font-semibold hover:underline"
+                      >
+                        Resubscribe to this plan →
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
