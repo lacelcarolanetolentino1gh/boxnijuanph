@@ -29,8 +29,8 @@ const BOT_RESPONSES: { keywords: string[]; reply: string; links?: PageLink[] }[]
   },
   {
     keywords: ["refund", "return", "replace", "wrong", "missing", "damaged"],
-    reply: "Sorry to hear that! For refunds or replacements, email support@boxnijuanph.com with your order number and a photo of the issue. We process refunds within 5–7 business days. 💚",
-    links: [{ label: "Contact Support →", href: "/contact" }, { label: "FAQ: Returns →", href: "/faq#returns" }],
+    reply: "Sorry to hear that! You can request a refund or replacement within 7 days of delivery for damaged, incorrect, or missing items.\n\nEmail support@boxnijuanph.com with:\n• Your order number (BNJ-XXXXXX)\n• A clear photo of the issue\n\nWe respond within 1–2 business days and process approved refunds within 5–7 business days. 💚",
+    links: [{ label: "Report an Issue →", href: "/contact" }, { label: "FAQ: Returns →", href: "/faq#returns" }],
   },
   {
     keywords: ["delivery", "shipping", "deliver", "arrive", "when"],

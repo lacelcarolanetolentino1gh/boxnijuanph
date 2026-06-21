@@ -748,6 +748,11 @@ function MyBoxContent() {
                         ⏸ Pause Subscription
                       </button>
                     )}
+                    <Link href="/contact?topic=refund" className="block">
+                      <button className="w-full min-h-[44px] border border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-500 py-2.5 rounded-full text-sm transition-colors">
+                        ↩️ Report an Issue
+                      </button>
+                    </Link>
                     <button
                       onClick={() => setShowCancelConfirm(true)}
                       className="w-full text-xs text-gray-400 hover:text-red-400 py-2 transition-colors underline"

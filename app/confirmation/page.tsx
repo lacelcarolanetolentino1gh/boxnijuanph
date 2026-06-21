@@ -106,6 +106,19 @@ export default function ConfirmationPage() {
         </ol>
       </div>
 
+      {/* Refund note */}
+      <div className="bg-[#FFFBEB] border border-amber-200 rounded-2xl p-4 mb-8 text-left text-sm flex gap-3 items-start">
+        <span className="text-lg shrink-0">↩️</span>
+        <div>
+          <p className="font-semibold text-amber-800 mb-0.5">Not satisfied with your box?</p>
+          <p className="text-amber-700 text-xs leading-relaxed">
+            You can request a refund or replacement within <strong>7 days of delivery</strong> for damaged, incorrect, or missing items.
+            {" "}Email <span className="font-medium">support@boxnijuanph.com</span> with your order number and a photo.{" "}
+            <Link href="/faq#returns" className="underline hover:text-amber-900">See full return policy →</Link>
+          </p>
+        </div>
+      </div>
+
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <Link href="/">
           <button className="min-h-[48px] border-2 border-[#7CAE8E] text-[#7CAE8E] px-6 py-3 rounded-full font-semibold hover:bg-[#7CAE8E] hover:text-white transition-colors">

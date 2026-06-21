@@ -1,6 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const TOPICS = [
   "After-Sales Support",
@@ -12,10 +14,14 @@ const TOPICS = [
   "General Inquiry",
 ];
 
-export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", email: "", order: "", topic: "", message: "" });
+function ContactForm() {
+  const searchParams = useSearchParams();
+  const topicParam = searchParams.get("topic");
+  const initialTopic = topicParam === "refund" ? "Refund or Replacement" : "";
+
+  const [form, setForm] = useState({ name: "", email: "", order: "", topic: initialTopic, message: "" });
   const [submitted, setSubmitted] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -230,5 +236,13 @@ export default function ContactPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense>
+      <ContactForm />
+    </Suspense>
   );
 }
