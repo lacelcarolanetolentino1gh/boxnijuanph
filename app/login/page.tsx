@@ -108,6 +108,20 @@ function LoginContent() {
     if (!isSignup && localStorage.getItem("boxbotHistory")) {
       localStorage.setItem("boxbotShowContinuePrompt", "1");
     }
+    // If a different user's data is lingering, clear it
+    const existingOrder = localStorage.getItem("orderDetails");
+    if (existingOrder) {
+      try {
+        const ord = JSON.parse(existingOrder);
+        if (ord.form?.email && ord.form.email !== email.trim()) {
+          localStorage.removeItem("orderDetails");
+          localStorage.removeItem("boxProfile");
+          localStorage.removeItem("boxAddresses");
+          localStorage.removeItem("boxPausedUntil");
+          localStorage.removeItem("boxOrderHistory");
+        }
+      } catch { /* ignore */ }
+    }
     const user = {
       name: name.trim(),
       email: email.trim(),

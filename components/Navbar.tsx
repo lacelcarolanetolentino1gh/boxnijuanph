@@ -68,8 +68,6 @@ export default function Navbar() {
       localStorage.setItem("logoutToast", u.name.split(" ")[0]);
     }
     localStorage.removeItem("boxUser");
-    localStorage.removeItem("boxProfile");
-    localStorage.removeItem("orderDetails");
     localStorage.removeItem("selectedItems");
     localStorage.removeItem("selectedPlan");
     setUser(null);
