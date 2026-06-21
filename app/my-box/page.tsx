@@ -286,6 +286,19 @@ function MyBoxContent() {
     ? new Date(pausedUntil).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" })
     : null;
 
+  const [addressFormErrors, setAddressFormErrors] = useState<{ address?: string; city?: string; zipCode?: string }>({});
+
+  const validateAddressForm = () => {
+    const errors: { address?: string; city?: string; zipCode?: string } = {};
+    if (!addressForm.address.trim() || addressForm.address.trim().length < 5)
+      errors.address = "Enter a valid street / barangay (min 5 characters)";
+    if (!addressForm.city.trim() || addressForm.city.trim().length < 2)
+      errors.city = "Enter a valid city or municipality";
+    if (!/^\d{4}$/.test(addressForm.zipCode.trim()))
+      errors.zipCode = "ZIP code must be 4 digits (e.g. 1000)";
+    return errors;
+  };
+
   const saveAddresses = (updated: SavedAddress[]) => {
     const em = getEmail();
     setAddresses(updated);
@@ -293,7 +306,12 @@ function MyBoxContent() {
   };
 
   const handleAddressSave = () => {
-    if (!addressForm.address.trim() || !addressForm.city.trim() || !addressForm.zipCode.trim()) return;
+    const errors = validateAddressForm();
+    if (Object.keys(errors).length > 0) {
+      setAddressFormErrors(errors);
+      return;
+    }
+    setAddressFormErrors({});
     if (editingAddress) {
       const updated = addresses.map((a) =>
         a.id === editingAddress.id ? { ...a, ...addressForm } : a
@@ -1012,32 +1030,34 @@ function MyBoxContent() {
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">Street / Barangay *</label>
-                    <input value={addressForm.address} onChange={(e) => setAddressForm((f) => ({ ...f, address: e.target.value }))}
+                    <input value={addressForm.address} onChange={(e) => { setAddressForm((f) => ({ ...f, address: e.target.value })); setAddressFormErrors((er) => ({ ...er, address: undefined })); }}
                       placeholder="123 Rizal St, Brgy. San Antonio"
-                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#7CAE8E] min-h-[44px]" />
+                      className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none min-h-[44px] transition-colors ${addressFormErrors.address ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-[#7CAE8E]"}`} />
+                    {addressFormErrors.address && <p className="text-xs text-red-500 mt-1 ml-1">{addressFormErrors.address}</p>}
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-medium text-gray-600 mb-1">City / Municipality *</label>
-                      <input value={addressForm.city} onChange={(e) => setAddressForm((f) => ({ ...f, city: e.target.value }))}
+                      <input value={addressForm.city} onChange={(e) => { setAddressForm((f) => ({ ...f, city: e.target.value })); setAddressFormErrors((er) => ({ ...er, city: undefined })); }}
                         placeholder="Maynila"
-                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#7CAE8E] min-h-[44px]" />
+                        className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none min-h-[44px] transition-colors ${addressFormErrors.city ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-[#7CAE8E]"}`} />
+                      {addressFormErrors.city && <p className="text-xs text-red-500 mt-1 ml-1">{addressFormErrors.city}</p>}
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-600 mb-1">ZIP Code *</label>
-                      <input value={addressForm.zipCode} onChange={(e) => setAddressForm((f) => ({ ...f, zipCode: e.target.value }))}
+                      <input value={addressForm.zipCode} onChange={(e) => { setAddressForm((f) => ({ ...f, zipCode: e.target.value })); setAddressFormErrors((er) => ({ ...er, zipCode: undefined })); }}
                         placeholder="1000"
-                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#7CAE8E] min-h-[44px]" />
+                        className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none min-h-[44px] transition-colors ${addressFormErrors.zipCode ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-[#7CAE8E]"}`} />
+                      {addressFormErrors.zipCode && <p className="text-xs text-red-500 mt-1 ml-1">{addressFormErrors.zipCode}</p>}
                     </div>
                   </div>
                   <div className="flex gap-2 pt-1">
-                    <button type="button" onClick={() => { setShowAddressForm(false); setEditingAddress(null); }}
+                    <button type="button" onClick={() => { setShowAddressForm(false); setEditingAddress(null); setAddressFormErrors({}); }}
                       className="flex-1 min-h-[40px] border border-gray-200 text-gray-500 rounded-full text-xs font-semibold hover:border-gray-300 transition-colors">
                       Cancel
                     </button>
                     <button type="button" onClick={handleAddressSave}
-                      disabled={!addressForm.address.trim() || !addressForm.city.trim() || !addressForm.zipCode.trim()}
-                      className="flex-1 min-h-[40px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white rounded-full text-xs font-bold transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                      className="flex-1 min-h-[40px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white rounded-full text-xs font-bold transition-colors">
                       {editingAddress ? "Save Changes" : "Add Address"} ✓
                     </button>
                   </div>
