@@ -12,7 +12,16 @@ export default function ConfirmationPage() {
   const [orderNumber, setOrderNumber] = useState<string>("");
 
   useEffect(() => {
-    const stored = localStorage.getItem("orderDetails");
+    // Try email-keyed order first (logged-in user), fall back to guest key
+    const storedUser = localStorage.getItem("boxUser");
+    let stored: string | null = null;
+    if (storedUser) {
+      try {
+        const u = JSON.parse(storedUser);
+        stored = localStorage.getItem(`boxOrder_${u.email}`);
+      } catch { /* ignore */ }
+    }
+    if (!stored) stored = localStorage.getItem("orderDetails");
     if (stored) {
       const data = JSON.parse(stored);
       setPlan(data.plan);

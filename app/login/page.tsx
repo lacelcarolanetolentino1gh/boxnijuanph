@@ -88,15 +88,14 @@ function LoginContent() {
 
   const finishLogin = (name: string, email: string, provider: string, isSignup: boolean) => {
     const firstName = name.trim().split(" ")[0];
+    const em = email.trim();
     localStorage.setItem("loginToast", isSignup ? `welcome:${firstName}` : `welcome-back:${firstName}`);
-    // Clear incomplete box selections (no checkout done) — keeps completed orders intact
-    if (!localStorage.getItem("orderDetails")) {
-      localStorage.removeItem("selectedItems");
-      localStorage.removeItem("selectedPlan");
-    }
-    // Restore saved draft for this specific user if one exists
-    const draft = localStorage.getItem(`boxDraft_${email.trim()}`);
-    if (draft && !localStorage.getItem("orderDetails")) {
+    // Clear any leftover session-level box selections
+    localStorage.removeItem("selectedItems");
+    localStorage.removeItem("selectedPlan");
+    // Restore saved draft for this specific user if they have no active order
+    const draft = localStorage.getItem(`boxDraft_${em}`);
+    if (draft && !localStorage.getItem(`boxOrder_${em}`)) {
       try {
         const { items, plan } = JSON.parse(draft);
         localStorage.setItem("selectedItems", items);
@@ -107,20 +106,6 @@ function LoginContent() {
     // If returning user has prior chat history, flag the chatbot to show the continue prompt
     if (!isSignup && localStorage.getItem("boxbotHistory")) {
       localStorage.setItem("boxbotShowContinuePrompt", "1");
-    }
-    // If a different user's data is lingering, clear it
-    const existingOrder = localStorage.getItem("orderDetails");
-    if (existingOrder) {
-      try {
-        const ord = JSON.parse(existingOrder);
-        if (ord.form?.email && ord.form.email !== email.trim()) {
-          localStorage.removeItem("orderDetails");
-          localStorage.removeItem("boxProfile");
-          localStorage.removeItem("boxAddresses");
-          localStorage.removeItem("boxPausedUntil");
-          localStorage.removeItem("boxOrderHistory");
-        }
-      } catch { /* ignore */ }
     }
     const user = {
       name: name.trim(),

@@ -40,19 +40,21 @@ export default function CheckoutPage() {
     setPlan(storedPlan);
     if (storedItems) setItems(JSON.parse(storedItems));
 
-    // Load saved addresses
-    const storedAddresses = localStorage.getItem("boxAddresses");
-    let addresses: SavedAddress[] = [];
-    if (storedAddresses) {
-      try { addresses = JSON.parse(storedAddresses); } catch { /* ignore */ }
-    }
-    setSavedAddresses(addresses);
-
     if (storedUser) {
       const user: BoxUser = JSON.parse(storedUser);
+      const em = user.email;
       setLoggedInUser(user);
+
+      // Load saved addresses (email-keyed)
+      const storedAddresses = localStorage.getItem(`boxAddresses_${em}`);
+      let addresses: SavedAddress[] = [];
+      if (storedAddresses) {
+        try { addresses = JSON.parse(storedAddresses); } catch { /* ignore */ }
+      }
+      setSavedAddresses(addresses);
+
       // Pre-fill from saved profile first, then fall back to user account data
-      const storedProfile = localStorage.getItem("boxProfile");
+      const storedProfile = localStorage.getItem(`boxProfile_${em}`);
       if (storedProfile) {
         const prof = JSON.parse(storedProfile);
         setForm((prev) => ({
@@ -84,6 +86,12 @@ export default function CheckoutPage() {
           zipCode: def.zipCode,
         }));
       }
+    } else {
+      // Guest — load addresses from generic key (none expected, but keep consistent)
+      const storedAddresses = localStorage.getItem("boxAddresses");
+      if (storedAddresses) {
+        try { setSavedAddresses(JSON.parse(storedAddresses)); } catch { /* ignore */ }
+      }
     }
   }, []);
 
@@ -113,10 +121,11 @@ export default function CheckoutPage() {
 
   const handleConfirmOrder = () => {
     const orderNumber = `BNJ-${Math.floor(100000 + Math.random() * 900000)}`;
-    localStorage.setItem("orderDetails", JSON.stringify({ plan, items, form, orderNumber }));
-    // Clear draft for this user — order is now complete
     if (loggedInUser) {
+      localStorage.setItem(`boxOrder_${loggedInUser.email}`, JSON.stringify({ plan, items, form, orderNumber }));
       localStorage.removeItem(`boxDraft_${loggedInUser.email}`);
+    } else {
+      localStorage.setItem("orderDetails", JSON.stringify({ plan, items, form, orderNumber }));
     }
     localStorage.removeItem("boxDraftRestored");
     router.push("/confirmation");

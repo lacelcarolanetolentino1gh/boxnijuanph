@@ -58,7 +58,7 @@ export default function Navbar() {
     if (storedUser) {
       const u = JSON.parse(storedUser);
       // Save incomplete box as a draft keyed by email before clearing
-      if (!localStorage.getItem("orderDetails")) {
+      if (!localStorage.getItem(`boxOrder_${u.email}`)) {
         const items = localStorage.getItem("selectedItems");
         const plan = localStorage.getItem("selectedPlan");
         if (items && plan) {

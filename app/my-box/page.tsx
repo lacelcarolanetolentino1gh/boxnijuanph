@@ -85,10 +85,11 @@ function MyBoxContent() {
     const reader = new FileReader();
     reader.onload = (ev) => {
       const dataUrl = ev.target?.result as string;
+      const em = getEmail();
       setProfile((p) => {
         const updated = { ...p, profilePic: dataUrl };
         // Auto-save immediately so the photo persists across navigation/logout
-        localStorage.setItem("boxProfile", JSON.stringify(updated));
+        localStorage.setItem(`boxProfile_${em}`, JSON.stringify(updated));
         if (user) {
           const updatedUser = { ...user, avatar: dataUrl };
           localStorage.setItem("boxUser", JSON.stringify(updatedUser));
@@ -113,11 +114,12 @@ function MyBoxContent() {
       return;
     }
     const parsedUser: BoxUser = JSON.parse(storedUser);
+    const em = parsedUser.email;
     setUser(parsedUser);
 
     // Load saved profile or pre-fill from user + orderDetails
-    const storedProfile = localStorage.getItem("boxProfile");
-    const storedOrder = localStorage.getItem("orderDetails");
+    const storedProfile = localStorage.getItem(`boxProfile_${em}`);
+    const storedOrder = localStorage.getItem(`boxOrder_${em}`);
 
     if (storedProfile) {
       setProfile(JSON.parse(storedProfile));
@@ -150,17 +152,17 @@ function MyBoxContent() {
     }
 
     // Load saved addresses
-    const storedAddresses = localStorage.getItem("boxAddresses");
+    const storedAddresses = localStorage.getItem(`boxAddresses_${em}`);
     if (storedAddresses) {
       try { setAddresses(JSON.parse(storedAddresses)); } catch { /* ignore */ }
     }
 
     // Load pause state
-    const storedPause = localStorage.getItem("boxPausedUntil");
+    const storedPause = localStorage.getItem(`boxPausedUntil_${em}`);
     if (storedPause) setPausedUntil(storedPause);
 
     // Load order history
-    const storedHistory = localStorage.getItem("boxOrderHistory");
+    const storedHistory = localStorage.getItem(`boxOrderHistory_${em}`);
     if (storedHistory) {
       try { setOrderHistory(JSON.parse(storedHistory)); } catch { /* ignore */ }
     }
@@ -193,39 +195,46 @@ function MyBoxContent() {
     router.push("/builder");
   };
 
+  const getEmail = () => {
+    try { return JSON.parse(localStorage.getItem("boxUser") || "{}").email || ""; } catch { return ""; }
+  };
+
   const handleCancelSubscription = () => {
+    const em = getEmail();
     // Archive current order to history before clearing
-    const storedOrder = localStorage.getItem("orderDetails");
+    const storedOrder = localStorage.getItem(`boxOrder_${em}`);
     if (storedOrder) {
       try {
         const order = JSON.parse(storedOrder);
-        const history = JSON.parse(localStorage.getItem("boxOrderHistory") || "[]");
+        const history = JSON.parse(localStorage.getItem(`boxOrderHistory_${em}`) || "[]");
         const archived = { ...order, cancelledAt: new Date().toISOString() };
         const updated = [archived, ...history];
-        localStorage.setItem("boxOrderHistory", JSON.stringify(updated));
+        localStorage.setItem(`boxOrderHistory_${em}`, JSON.stringify(updated));
         setOrderHistory(updated);
       } catch { /* ignore */ }
     }
-    localStorage.removeItem("orderDetails");
+    localStorage.removeItem(`boxOrder_${em}`);
     localStorage.removeItem("selectedItems");
     localStorage.removeItem("selectedPlan");
     localStorage.removeItem("customBoxSaved");
-    localStorage.removeItem("boxPausedUntil");
+    localStorage.removeItem(`boxPausedUntil_${em}`);
     setCancelled(true);
     setShowCancelConfirm(false);
   };
 
   const handleConfirmPause = () => {
+    const em = getEmail();
     const until = new Date();
     until.setMonth(until.getMonth() + pauseMonths);
     const dateStr = until.toISOString();
-    localStorage.setItem("boxPausedUntil", dateStr);
+    localStorage.setItem(`boxPausedUntil_${em}`, dateStr);
     setPausedUntil(dateStr);
     setShowPauseModal(false);
   };
 
   const handleResume = () => {
-    localStorage.removeItem("boxPausedUntil");
+    const em = getEmail();
+    localStorage.removeItem(`boxPausedUntil_${em}`);
     setPausedUntil(null);
   };
 
@@ -235,8 +244,9 @@ function MyBoxContent() {
     : null;
 
   const saveAddresses = (updated: SavedAddress[]) => {
+    const em = getEmail();
     setAddresses(updated);
-    localStorage.setItem("boxAddresses", JSON.stringify(updated));
+    localStorage.setItem(`boxAddresses_${em}`, JSON.stringify(updated));
   };
 
   const handleAddressSave = () => {
@@ -285,7 +295,8 @@ function MyBoxContent() {
   };
 
   const handleProfileSave = () => {
-    localStorage.setItem("boxProfile", JSON.stringify(profile));
+    const em = getEmail();
+    localStorage.setItem(`boxProfile_${em}`, JSON.stringify(profile));
     if (user) {
       const updated = { ...user, name: profile.displayName, avatar: profile.profilePic || user.avatar };
       localStorage.setItem("boxUser", JSON.stringify(updated));
@@ -786,7 +797,7 @@ function MyBoxContent() {
                       <button
                         onClick={() => setProfile((p) => {
                           const updated = { ...p, profilePic: undefined };
-                          localStorage.setItem("boxProfile", JSON.stringify(updated));
+                          localStorage.setItem(`boxProfile_${getEmail()}`, JSON.stringify(updated));
                           if (user) {
                             const updatedUser = { ...user, avatar: undefined };
                             localStorage.setItem("boxUser", JSON.stringify(updatedUser));
@@ -1073,7 +1084,7 @@ function MyBoxContent() {
               <button
                 onClick={() => {
                   if (user) {
-                    if (!localStorage.getItem("orderDetails")) {
+                    if (!localStorage.getItem(`boxOrder_${user.email}`)) {
                       const items = localStorage.getItem("selectedItems");
                       const plan = localStorage.getItem("selectedPlan");
                       if (items && plan) {
