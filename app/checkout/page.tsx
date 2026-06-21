@@ -26,8 +26,12 @@ export default function CheckoutPage() {
   const isValidPHPhone = (val: string) => /^(09\d{9}|\+639\d{9})$/.test(val.replace(/[\s\-()]/g, ""));
 
   const handlePhoneBlur = () => {
-    if (form.phone && !isValidPHPhone(form.phone)) {
-      setPhoneError("Enter a valid PH number (e.g. 09171234567 or +639171234567)");
+    if (!form.phone || !isValidPHPhone(form.phone)) {
+      setPhoneError(
+        !form.phone
+          ? "Phone number is required"
+          : "Enter a valid PH number (e.g. 09171234567 or +639171234567)"
+      );
     } else {
       setPhoneError("");
     }
@@ -127,6 +131,13 @@ export default function CheckoutPage() {
 
   const handleSubmitRequest = (e: React.FormEvent) => {
     e.preventDefault();
+    // Trigger phone error on submit attempt so user sees it even without blur
+    if (!form.phone || !isValidPHPhone(form.phone)) {
+      setPhoneError(
+        !form.phone ? "Phone number is required" : "Enter a valid PH number (e.g. 09171234567 or +639171234567)"
+      );
+      return;
+    }
     if (!isComplete) return;
     setShowConfirm(true); // Show confirmation dialog — Robustness, Error Prevention
   };
