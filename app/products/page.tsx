@@ -132,21 +132,19 @@ function ProductCard({ product, onClick }: { product: Product; onClick: () => vo
 export default function ProductsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeBrand, setActiveBrand] = useState("All");
-  const [localOnly, setLocalOnly] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const filtered = PRODUCTS
     .filter((p) => activeCategory === "All" || p.category === activeCategory)
     .filter((p) => activeBrand === "All" || p.brand === activeBrand)
-    .filter((p) => !localOnly || p.isLocal)
     .filter((p) => {
       if (!query.trim()) return true;
       const q = query.toLowerCase();
       return p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.details.description.toLowerCase().includes(q);
     });
 
-  const hasFilters = activeCategory !== "All" || activeBrand !== "All" || localOnly || query.trim() !== "";
+  const hasFilters = activeCategory !== "All" || activeBrand !== "All" || query.trim() !== "";
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-16">
@@ -222,21 +220,10 @@ export default function ProductsPage() {
           <span className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs ${activeBrand !== "All" ? "text-white" : "text-gray-400"}`}>▾</span>
         </div>
 
-        {/* Local only toggle */}
-        <label className="flex items-center gap-2 cursor-pointer ml-1">
-          <input
-            type="checkbox"
-            checked={localOnly}
-            onChange={(e) => setLocalOnly(e.target.checked)}
-            className="accent-[#7CAE8E] w-4 h-4"
-          />
-          <span className="text-sm text-gray-600 font-medium">🇵🇭 Local brands only</span>
-        </label>
-
             {/* Clear filters */}
             {hasFilters && (
               <button
-                onClick={() => { setActiveCategory("All"); setActiveBrand("All"); setLocalOnly(false); setQuery(""); }}
+                onClick={() => { setActiveCategory("All"); setActiveBrand("All"); setQuery(""); }}
                 className="ml-auto text-xs text-gray-400 hover:text-red-400 transition-colors underline"
               >
                 Clear filters
