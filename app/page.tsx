@@ -220,6 +220,90 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── Testimonials ─────────────────────────────────────── */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="text-[#7CAE8E] font-bold text-sm uppercase tracking-widest">What Our Subscribers Say</span>
+            <h2 className="font-[var(--font-dm-sans)] text-4xl font-extrabold text-[#2D2D2D] mt-2">Real People. Real Boxes.</h2>
+            <div className="flex items-center justify-center gap-1 mt-3">
+              {[1,2,3,4,5].map((s) => <span key={s} className="text-[#7CAE8E] text-xl">★</span>)}
+              <span className="text-sm text-gray-500 ml-2">4.9 out of 5 · 200+ subscribers</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Maria Santos",
+                location: "Quezon City",
+                plan: "Standard Plan",
+                rating: 5,
+                text: "I love how every box feels so intentional. The products are actually good quality Filipino brands I never would've discovered on my own. Sulit na sulit!",
+                avatar: "M",
+              },
+              {
+                name: "James Reyes",
+                location: "Makati",
+                plan: "Custom Plan",
+                rating: 5,
+                text: "Being able to pick exactly what goes in my box is a game changer. I'm a gym guy so I load up on protein snacks and recovery items every month. No waste!",
+                avatar: "J",
+              },
+              {
+                name: "Carla Mendoza",
+                location: "Pasig",
+                plan: "Premium Plan",
+                rating: 5,
+                text: "Sobrang ganda ng packaging and the eco-friendly picks are my favorite. I feel good about what I'm buying. Will never go back to random online shopping.",
+                avatar: "C",
+              },
+              {
+                name: "Paolo Cruz",
+                location: "Taguig",
+                plan: "Basic Plan",
+                rating: 5,
+                text: "Perfect starter box for someone curious about wellness. Parang surprise every month. The chatbot also helped me pick the right plan — very helpful!",
+                avatar: "P",
+              },
+              {
+                name: "Nina Flores",
+                location: "Mandaluyong",
+                plan: "Standard Plan",
+                rating: 5,
+                text: "I paused my sub for a month when I traveled and it was so easy. No hassle, no hidden charges. Resumed right away when I got back. Love this service!",
+                avatar: "N",
+              },
+              {
+                name: "Gio Villanueva",
+                location: "Las Piñas",
+                plan: "Premium Plan",
+                rating: 5,
+                text: "Supporting local brands while getting great wellness products — this is exactly what I was looking for. My monthly highlight is opening the box!",
+                avatar: "G",
+              },
+            ].map((t, i) => (
+              <div key={i} className="bg-[#FAFAF7] border border-green-100 rounded-2xl p-5 flex flex-col gap-3 hover:shadow-md transition-shadow">
+                <div className="flex gap-0.5">
+                  {[1,2,3,4,5].map((s) => (
+                    <span key={s} className={`text-sm ${s <= t.rating ? "text-[#7CAE8E]" : "text-gray-200"}`}>★</span>
+                  ))}
+                </div>
+                <p className="text-sm text-gray-600 leading-relaxed flex-1">&ldquo;{t.text}&rdquo;</p>
+                <div className="flex items-center gap-3 pt-2 border-t border-green-100">
+                  <div className="w-9 h-9 rounded-full bg-[#7CAE8E] text-white flex items-center justify-center text-sm font-bold shrink-0">
+                    {t.avatar}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#2D2D2D]">{t.name}</p>
+                    <p className="text-xs text-gray-400">{t.location} · {t.plan}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── CSR Section ──────────────────────────────────────── */}
       <section className="py-20 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
