@@ -21,6 +21,7 @@ export default function CheckoutPage() {
   const [items, setItems] = useState<Product[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
   const [phoneError, setPhoneError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ fullName?: string; email?: string; address?: string; city?: string; zipCode?: string }>({});
 
   // Validates Philippine mobile numbers: 09XXXXXXXXX (11 digits) or +639XXXXXXXXX (13 chars)
   const isValidPHPhone = (val: string) => /^(09\d{9}|\+639\d{9})$/.test(val.replace(/[\s\-()]/g, ""));
@@ -115,6 +116,7 @@ export default function CheckoutPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setFieldErrors((prev) => ({ ...prev, [e.target.name]: undefined }));
   };
 
   const handleSelectSavedAddress = (addr: SavedAddress) => {
@@ -131,14 +133,22 @@ export default function CheckoutPage() {
 
   const handleSubmitRequest = (e: React.FormEvent) => {
     e.preventDefault();
-    // Trigger phone error on submit attempt so user sees it even without blur
+    // Validate all required fields and show inline errors
+    const errors: typeof fieldErrors = {};
+    if (!form.fullName.trim()) errors.fullName = "Full name is required";
+    if (!form.email.trim()) errors.email = "Email is required";
+    if (!form.address.trim()) errors.address = "Delivery address is required";
+    if (!form.city.trim()) errors.city = "City is required";
+    if (!form.zipCode.trim()) errors.zipCode = "ZIP code is required";
+    setFieldErrors(errors);
+
+    let phoneErr = "";
     if (!form.phone || !isValidPHPhone(form.phone)) {
-      setPhoneError(
-        !form.phone ? "Phone number is required" : "Enter a valid PH number (e.g. 09171234567 or +639171234567)"
-      );
-      return;
+      phoneErr = !form.phone ? "Phone number is required" : "Enter a valid PH number (e.g. 09171234567 or +639171234567)";
+      setPhoneError(phoneErr);
     }
-    if (!isComplete) return;
+
+    if (Object.keys(errors).length > 0 || phoneErr) return;
     setShowConfirm(true); // Show confirmation dialog — Robustness, Error Prevention
   };
 
@@ -214,8 +224,9 @@ export default function CheckoutPage() {
                   required
                   placeholder="Juan dela Cruz"
                   aria-required="true"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
+                  className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 min-h-[48px] transition-colors ${fieldErrors.fullName ? "border-red-400 focus:border-red-400 focus:ring-red-400/20" : "border-gray-200 focus:border-[#7CAE8E] focus:ring-[#7CAE8E]/20"}`}
                 />
+                {fieldErrors.fullName && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.fullName}</p>}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -231,8 +242,9 @@ export default function CheckoutPage() {
                     required
                     placeholder="juan@email.com"
                     aria-required="true"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
+                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 min-h-[48px] transition-colors ${fieldErrors.email ? "border-red-400 focus:border-red-400 focus:ring-red-400/20" : "border-gray-200 focus:border-[#7CAE8E] focus:ring-[#7CAE8E]/20"}`}
                   />
+                  {fieldErrors.email && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.email}</p>}
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-600 mb-1">
@@ -328,8 +340,9 @@ export default function CheckoutPage() {
                           required
                           placeholder="Street, Barangay"
                           aria-required="true"
-                          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[44px]"
+                          className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 min-h-[44px] transition-colors ${fieldErrors.address ? "border-red-400 focus:border-red-400 focus:ring-red-400/20" : "border-gray-200 focus:border-[#7CAE8E] focus:ring-[#7CAE8E]/20"}`}
                         />
+                        {fieldErrors.address && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.address}</p>}
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
@@ -344,8 +357,9 @@ export default function CheckoutPage() {
                             required
                             placeholder="Maynila"
                             aria-required="true"
-                            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[44px]"
+                            className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 min-h-[44px] transition-colors ${fieldErrors.city ? "border-red-400 focus:border-red-400 focus:ring-red-400/20" : "border-gray-200 focus:border-[#7CAE8E] focus:ring-[#7CAE8E]/20"}`}
                           />
+                          {fieldErrors.city && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.city}</p>}
                         </div>
                         <div>
                           <label htmlFor="zipCode" className="block text-xs font-medium text-gray-600 mb-1">
@@ -359,8 +373,9 @@ export default function CheckoutPage() {
                             required
                             placeholder="1000"
                             aria-required="true"
-                            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[44px]"
+                            className={`w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 min-h-[44px] transition-colors ${fieldErrors.zipCode ? "border-red-400 focus:border-red-400 focus:ring-red-400/20" : "border-gray-200 focus:border-[#7CAE8E] focus:ring-[#7CAE8E]/20"}`}
                           />
+                          {fieldErrors.zipCode && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.zipCode}</p>}
                         </div>
                       </div>
                     </div>
@@ -389,8 +404,9 @@ export default function CheckoutPage() {
                       required
                       placeholder="Street, Barangay"
                       aria-required="true"
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
+                      className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 min-h-[48px] transition-colors ${fieldErrors.address ? "border-red-400 focus:border-red-400 focus:ring-red-400/20" : "border-gray-200 focus:border-[#7CAE8E] focus:ring-[#7CAE8E]/20"}`}
                     />
+                    {fieldErrors.address && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.address}</p>}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -405,8 +421,9 @@ export default function CheckoutPage() {
                         required
                         placeholder="Maynila"
                         aria-required="true"
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
+                        className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 min-h-[48px] transition-colors ${fieldErrors.city ? "border-red-400 focus:border-red-400 focus:ring-red-400/20" : "border-gray-200 focus:border-[#7CAE8E] focus:ring-[#7CAE8E]/20"}`}
                       />
+                      {fieldErrors.city && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.city}</p>}
                     </div>
                     <div>
                       <label htmlFor="zipCode" className="block text-sm font-medium text-gray-600 mb-1">
@@ -420,8 +437,9 @@ export default function CheckoutPage() {
                         required
                         placeholder="1000"
                         aria-required="true"
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
+                        className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 min-h-[48px] transition-colors ${fieldErrors.zipCode ? "border-red-400 focus:border-red-400 focus:ring-red-400/20" : "border-gray-200 focus:border-[#7CAE8E] focus:ring-[#7CAE8E]/20"}`}
                       />
+                      {fieldErrors.zipCode && <p className="text-xs text-red-500 mt-1 ml-1">{fieldErrors.zipCode}</p>}
                     </div>
                   </div>
                   <p className="text-xs text-gray-400">

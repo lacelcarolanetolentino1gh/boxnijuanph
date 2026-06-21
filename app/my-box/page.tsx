@@ -364,7 +364,9 @@ function MyBoxContent() {
     const errors: { displayName?: string; phone?: string } = {};
     if (!profile.displayName.trim() || profile.displayName.trim().length < 2)
       errors.displayName = "Display name must be at least 2 characters";
-    if (profile.phone && !isValidPHPhone(profile.phone))
+    if (!profile.phone.trim())
+      errors.phone = "Phone number is required";
+    else if (!isValidPHPhone(profile.phone))
       errors.phone = "Enter a valid PH number (e.g. 09171234567 or +639171234567)";
     if (Object.keys(errors).length > 0) {
       setProfileErrors(errors);
@@ -963,7 +965,7 @@ function MyBoxContent() {
                 </div>
                 <div>
                   <label htmlFor="phone" className="block text-xs font-medium text-gray-600 mb-1">
-                    Phone Number
+                    Phone Number <span className="text-red-400">*</span>
                   </label>
                   <input
                     id="phone"
