@@ -80,6 +80,11 @@ export default function CheckoutPage() {
   const handleConfirmOrder = () => {
     const orderNumber = `BNJ-${Math.floor(100000 + Math.random() * 900000)}`;
     localStorage.setItem("orderDetails", JSON.stringify({ plan, items, form, orderNumber }));
+    // Clear draft for this user — order is now complete
+    if (loggedInUser) {
+      localStorage.removeItem(`boxDraft_${loggedInUser.email}`);
+    }
+    localStorage.removeItem("boxDraftRestored");
     router.push("/confirmation");
   };
 

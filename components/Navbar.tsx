@@ -47,6 +47,18 @@ export default function Navbar() {
   }, [pathname]);
 
   const handleSignOut = () => {
+    const storedUser = localStorage.getItem("boxUser");
+    if (storedUser) {
+      const u = JSON.parse(storedUser);
+      // Save incomplete box as a draft keyed by email before clearing
+      if (!localStorage.getItem("orderDetails")) {
+        const items = localStorage.getItem("selectedItems");
+        const plan = localStorage.getItem("selectedPlan");
+        if (items && plan) {
+          localStorage.setItem(`boxDraft_${u.email}`, JSON.stringify({ items, plan }));
+        }
+      }
+    }
     localStorage.removeItem("boxUser");
     localStorage.removeItem("boxProfile");
     localStorage.removeItem("orderDetails");

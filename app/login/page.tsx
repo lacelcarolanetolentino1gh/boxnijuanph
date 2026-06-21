@@ -94,6 +94,16 @@ function LoginContent() {
       localStorage.removeItem("selectedItems");
       localStorage.removeItem("selectedPlan");
     }
+    // Restore saved draft for this specific user if one exists
+    const draft = localStorage.getItem(`boxDraft_${email.trim()}`);
+    if (draft && !localStorage.getItem("orderDetails")) {
+      try {
+        const { items, plan } = JSON.parse(draft);
+        localStorage.setItem("selectedItems", items);
+        localStorage.setItem("selectedPlan", plan);
+        localStorage.setItem("boxDraftRestored", "1");
+      } catch { /* ignore malformed draft */ }
+    }
     // If returning user has prior chat history, flag the chatbot to show the continue prompt
     if (!isSignup && localStorage.getItem("boxbotHistory")) {
       localStorage.setItem("boxbotShowContinuePrompt", "1");

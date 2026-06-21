@@ -41,6 +41,8 @@ function MyBoxContent() {
   const [hydrated, setHydrated] = useState(false);
   const [activeTab, setActiveTab] = useState<"box" | "profile">("box");
 
+  const [draftRestored, setDraftRestored] = useState(false);
+
   // Profile form state
   const [profile, setProfile] = useState<BoxProfile>({
     displayName: "",
@@ -120,6 +122,12 @@ function MyBoxContent() {
       setOrderDetails(data);
       setPlan(data.plan || null);
       setItems(data.items || []);
+    }
+
+    // Check if an incomplete box draft was restored on login
+    if (localStorage.getItem("boxDraftRestored")) {
+      setDraftRestored(true);
+      localStorage.removeItem("boxDraftRestored");
     }
   }, [router]);
 
@@ -255,6 +263,33 @@ function MyBoxContent() {
       {/* ── MY BOX TAB ── */}
       {activeTab === "box" && (
         <>
+          {/* Draft restored banner */}
+          {draftRestored && (
+            <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 mb-6">
+              <span className="text-xl shrink-0">📦</span>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-amber-800">You have an incomplete box from your last session</p>
+                <p className="text-xs text-amber-700 mt-0.5">Your previous selections were restored. Continue building or start fresh.</p>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <Link href="/builder">
+                  <button className="min-h-[36px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white px-4 py-1.5 rounded-full text-xs font-bold transition-colors">
+                    Continue →
+                  </button>
+                </Link>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("selectedItems");
+                    localStorage.removeItem("selectedPlan");
+                    setDraftRestored(false);
+                  }}
+                  className="min-h-[36px] border border-amber-300 text-amber-700 hover:bg-amber-100 px-4 py-1.5 rounded-full text-xs font-semibold transition-colors"
+                >
+                  Start Fresh
+                </button>
+              </div>
+            </div>
+          )}
           {(!plan && items.length === 0) ? (
             <div className="text-center py-16">
               <div className="w-16 h-16 bg-[#7CAE8E]/10 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -696,6 +731,15 @@ function MyBoxContent() {
               <p className="text-xs text-gray-400 mb-3">Done for now?</p>
               <button
                 onClick={() => {
+                  if (user) {
+                    if (!localStorage.getItem("orderDetails")) {
+                      const items = localStorage.getItem("selectedItems");
+                      const plan = localStorage.getItem("selectedPlan");
+                      if (items && plan) {
+                        localStorage.setItem(`boxDraft_${user.email}`, JSON.stringify({ items, plan }));
+                      }
+                    }
+                  }
                   localStorage.removeItem("boxUser");
                   localStorage.removeItem("boxProfile");
                   localStorage.removeItem("orderDetails");
