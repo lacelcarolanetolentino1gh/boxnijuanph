@@ -7,6 +7,7 @@ import StepIndicator from "@/components/StepIndicator";
 import Image from "next/image";
 
 type BoxUser = { name: string; email: string; provider: string; avatar: string };
+type SavedAddress = { id: string; label: string; address: string; city: string; zipCode: string; isDefault: boolean };
 
 const PROVIDER_LABELS: Record<string, string> = {
   google: "Google",
@@ -20,6 +21,8 @@ export default function CheckoutPage() {
   const [items, setItems] = useState<Product[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState<BoxUser | null>(null);
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | "new" | null>(null);
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -36,6 +39,15 @@ export default function CheckoutPage() {
     const storedUser = localStorage.getItem("boxUser");
     setPlan(storedPlan);
     if (storedItems) setItems(JSON.parse(storedItems));
+
+    // Load saved addresses
+    const storedAddresses = localStorage.getItem("boxAddresses");
+    let addresses: SavedAddress[] = [];
+    if (storedAddresses) {
+      try { addresses = JSON.parse(storedAddresses); } catch { /* ignore */ }
+    }
+    setSavedAddresses(addresses);
+
     if (storedUser) {
       const user: BoxUser = JSON.parse(storedUser);
       setLoggedInUser(user);
@@ -60,6 +72,18 @@ export default function CheckoutPage() {
           email: user.email,
         }));
       }
+
+      // Pre-select default saved address if available
+      if (addresses.length > 0) {
+        const def = addresses.find((a) => a.isDefault) || addresses[0];
+        setSelectedAddressId(def.id);
+        setForm((prev) => ({
+          ...prev,
+          address: def.address,
+          city: def.city,
+          zipCode: def.zipCode,
+        }));
+      }
     }
   }, []);
 
@@ -67,6 +91,16 @@ export default function CheckoutPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSelectSavedAddress = (addr: SavedAddress) => {
+    setSelectedAddressId(addr.id);
+    setForm((prev) => ({ ...prev, address: addr.address, city: addr.city, zipCode: addr.zipCode }));
+  };
+
+  const handleUseNewAddress = () => {
+    setSelectedAddressId("new");
+    setForm((prev) => ({ ...prev, address: "", city: "", zipCode: "" }));
   };
 
   const isComplete = !!(form.fullName && form.email && form.phone && form.address && form.city && form.zipCode);
@@ -185,56 +219,175 @@ export default function CheckoutPage() {
                   />
                 </div>
               </div>
-              <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-600 mb-1">
-                  Delivery Address <span className="text-red-400" aria-hidden="true">*</span>
-                </label>
-                <input
-                  id="address"
-                  name="address"
-                  value={form.address}
-                  onChange={handleChange}
-                  required
-                  placeholder="Street, Barangay"
-                  aria-required="true"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
-                />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+              {/* Saved address picker — shown only when user has saved addresses */}
+              {savedAddresses.length > 0 ? (
                 <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-gray-600 mb-1">
-                    City / Municipality <span className="text-red-400" aria-hidden="true">*</span>
-                  </label>
-                  <input
-                    id="city"
-                    name="city"
-                    value={form.city}
-                    onChange={handleChange}
-                    required
-                    placeholder="Maynila"
-                    aria-required="true"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
-                  />
+                  <p className="block text-sm font-medium text-gray-600 mb-2">
+                    Delivery Address <span className="text-red-400" aria-hidden="true">*</span>
+                  </p>
+                  <div className="space-y-2" role="radiogroup" aria-label="Select delivery address">
+                    {savedAddresses.map((addr) => (
+                      <label
+                        key={addr.id}
+                        className={`flex items-start gap-3 border-2 rounded-xl px-4 py-3 cursor-pointer transition-colors ${
+                          selectedAddressId === addr.id
+                            ? "border-[#7CAE8E] bg-[#7CAE8E]/5"
+                            : "border-gray-200 hover:border-[#7CAE8E]"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="savedAddress"
+                          value={addr.id}
+                          checked={selectedAddressId === addr.id}
+                          onChange={() => handleSelectSavedAddress(addr)}
+                          className="accent-[#7CAE8E] w-4 h-4 mt-0.5 shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <span className="text-xs font-bold text-[#2D2D2D]">{addr.label}</span>
+                            {addr.isDefault && <span className="text-[10px] bg-[#7CAE8E] text-white px-2 py-0.5 rounded-full">Default</span>}
+                          </div>
+                          <p className="text-xs text-gray-500">{addr.address}, {addr.city} {addr.zipCode}</p>
+                        </div>
+                      </label>
+                    ))}
+                    <label
+                      className={`flex items-center gap-3 border-2 rounded-xl px-4 py-3 cursor-pointer transition-colors ${
+                        selectedAddressId === "new"
+                          ? "border-[#7CAE8E] bg-[#7CAE8E]/5"
+                          : "border-gray-200 hover:border-[#7CAE8E]"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="savedAddress"
+                        value="new"
+                        checked={selectedAddressId === "new"}
+                        onChange={handleUseNewAddress}
+                        className="accent-[#7CAE8E] w-4 h-4 shrink-0"
+                      />
+                      <span className="text-sm text-gray-500 font-medium">+ Use a different address</span>
+                    </label>
+                  </div>
+
+                  {/* One-time manual entry — only shown when "new" selected */}
+                  {selectedAddressId === "new" && (
+                    <div className="mt-3 space-y-3 border border-gray-100 rounded-xl p-4 bg-gray-50">
+                      <div>
+                        <label htmlFor="address" className="block text-xs font-medium text-gray-600 mb-1">
+                          Street / Barangay <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          id="address"
+                          name="address"
+                          value={form.address}
+                          onChange={handleChange}
+                          required
+                          placeholder="Street, Barangay"
+                          aria-required="true"
+                          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[44px]"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label htmlFor="city" className="block text-xs font-medium text-gray-600 mb-1">
+                            City / Municipality <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            id="city"
+                            name="city"
+                            value={form.city}
+                            onChange={handleChange}
+                            required
+                            placeholder="Maynila"
+                            aria-required="true"
+                            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[44px]"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="zipCode" className="block text-xs font-medium text-gray-600 mb-1">
+                            ZIP Code <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            id="zipCode"
+                            name="zipCode"
+                            value={form.zipCode}
+                            onChange={handleChange}
+                            required
+                            placeholder="1000"
+                            aria-required="true"
+                            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[44px]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div className="mt-3 flex items-center justify-between">
+                    <p className="text-xs text-gray-400">
+                      <span className="text-red-400">*</span> Required · Protected under RA 10173
+                    </p>
+                    <Link href="/my-box?tab=profile" className="text-xs text-[#7CAE8E] hover:underline font-medium">
+                      Manage addresses →
+                    </Link>
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="zipCode" className="block text-sm font-medium text-gray-600 mb-1">
-                    ZIP Code <span className="text-red-400" aria-hidden="true">*</span>
-                  </label>
-                  <input
-                    id="zipCode"
-                    name="zipCode"
-                    value={form.zipCode}
-                    onChange={handleChange}
-                    required
-                    placeholder="1000"
-                    aria-required="true"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-gray-400">
-                <span className="text-red-400">*</span> Required fields · Protected under RA 10173 (Data Privacy Act of 2012)
-              </p>
+              ) : (
+                /* No saved addresses — show regular manual fields */
+                <>
+                  <div>
+                    <label htmlFor="address" className="block text-sm font-medium text-gray-600 mb-1">
+                      Delivery Address <span className="text-red-400" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      id="address"
+                      name="address"
+                      value={form.address}
+                      onChange={handleChange}
+                      required
+                      placeholder="Street, Barangay"
+                      aria-required="true"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="city" className="block text-sm font-medium text-gray-600 mb-1">
+                        City / Municipality <span className="text-red-400" aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        id="city"
+                        name="city"
+                        value={form.city}
+                        onChange={handleChange}
+                        required
+                        placeholder="Maynila"
+                        aria-required="true"
+                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="zipCode" className="block text-sm font-medium text-gray-600 mb-1">
+                        ZIP Code <span className="text-red-400" aria-hidden="true">*</span>
+                      </label>
+                      <input
+                        id="zipCode"
+                        name="zipCode"
+                        value={form.zipCode}
+                        onChange={handleChange}
+                        required
+                        placeholder="1000"
+                        aria-required="true"
+                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    <span className="text-red-400">*</span> Required fields · Protected under RA 10173 (Data Privacy Act of 2012)
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
