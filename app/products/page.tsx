@@ -4,14 +4,96 @@ import Image from "next/image";
 import Link from "next/link";
 import { PRODUCTS, CATEGORIES, BRANDS, Product } from "@/lib/data";
 
-function ProductCard({ product }: { product: Product }) {
+function ProductModal({ product, onClose }: { product: Product; onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      role="dialog"
+      aria-modal="true"
+      aria-label={product.name}
+    >
+      <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        {/* Image */}
+        <div className="relative h-56 bg-gray-50 shrink-0">
+          <Image src={product.image} alt={product.name} fill className="object-cover" unoptimized />
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-800 shadow-sm transition-colors"
+            aria-label="Close"
+          >✕</button>
+          <div className="absolute top-3 left-3 flex gap-1.5">
+            {product.isLocal && <span className="text-xs bg-[#7CAE8E] text-white px-2 py-0.5 rounded-full">🇵🇭 Local</span>}
+            {product.isEco && <span className="text-xs bg-white text-green-700 px-2 py-0.5 rounded-full border border-green-200">♻️ Eco</span>}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-y-auto">
+          <p className="text-xs text-[#7CAE8E] font-bold uppercase tracking-widest mb-1">{product.category}</p>
+          <h2 className="font-[var(--font-dm-sans)] text-xl font-extrabold text-[#2D2D2D] mb-0.5">{product.name}</h2>
+          <p className="text-sm text-gray-400 font-medium mb-4">by {product.brand}</p>
+
+          <div className="space-y-4 mb-6">
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">About</p>
+              <p className="text-sm text-gray-600 leading-relaxed">{product.details.description}</p>
+            </div>
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Best For</p>
+              <p className="text-sm text-gray-600 leading-relaxed">{product.details.purpose}</p>
+            </div>
+            {product.details.contents && (
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Contents</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{product.details.contents}</p>
+              </div>
+            )}
+            {product.variants.length > 0 && (
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Available Variants</p>
+                <div className="flex flex-wrap gap-2">
+                  {product.variants.map((v) => (
+                    <span key={v} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{v}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {product.details.nutrition && (
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Nutrition Facts</p>
+                <div className="bg-gray-50 rounded-xl p-3 text-xs text-gray-600 grid grid-cols-3 gap-2">
+                  <div><p className="text-gray-400">Serving</p><p className="font-semibold">{product.details.nutrition.servingSize}</p></div>
+                  <div><p className="text-gray-400">Calories</p><p className="font-semibold">{product.details.nutrition.calories}</p></div>
+                  {product.details.nutrition.protein && <div><p className="text-gray-400">Protein</p><p className="font-semibold">{product.details.nutrition.protein}</p></div>}
+                  {product.details.nutrition.carbs && <div><p className="text-gray-400">Carbs</p><p className="font-semibold">{product.details.nutrition.carbs}</p></div>}
+                  {product.details.nutrition.fat && <div><p className="text-gray-400">Fat</p><p className="font-semibold">{product.details.nutrition.fat}</p></div>}
+                  {product.details.nutrition.sugar && <div><p className="text-gray-400">Sugar</p><p className="font-semibold">{product.details.nutrition.sugar}</p></div>}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <Link href="/plans" onClick={onClose}>
+            <button className="w-full min-h-[48px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white font-bold rounded-full transition-colors text-sm">
+              Add to My Box →
+            </button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductCard({ product, onClick }: { product: Product; onClick: () => void }) {
   const [flipped, setFlipped] = useState(false);
 
   return (
     <div
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex flex-col"
+      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex flex-col cursor-pointer"
       onMouseEnter={() => setFlipped(true)}
       onMouseLeave={() => setFlipped(false)}
+      onClick={onClick}
     >
       <div className="relative h-44 bg-gray-50 overflow-hidden">
         <Image
@@ -36,11 +118,12 @@ function ProductCard({ product }: { product: Product }) {
           {flipped ? product.details.purpose : product.details.description}
         </p>
         <p className="text-[10px] text-gray-300 mb-3">{product.category}</p>
-        <Link href="/plans">
-          <button className="w-full min-h-[40px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white text-xs font-bold rounded-full transition-colors">
-            Add to My Box →
-          </button>
-        </Link>
+        <button
+          onClick={(e) => { e.stopPropagation(); onClick(); }}
+          className="w-full min-h-[40px] bg-[#7CAE8E] hover:bg-[#5F8F72] text-white text-xs font-bold rounded-full transition-colors"
+        >
+          View Details →
+        </button>
       </div>
     </div>
   );
@@ -51,6 +134,7 @@ export default function ProductsPage() {
   const [activeBrand, setActiveBrand] = useState("All");
   const [localOnly, setLocalOnly] = useState(false);
   const [query, setQuery] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const filtered = PRODUCTS
     .filter((p) => activeCategory === "All" || p.category === activeCategory)
@@ -167,12 +251,15 @@ export default function ProductsPage() {
       {filtered.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} onClick={() => setSelectedProduct(product)} />
           ))}
         </div>
       ) : (
         <p className="text-center text-gray-400 text-sm py-16">No products match your filters.</p>
       )}
+
+      {/* Product Detail Modal */}
+      {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
 
       {/* Bottom CTA */}
       <div className="mt-16 text-center bg-[#FAFAF7] border border-green-100 rounded-3xl p-10">
