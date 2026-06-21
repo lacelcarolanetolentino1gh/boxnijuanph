@@ -117,9 +117,31 @@ function MyBoxContent() {
     const em = parsedUser.email;
     setUser(parsedUser);
 
-    // Load saved profile or pre-fill from user + orderDetails
-    const storedProfile = localStorage.getItem(`boxProfile_${em}`);
-    const storedOrder = localStorage.getItem(`boxOrder_${em}`);
+    // Load saved profile — migrate from old generic key if needed
+    const storedProfile = localStorage.getItem(`boxProfile_${em}`)
+      || localStorage.getItem("boxProfile");
+    const storedOrder = localStorage.getItem(`boxOrder_${em}`)
+      || localStorage.getItem("orderDetails");
+
+    // Migrate old generic keys to email-keyed
+    if (!localStorage.getItem(`boxProfile_${em}`) && localStorage.getItem("boxProfile")) {
+      localStorage.setItem(`boxProfile_${em}`, localStorage.getItem("boxProfile")!);
+      localStorage.removeItem("boxProfile");
+    }
+    if (!localStorage.getItem(`boxOrder_${em}`) && localStorage.getItem("orderDetails")) {
+      localStorage.setItem(`boxOrder_${em}`, localStorage.getItem("orderDetails")!);
+      localStorage.removeItem("orderDetails");
+    }
+    const storedPauseOld = localStorage.getItem("boxPausedUntil");
+    if (!localStorage.getItem(`boxPausedUntil_${em}`) && storedPauseOld) {
+      localStorage.setItem(`boxPausedUntil_${em}`, storedPauseOld);
+      localStorage.removeItem("boxPausedUntil");
+    }
+    const storedHistoryOld = localStorage.getItem("boxOrderHistory");
+    if (!localStorage.getItem(`boxOrderHistory_${em}`) && storedHistoryOld) {
+      localStorage.setItem(`boxOrderHistory_${em}`, storedHistoryOld);
+      localStorage.removeItem("boxOrderHistory");
+    }
 
     if (storedProfile) {
       setProfile(JSON.parse(storedProfile));
@@ -151,10 +173,19 @@ function MyBoxContent() {
       localStorage.removeItem("boxDraftRestored");
     }
 
-    // Load saved addresses
-    const storedAddresses = localStorage.getItem(`boxAddresses_${em}`);
+    // Load saved addresses — migrate from old generic key if needed
+    const storedAddresses = localStorage.getItem(`boxAddresses_${em}`)
+      || localStorage.getItem("boxAddresses");
     if (storedAddresses) {
-      try { setAddresses(JSON.parse(storedAddresses)); } catch { /* ignore */ }
+      try {
+        const parsed = JSON.parse(storedAddresses);
+        setAddresses(parsed);
+        // Migrate to email-keyed key if it was under the old generic key
+        if (!localStorage.getItem(`boxAddresses_${em}`)) {
+          localStorage.setItem(`boxAddresses_${em}`, storedAddresses);
+          localStorage.removeItem("boxAddresses");
+        }
+      } catch { /* ignore */ }
     }
 
     // Load pause state
