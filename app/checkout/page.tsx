@@ -20,6 +20,18 @@ export default function CheckoutPage() {
   const [plan, setPlan] = useState<string>("basic");
   const [items, setItems] = useState<Product[]>([]);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+
+  // Validates Philippine mobile numbers: 09XXXXXXXXX (11 digits) or +639XXXXXXXXX (13 chars)
+  const isValidPHPhone = (val: string) => /^(09\d{9}|\+639\d{9})$/.test(val.replace(/[\s\-()]/g, ""));
+
+  const handlePhoneBlur = () => {
+    if (form.phone && !isValidPHPhone(form.phone)) {
+      setPhoneError("Enter a valid PH number (e.g. 09171234567 or +639171234567)");
+    } else {
+      setPhoneError("");
+    }
+  };
   const [loggedInUser, setLoggedInUser] = useState<BoxUser | null>(null);
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | "new" | null>(null);
@@ -111,7 +123,7 @@ export default function CheckoutPage() {
     setForm((prev) => ({ ...prev, address: "", city: "", zipCode: "" }));
   };
 
-  const isComplete = !!(form.fullName && form.email && form.phone && form.address && form.city && form.zipCode);
+  const isComplete = !!(form.fullName && form.email && form.phone && isValidPHPhone(form.phone) && form.address && form.city && form.zipCode);
 
   const handleSubmitRequest = (e: React.FormEvent) => {
     e.preventDefault();
@@ -220,12 +232,21 @@ export default function CheckoutPage() {
                     name="phone"
                     type="tel"
                     value={form.phone}
-                    onChange={handleChange}
+                    onChange={(e) => { handleChange(e); setPhoneError(""); }}
+                    onBlur={handlePhoneBlur}
                     required
-                    placeholder="09XX-XXX-XXXX"
+                    placeholder="09171234567"
                     aria-required="true"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7CAE8E] focus:ring-2 focus:ring-[#7CAE8E]/20 min-h-[48px]"
+                    aria-describedby={phoneError ? "phone-error" : undefined}
+                    className={`w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 min-h-[48px] transition-colors ${
+                      phoneError
+                        ? "border-red-400 focus:border-red-400 focus:ring-red-400/20"
+                        : "border-gray-200 focus:border-[#7CAE8E] focus:ring-[#7CAE8E]/20"
+                    }`}
                   />
+                  {phoneError && (
+                    <p id="phone-error" className="text-xs text-red-500 mt-1 ml-1">{phoneError}</p>
+                  )}
                 </div>
               </div>
 
