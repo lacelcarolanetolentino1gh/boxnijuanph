@@ -31,7 +31,7 @@ export default function Navbar() {
     return () => window.removeEventListener("storage", load);
   }, []);
 
-  // Check for login toast on every navigation (pathname change)
+  // Check for login/logout toast on every navigation (pathname change)
   useEffect(() => {
     const loginToast = localStorage.getItem("loginToast");
     if (loginToast) {
@@ -42,6 +42,13 @@ export default function Navbar() {
       } else {
         setToast({ emoji: "🎉", message: `Welcome, ${name}!` });
       }
+      setTimeout(() => setToast(null), 4000);
+      return;
+    }
+    const logoutToast = localStorage.getItem("logoutToast");
+    if (logoutToast) {
+      localStorage.removeItem("logoutToast");
+      setToast({ emoji: "👋", message: `See you soon, ${logoutToast}!` });
       setTimeout(() => setToast(null), 4000);
     }
   }, [pathname]);
@@ -58,6 +65,7 @@ export default function Navbar() {
           localStorage.setItem(`boxDraft_${u.email}`, JSON.stringify({ items, plan }));
         }
       }
+      localStorage.setItem("logoutToast", u.name.split(" ")[0]);
     }
     localStorage.removeItem("boxUser");
     localStorage.removeItem("boxProfile");

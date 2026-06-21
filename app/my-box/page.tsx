@@ -918,6 +918,7 @@ function MyBoxContent() {
                         localStorage.setItem(`boxDraft_${user.email}`, JSON.stringify({ items, plan }));
                       }
                     }
+                    localStorage.setItem("logoutToast", user.name.split(" ")[0]);
                   }
                   localStorage.removeItem("boxUser");
                   localStorage.removeItem("boxProfile");
